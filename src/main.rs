@@ -6,7 +6,6 @@ use behavior_hiding::BehaviorHiding;
 use clap::{Arg, Command};
 use std::process;
 
-#[allow(dead_code)]
 fn main() {
     let matches = Command::new("DAYS DVCS First Prototyping and Demo")
         .version("0.1")
@@ -23,14 +22,25 @@ fn main() {
                 .required(true)
                 .index(2),
         )
+        .arg(
+            Arg::new("file")
+                .help("The file to commit (required for 'commit' command)")
+                .required(false)
+                .index(3),
+        )
         .get_matches();
 
     let command = matches.get_one::<String>("command").unwrap();
     let directory = matches.get_one::<String>("directory").unwrap();
+    let file_path = matches.get_one::<String>("file");
 
     match BehaviorHiding::validate_command(command) {
         Ok(valid_command) => {
-            if let Err(e) = BehaviorHiding::execute_command(valid_command, directory) {
+            if let Err(e) = BehaviorHiding::execute_command(
+                valid_command,
+                directory,
+                file_path.map(|s| s.as_str()),
+            ) {
                 BehaviorHiding::display_output(&format!("Error: {:?}", e), "error");
                 process::exit(1);
             } else {

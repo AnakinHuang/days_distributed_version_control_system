@@ -1,25 +1,5 @@
-// CSC 253/453 DVCS Assignment
-
 use crate::repository_hiding::{RepoError, Repository};
 use std::io;
-
-#[allow(dead_code)]
-pub enum Command {
-    Init,
-    Clone { repo_url: String },
-    Add { file_path: String },
-    Remove { file_path: String },
-    Status,
-    Heads,
-    Diff { file_path: Option<String> },
-    Cat { file_name: String },
-    Checkout { branch_name: String },
-    Commit { commit_message: String },
-    Log,
-    Merge { branch_name: String },
-    Pull,
-    Push,
-}
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -39,30 +19,6 @@ impl From<RepoError> for BehaviorError {
     fn from(err: RepoError) -> BehaviorError {
         BehaviorError::RepoError(err)
     }
-}
-
-#[allow(dead_code)]
-pub enum Error {
-    ParseError(String),
-    ValidationError(String),
-    ExecutionError(String),
-}
-
-#[allow(dead_code)]
-pub enum OutputStyle {
-    Plain,
-    Error,
-    Success,
-}
-
-#[allow(dead_code)]
-pub struct ValidCommand {
-    pub command: Command,
-}
-
-#[allow(dead_code)]
-pub trait Valid {
-    fn is_valid(&self) -> bool;
 }
 
 pub struct BehaviorHiding;
@@ -91,16 +47,26 @@ impl BehaviorHiding {
     }
 
     /// Executes a command by calling appropriate module functions.
-    pub fn execute_command(command: &str, directory: &str) -> Result<(), BehaviorError> {
+    pub fn execute_command(
+        command: &str,
+        directory: &str,
+        file_directory: Option<&str>,
+    ) -> Result<(), BehaviorError> {
         match command {
             "init" => {
                 Repository::init(directory).map_err(|e| BehaviorError::RepoError(e))?;
                 println!("Repository initialized in {}", directory);
             }
             "commit" => {
-                Repository::commit(directory, "Initial commit")
-                    .map_err(|e| BehaviorError::RepoError(e))?;
-                println!("Commit created in {}", directory);
+                if let Some(file_path) = file_directory {
+                    Repository::commit(directory, file_path, "Commit from CLI")
+                        .map_err(|e| BehaviorError::RepoError(e))?;
+                    println!("Commit created in {}", directory);
+                } else {
+                    return Err(BehaviorError::CommandError(
+                        "Commit command requires a file path argument.".to_string(),
+                    ));
+                }
             }
             "checkout" => {
                 println!("Enter the commit ID or branch name to checkout:");

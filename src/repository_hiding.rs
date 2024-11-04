@@ -1,6 +1,6 @@
 use crate::file_system_hiding::{FileError, FileSystemHiding};
 use std::fs;
-use std::io::{Error, Write};
+use std::io::Error;
 use std::path::Path;
 
 #[allow(dead_code)]
@@ -30,15 +30,15 @@ pub struct Repository;
 #[allow(dead_code)]
 impl Repository {
     /// Initializes a new repository by creating the necessary directory structure.
-    pub fn init(directory: &str) -> Result<(), RepoError> {
-        let repo_path = Path::new(directory).join(".dvcs");
+    pub fn init(repo_directory: &str) -> Result<(), RepoError> {
+        let repo_path = Path::new(repo_directory).join(".dvcs");
         if repo_path.exists() {
             return Err(RepoError::RepoInitializationError(
                 "Repository already exists".to_string(),
             ));
         }
         FileSystemHiding::create_directory(repo_path.to_str().unwrap())?;
-        println!("Initialized empty DVCS repository in {}", directory);
+        println!("Initialized empty DVCS repository in {}", repo_directory);
         Ok(())
     }
 
@@ -61,17 +61,44 @@ impl Repository {
         Ok(())
     }
 
-    /// Commits changes with a given message. Assumes a basic file tracking and commit simulation.
-    pub fn commit(directory: &str, message: &str) -> Result<(), RepoError> {
-        let commit_path = Path::new(directory).join(".dvcs").join("commits");
+    /// Commits a file from `file_directory` to the repository in `repo_directory` with a given message.
+    pub fn commit(
+        repo_directory: &str,
+        file_directory: &str,
+        message: &str,
+    ) -> Result<(), RepoError> {
+        // Create the commit path in the repository
+        let commit_path = Path::new(repo_directory).join(".dvcs").join("commits");
         FileSystemHiding::create_directory(commit_path.to_str().unwrap())?;
 
-        let commit_file_path = commit_path.join(format!("commit_{}.txt", uuid::Uuid::new_v4()));
-        let mut commit_file = fs::File::create(commit_file_path)?;
-        writeln!(commit_file, "Commit message: {}", message)?;
-        writeln!(commit_file, "Timestamp: {:?}", chrono::Utc::now())?;
+        // Read the content of the file to be committed
+        let file_content = FileSystemHiding::read_file(file_directory)?;
 
-        println!("Committed changes with message: '{}'", message);
+        // Generate a unique name for the commit file
+        let commit_file_path = commit_path.join(format!(
+            "{}_{}.txt",
+            Path::new(file_directory)
+                .file_name()
+                .unwrap()
+                .to_string_lossy(),
+            uuid::Uuid::new_v4()
+        ));
+
+        // Write the commit information to the file using FileSystemHiding
+        let commit_data = format!(
+            "Commit message: {}\nTimestamp: {:?}\n\nFile Content:\n{}",
+            message,
+            chrono::Utc::now(),
+            file_content
+        );
+        FileSystemHiding::write_file(commit_file_path.to_str().unwrap(), &commit_data)?;
+
+        println!(
+            "Committed changes from '{}' to '{}', with message: '{}'",
+            file_directory,
+            commit_file_path.to_string_lossy(),
+            message
+        );
         Ok(())
     }
 
