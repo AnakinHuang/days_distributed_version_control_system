@@ -72,12 +72,16 @@ impl Repository {
         let file_content = FileSystemHiding::read_file(file_directory)?;
 
         let commit_file_path = commit_path.join(format!(
-            "{}_{}.txt",
+            "{}_{}.{}",
             Path::new(file_directory)
                 .file_stem()
                 .unwrap()
                 .to_string_lossy(),
-            uuid::Uuid::new_v4()
+            uuid::Uuid::new_v4(),
+            Path::new(file_directory)
+                .extension()
+                .unwrap()
+                .to_string_lossy()
         ));
 
         let commit_data = format!(
@@ -106,7 +110,7 @@ impl Repository {
             ));
         }
 
-        let commit_path_buf = repo_path.join("commits").join(format!("{}_{}.txt", "*", commit_id));
+        let commit_path_buf = repo_path.join("commits").join(format!("*_{}.*", commit_id));
         let commit_path = match glob::glob(commit_path_buf.to_str().unwrap()).ok().and_then(|mut paths| paths.next()) {
             Some(Ok(path)) => path,
             _ => {
