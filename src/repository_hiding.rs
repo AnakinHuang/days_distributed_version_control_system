@@ -1,3 +1,4 @@
+use std::string::String;
 use crate::file_system_hiding::{FileError, FileSystemHiding};
 use std::fs;
 use std::io::Error;
@@ -126,7 +127,13 @@ impl Repository {
         let content_marker = "\n\nFile Content:\n";
         if let Some(content_start) = commit_content.find(content_marker) {
             let file_content = &commit_content[content_start + content_marker.len()..];
-            let target_file_path = Path::new(directory).join("restored_file.txt");
+            let target_file_path = Path::new(directory).join(format!("restored_{}.{}", commit_path
+                .file_stem()
+                .unwrap()
+                .to_string_lossy().replace(&format!("_{}", commit_id), ""), commit_path
+                .extension()
+                .unwrap()
+                .to_string_lossy()));
             FileSystemHiding::write_file(target_file_path.to_str().unwrap(), file_content)?;
 
             Ok(format!("Checked out to commit '{}'. The content has been restored to '{}'.",
