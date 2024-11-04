@@ -54,13 +54,13 @@ impl BehaviorHiding {
     ) -> Result<(), BehaviorError> {
         match command {
             "init" => {
-                Repository::init(directory).map_err(|e| BehaviorError::RepoError(e))?;
+                Repository::init(directory).map_err(BehaviorError::RepoError)?;
                 println!("Repository initialized in {}", directory);
             }
             "commit" => {
                 if let Some(file_path) = file_directory {
                     Repository::commit(directory, file_path, "Commit from CLI")
-                        .map_err(|e| BehaviorError::RepoError(e))?;
+                        .map_err(BehaviorError::RepoError)?;
                     println!("Commit created in {}", directory);
                 } else {
                     return Err(BehaviorError::CommandError(
@@ -69,16 +69,19 @@ impl BehaviorHiding {
                 }
             }
             "checkout" => {
-                println!("Enter the commit ID or branch name to checkout:");
-                let mut buffer = String::new();
-                io::stdin().read_line(&mut buffer)?;
-                let target = buffer.trim();
-                Repository::checkout(directory, target).map_err(|e| BehaviorError::RepoError(e))?;
-                println!("Checked out to {}", target);
+                if let Some(commit_id) = file_directory {
+                    // Handle the returned string from `Repository::checkout`
+                    let result = Repository::checkout(directory, commit_id)
+                        .map_err(BehaviorError::RepoError)?;
+                    println!("{}", result); // Print the success message
+                } else {
+                    return Err(BehaviorError::CommandError(
+                        "Checkout command requires a commit ID argument.".to_string(),
+                    ));
+                }
             }
             "status" => {
-                let status =
-                    Repository::status(directory).map_err(|e| BehaviorError::RepoError(e))?;
+                let status = Repository::status(directory).map_err(BehaviorError::RepoError)?;
                 println!("Repository status:\n{}", status);
             }
             _ => {
