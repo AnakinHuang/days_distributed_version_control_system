@@ -59,7 +59,7 @@ impl BehaviorHiding {
             }
             "commit" => {
                 if let Some(file_path) = file_directory {
-                    Repository::commit(directory, file_path, "Commit from CLI")
+                    Repository::commit(directory, file_path, "Commit from Days DVCS Demo")
                         .map_err(BehaviorError::RepoError)?;
                     println!("Commit created in {}", directory);
                 } else {
