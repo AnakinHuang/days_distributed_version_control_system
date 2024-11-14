@@ -1,4 +1,24 @@
 // days/src/behavioral_hiding/command_parser.rs
+//
+// B.2.1 Command Parser
+// This component is responsible for parsing and validating command-line arguments 
+// and returning a structured command based on user input.
+// 
+// Parent Module: A.2 Behavioral Hiding 
+//
+// Usage:
+// The `parse_command` function utilizes the `clap` crate to define and interpret various 
+// subcommands and their associated arguments. Valid commands include repository 
+// initialization, file staging, branching, and committing, among others.
+// 
+// Each subcommand is mapped to a `ValidCommand` enum variant, allowing other 
+// modules within the system to handle parsed commands in a type-safe manner.
+//
+// Dependencies:
+// - clap: For command-line argument parsing.
+// 
+// Author: Yifan (Alvin) Jiang
+// Date: 11/13/2024
 
 use clap::{Arg, Command, ArgMatches};
 use std::env;
@@ -13,7 +33,7 @@ pub enum ValidCommand {
     Heads,
     Diff (revision_1: String, revision_2: String),
     Cat {file: String},
-    Checkout {revision: String},
+    Checkout {branch: String},
     Commit {message: String},
     Log,
     Merge {branch: String},
@@ -51,7 +71,98 @@ pub fn parse_command() -> ValidCommand {
                 .takes_value(true)
             ),
         )
-
+        .subcommand(
+            Command::new("remove")
+            .about("Remove a file from the staging area")
+            .arg(
+                Arg::new("file")
+                .help("File to remove from the staging area")
+                .required(true)
+                .takes_value(true)
+            ),
+        )
+        .subcommand(
+            Command::new("status")
+            .about("Show the status of the repository")
+        )
+        .subcommand(
+            Command::new("heads")
+            .about("Show all branches in the repository")
+        )
+        .subcommand(
+            Command::new("diff")
+            .about("Show the differences between two revisions")
+            .arg(
+                Arg::new("revision_1")
+                .help("The first revision to compare")
+                .required(true)
+                .takes_value(true)
+            )
+            .arg(
+                Arg::new("revision_2")
+                .help("The second revision to compare")
+                .required(true)
+                .takes_value(true)
+            ),
+        )
+        .subcommand(
+            Command::new("cat")
+            .about("Inspect the content of a file")
+            .arg(
+                Arg::new("file")
+                .help("Path to the file to inspect")
+                .required(true)
+                .takes_value(true)
+            ),
+        )
+        .subcommand(
+            Command::new("checkout")
+            .about("Switch to a different branch")
+            .arg(
+                Arg::new("branch")
+                .help("Branch to switch to")
+                .required(true)
+                .takes_value(true)
+            ),
+        )
+        .subcommand(
+            Command::new("commit")
+            .about("Commit the changes in the staging area")
+            .arg(
+                Arg::new("message")
+                .help("Commit message")
+                .required(true)
+                .takes_value(true)
+            ),
+        )
+        .subcommand(
+            Command::new("log")
+            .about("Displays the commit log of the repository")
+        )
+        .subcommand(
+            Command::new("merge")
+            .about("Merge a branch into the current branch")
+            .arg(
+                Arg::new("branch")
+                .help("Branch to merge into the current branch")
+                .required(true)
+                .takes_value(true)
+            ),
+        )
+        .subcommand(
+            Command::new("pull").about("Pulls changes from a remote repository")
+        )
+        .subcommand(
+            Command::new("push").about("Pushes changes to a remote repository")
+            .arg(
+                Arg::new("branch")
+                .help("Branch to push to the remote repository")
+                .required(false)
+                .takes_value(true)
+            ),
+        )
+        .try_get_matches_from(args.clone())
+        .map_err(|e| e.to_string())?;
 
     match command.as_str() {
         "init" => ValidCommand::Init,
