@@ -29,7 +29,7 @@ pub enum ValidCommand {
     Clone {remote_url: String},
     Add {file: String},
     Remove {file: String},
-    Status {directory: String},
+    Status,
     Heads,
     Diff (revision_1: String, revision_2: String),
     Cat {file: String},
@@ -164,52 +164,67 @@ pub fn parse_command() -> ValidCommand {
         .try_get_matches_from(args.clone())
         .map_err(|e| e.to_string())?;
 
-    match command.as_str() {
-        "init" => ValidCommand::Init,
-        "clone" => {
-            let remote_url = args[2].clone();
-            ValidCommand::Clone {remote_url}
-        },
-        "add" => {
-            let file = args[2].clone();
-            ValidCommand::Add {file}
-        },
-        "remove" => {
-            let file = args[2].clone();
-            ValidCommand::Remove {file}
-        },
-        "status" => {
-            let directory = args[2].clone();
-            ValidCommand::Status {directory}
-        },
-        "heads" => ValidCommand::Heads,
-        "diff" => {
-            let revision_1 = args[2].clone();
-            let revision_2 = args[3].clone();
-            ValidCommand::Diff (revision_1, revision_2)
-        },
-        "cat" => {
-            let file = args[2].clone();
-            ValidCommand::Cat {file}
-        },
-        "checkout" => {
-            let revision = args[2].clone();
-            ValidCommand::Checkout {revision}
-        },
-        "commit" => {
-            let message = args[2].clone();
-            ValidCommand::Commit {message}
-        },
-        "log" => ValidCommand::Log,
-        "merge" => {
-            let branch = args[2].clone();
-            ValidCommand::Merge {branch}
-        },
-        "pull" => ValidCommand::Pull,
-        "push" => {
-            let branch = args[2].clone();
-            ValidCommand::Push {branch}
-        },
-        _ => panic!("Invalid command"),
+    match matches.subcommand() {
+        Some(("init", _)) => Ok(ValidCommand::Init),
+        Some(("clone", sub_m)) => parse_clone(sub_m),
+        Some(("add", sub_m)) => parse_add(sub_m),
+        Some(("remove", sub_m)) => parse_remove(sub_m),
+        Some(("status", _)) => Ok(ValidCommand::Status),
+        Some(("heads", _)) => Ok(ValidCommand::Heads),
+        Some(("diff", sub_m)) => parse_diff(sub_m),
+        Some(("cat", sub_m)) => parse_cat(sub_m),
+        Some(("checkout", sub_m)) => parse_checkout(sub_m),
+        Some(("commit", sub_m)) => parse_commit(sub_m),
+        Some(("log", _)) => Ok(ValidCommand::Log),
+        Some(("merge", sub_m)) => parse_merge(sub_m),
+        Some(("pull", _)) => Ok(ValidCommand::Pull),
+        Some(("push", sub_m)) => parse_push(sub_m),
+        _ => Err("Invalid command".to_string()),
     }
+}
+
+fn parse_clone(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let remote_url = matches.value_of("remote_url").unwrap().to_string();
+    Ok(ValidCommand::Clone {remote_url})
+}
+
+fn parse_add(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let file = matches.value_of("file").unwrap().to_string();
+    Ok(ValidCommand::Add {file})
+}
+
+fn parse_remove(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let file = matches.value_of("file").unwrap().to_string();
+    Ok(ValidCommand::Remove {file})
+}
+
+fn parse_diff(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let revision_1 = matches.value_of("revision_1").unwrap().to_string();
+    let revision_2 = matches.value_of("revision_2").unwrap().to_string();
+    Ok(ValidCommand::Diff(revision_1, revision_2))
+}
+
+fn parse_cat(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let file = matches.value_of("file").unwrap().to_string();
+    Ok(ValidCommand::Cat {file})
+}
+
+fn parse_checkout(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let branch = matches.value_of("branch").unwrap().to_string();
+    Ok(ValidCommand::Checkout {branch})
+}
+
+fn parse_commit(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let message = matches.value_of("message").unwrap().to_string();
+    Ok(ValidCommand::Commit {message})
+}
+
+fn parse_merge(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let branch = matches.value_of("branch").unwrap().to_string();
+    Ok(ValidCommand::Merge {branch})
+}
+
+fn parse_push(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let branch = matches.value_of("branch").map(|s| s.to_string());
+    Ok(ValidCommand::Push {branch})
 }
