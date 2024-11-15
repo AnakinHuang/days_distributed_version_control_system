@@ -21,9 +21,8 @@
 // Date: 11/13/2024
 
 use clap::{Arg, Command, ArgMatches};
-use std::env;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ValidCommand {
     Init,
     Clone {remote_url: String},
@@ -31,20 +30,19 @@ pub enum ValidCommand {
     Remove {file: String},
     Status,
     Heads,
-    Diff (revision_1: String, revision_2: String),
+    Diff {revision_1: String, revision_2: String},
     Cat {file: String},
     Checkout {branch: String},
     Commit {message: String},
     Log,
     Merge {branch: String},
     Pull,
-    Push {branch: String},
+    Push {branch: Option<String>},
 }
 
-pub fn parse_command() -> ValidCommand {
-    let args: Vec<String> = env::args().skip(1).collect();
-    let cur_dir = env::current_dir()
-        .map_err(|e| format!("Failed to fetch current directory: {}", e))?;
+pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, String> {
+    // let cur_dir = env::current_dir()
+    //     .map_err(|e| format!("Failed to fetch current directory: {}", e))?;
     let matches = Command::new("days")
         .about("A distributed version control system developed in Rust")
         .subcommand(
@@ -58,7 +56,7 @@ pub fn parse_command() -> ValidCommand {
                 Arg::new("remote_url")
                 .help("Remote URL of the repository to clone from")
                 .required(true)
-                .takes_value(true)
+                .num_args(1..)
             ),
         )
         .subcommand(
@@ -68,7 +66,7 @@ pub fn parse_command() -> ValidCommand {
                 Arg::new("file")
                 .help("File to add to the staging area")
                 .required(true)
-                .takes_value(true)
+                .num_args(1)
             ),
         )
         .subcommand(
@@ -78,7 +76,7 @@ pub fn parse_command() -> ValidCommand {
                 Arg::new("file")
                 .help("File to remove from the staging area")
                 .required(true)
-                .takes_value(true)
+                .num_args(1)
             ),
         )
         .subcommand(
@@ -96,13 +94,13 @@ pub fn parse_command() -> ValidCommand {
                 Arg::new("revision_1")
                 .help("The first revision to compare")
                 .required(true)
-                .takes_value(true)
+                .num_args(1)
             )
             .arg(
                 Arg::new("revision_2")
                 .help("The second revision to compare")
                 .required(true)
-                .takes_value(true)
+                .num_args(1)
             ),
         )
         .subcommand(
@@ -112,7 +110,7 @@ pub fn parse_command() -> ValidCommand {
                 Arg::new("file")
                 .help("Path to the file to inspect")
                 .required(true)
-                .takes_value(true)
+                .num_args(1)
             ),
         )
         .subcommand(
@@ -122,7 +120,7 @@ pub fn parse_command() -> ValidCommand {
                 Arg::new("branch")
                 .help("Branch to switch to")
                 .required(true)
-                .takes_value(true)
+                .num_args(1)
             ),
         )
         .subcommand(
@@ -132,7 +130,7 @@ pub fn parse_command() -> ValidCommand {
                 Arg::new("message")
                 .help("Commit message")
                 .required(true)
-                .takes_value(true)
+                .num_args(1)
             ),
         )
         .subcommand(
@@ -146,7 +144,7 @@ pub fn parse_command() -> ValidCommand {
                 Arg::new("branch")
                 .help("Branch to merge into the current branch")
                 .required(true)
-                .takes_value(true)
+                .num_args(1)
             ),
         )
         .subcommand(
@@ -157,8 +155,8 @@ pub fn parse_command() -> ValidCommand {
             .arg(
                 Arg::new("branch")
                 .help("Branch to push to the remote repository")
-                .required(false)
-                .takes_value(true)
+                .required(false) // defaults to main branch if no argument taken
+                .num_args(1)
             ),
         )
         .try_get_matches_from(args.clone())
@@ -184,47 +182,47 @@ pub fn parse_command() -> ValidCommand {
 }
 
 fn parse_clone(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let remote_url = matches.value_of("remote_url").unwrap().to_string();
-    Ok(ValidCommand::Clone {remote_url})
+    let remote_url = matches.get_one::<String>("remote_url").unwrap().to_string();
+    Ok(ValidCommand::Clone { remote_url })
 }
 
 fn parse_add(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let file = matches.value_of("file").unwrap().to_string();
-    Ok(ValidCommand::Add {file})
+    let file = matches.get_one::<String>("file").unwrap().to_string();
+    Ok(ValidCommand::Add { file })
 }
 
 fn parse_remove(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let file = matches.value_of("file").unwrap().to_string();
-    Ok(ValidCommand::Remove {file})
+    let file = matches.get_one::<String>("file").unwrap().to_string();
+    Ok(ValidCommand::Remove { file })
 }
 
 fn parse_diff(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let revision_1 = matches.value_of("revision_1").unwrap().to_string();
-    let revision_2 = matches.value_of("revision_2").unwrap().to_string();
-    Ok(ValidCommand::Diff(revision_1, revision_2))
+    let revision_1 = matches.get_one::<String>("revision_1").unwrap().to_string();
+    let revision_2 = matches.get_one::<String>("revision_2").unwrap().to_string();
+    Ok(ValidCommand::Diff { revision_1, revision_2 })
 }
 
 fn parse_cat(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let file = matches.value_of("file").unwrap().to_string();
-    Ok(ValidCommand::Cat {file})
+    let file = matches.get_one::<String>("file").unwrap().to_string();
+    Ok(ValidCommand::Cat { file })
 }
 
 fn parse_checkout(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let branch = matches.value_of("branch").unwrap().to_string();
-    Ok(ValidCommand::Checkout {branch})
+    let branch = matches.get_one::<String>("branch").unwrap().to_string();
+    Ok(ValidCommand::Checkout { branch })
 }
 
 fn parse_commit(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let message = matches.value_of("message").unwrap().to_string();
-    Ok(ValidCommand::Commit {message})
+    let message = matches.get_one::<String>("message").unwrap().to_string();
+    Ok(ValidCommand::Commit { message })
 }
 
 fn parse_merge(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let branch = matches.value_of("branch").unwrap().to_string();
-    Ok(ValidCommand::Merge {branch})
+    let branch = matches.get_one::<String>("branch").unwrap().to_string();
+    Ok(ValidCommand::Merge { branch })
 }
 
 fn parse_push(matches: &ArgMatches) -> Result<ValidCommand, String> {
-    let branch = matches.value_of("branch").map(|s| s.to_string());
-    Ok(ValidCommand::Push {branch})
+    let branch = matches.get_one::<String>("branch").map(|s| s.to_string());
+    Ok(ValidCommand::Push { branch })
 }
