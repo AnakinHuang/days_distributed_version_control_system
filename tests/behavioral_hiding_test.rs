@@ -5,7 +5,7 @@
 // Author: Yifan (Alvin) Jiang
 // Date: 11/14/2024
 
-use days_dvcs::behavioral_hiding::command_parser::{parse_command, ValidCommand};
+use days_dvcs::a_2_behavioral_hiding::command_parser::{parse_command, ValidCommand};
 
 #[cfg(test)]
 mod tests {
