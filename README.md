@@ -21,7 +21,7 @@ Run the PowerShell script:
 ```
 
 ### On Linux/Unix-based OS
-Run the PowerShell script:
+Run the shell script:
 ```bash
 ./scripts/Unix/cargo_commands.sh
 chmod +x cargo_commands.sh
