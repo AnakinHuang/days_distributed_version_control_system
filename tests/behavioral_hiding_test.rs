@@ -5,13 +5,15 @@
 // Author: Yifan (Alvin) Jiang
 // Date: 11/14/2024
 
-use days_dvcs::a_2_behavioral_hiding::command_parser::{parse_command, ValidCommand};
+use days_dvcs::a_2_behavioral_hiding::b_2_1_command_parser::{parse_command, ValidCommand};
+use days_dvcs::a_2_behavioral_hiding::b_2_3_output_formatter::{OutputFormatter, OutputType};
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     // B.2.1 Command Parser: test parse_command() function
+
     #[test]
     fn test_parse_init() {
         let args = vec!["days".to_string(), "init".to_string()];
@@ -268,5 +270,17 @@ mod tests {
         let args = vec!["days".to_string(), "invalid".to_string()];
         let command = parse_command(args);
         assert!(command.is_err());
+    }
+
+    // B.2.3 Output Formatter: test OutputFormatter::display() function
+
+    #[test]
+    fn test_output_success() {
+        OutputFormatter::display(OutputType::Success, "Test succeeded!".to_string());
+    }
+
+    #[test]
+    fn test_output_error() {
+        OutputFormatter::display(OutputType::Error, "Test failed!".to_string());
     }
 }
