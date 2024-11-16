@@ -1,31 +1,31 @@
 // days/src/a_2_behavioral_hiding/b_2_1_command_parser.rs
 //
-// B.2.1 Command Parser
-// This component is responsible for parsing and validating command-line arguments 
-// and returning a structured command based on user input.
-// 
-// Parent Module: A.2 Behavioral Hiding 
-//
-// Usage:
-// The `parse_command` function utilizes the `clap` crate to define and interpret various 
-// subcommands and their associated arguments. Valid commands include repository 
-// initialization, file staging, branching, and committing, among others.
-// 
-// Each subcommand is mapped to a `ValidCommand` enum variant, allowing other 
-// modules within the system to handle parsed commands in a type-safe manner.
-//
-// The `init`, `clone`, `merge`, `pull`, and `push` commands accept an optional `--dir` or `-d`
-// flag to specify the directory in which the operation should be performed. This flag defaults
-// to the current directory (i.e. `.`) if not provided.
-//
-// Additionally, the `push` command accepts an optional `branch` argument to specify the branch
-// to push to. If not provided, the default branch is set to `main`.
-//
-// Dependencies:
-// - clap: For command-line argument parsing.
-// 
-// Author: Yifan (Alvin) Jiang
-// Date: 11/13/2024
+//! B.2.1 Command Parser
+//! This component is responsible for parsing and validating command-line arguments 
+//! and returning a structured command based on user input.
+//! 
+//! Parent Module: A.2 Behavioral Hiding 
+//!
+//! ## Usage:
+//! The `parse_command()` function utilizes the `clap` crate to define and interpret various 
+//! subcommands and their associated arguments. Valid commands include repository 
+//! initialization, file staging, branching, and committing, among others.
+//! 
+//! Each subcommand is mapped to a `ValidCommand` enum variant, allowing other 
+//! modules within the system to handle parsed commands in a type-safe manner.
+//!
+//! The `init`, `clone`, `merge`, `pull`, and `push` commands accept an optional `--dir` or `-d`
+//! flag to specify the directory in which the operation should be performed. This flag defaults
+//! to the current directory (i.e. `.`) if not provided.
+//!
+//! Additionally, the `push` command accepts an optional `branch` argument to specify the branch
+//! to push to. If not provided, the default branch is set to `main`.
+//!
+//! ## Dependencies:
+//! - clap: For command-line argument parsing.
+//! 
+//! Author: Yifan (Alvin) Jiang
+//! Date: 11/13/2024
 
 use clap::{Arg, Command, ArgMatches};
 
