@@ -273,6 +273,7 @@ mod tests {
     }
 
     // B.2.3 Output Formatter: test OutputFormatter::display() function
+    // Run with `cargo test -- --nocapture` to make colored output visible
 
     #[test]
     fn test_output_success() {
