@@ -11,6 +11,7 @@ use days_dvcs::a_2_behavioral_hiding::command_parser::{parse_command, ValidComma
 mod tests {
     use super::*;
 
+    // B.2.1 Command Parser: test parse_command() function
     #[test]
     fn test_parse_init() {
         let args = vec!["days".to_string(), "init".to_string()];
