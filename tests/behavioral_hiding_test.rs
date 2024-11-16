@@ -5,8 +5,8 @@
 // Author: Yifan (Alvin) Jiang
 // Date: 11/14/2024
 
-use days_dvcs::a_2_behavioral_hiding::b_2_1_command_parser::{parse_command, ValidCommand};
-use days_dvcs::a_2_behavioral_hiding::b_2_3_output_formatter::{OutputFormatter, OutputType};
+use days::a_2_behavioral_hiding::b_2_1_command_parser::{parse_command, ValidCommand};
+use days::a_2_behavioral_hiding::b_2_3_output_formatter::{OutputFormatter, OutputType};
 
 #[cfg(test)]
 mod tests {
