@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="CargoProjects">
+    <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="Start merging File System Hiding Modules." />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Rust File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="behavioral" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;AnakinHuang&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/AnakinHuang/days_dvcs.git&quot;,
+    &quot;accountId&quot;: &quot;15f7abf3-0318-4f50-af69-93d6566bc30f&quot;
+  }
+}</component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="djkjq755" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2oMZXVHIt6S3zKtc6yvfdZviCpH" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Cargo.Run.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;file__system&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/yuesong.huang/RustroverProjects/days_dvcs&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
+    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;language.rust.cargo.check&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RsExternalLinterProjectSettings">
+    <option name="runOnTheFly" value="true" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Run" type="CargoCommandRunConfiguration" factoryName="Cargo Command" nameIsGenerated="true">
+      <option name="buildProfileId" value="dev" />
+      <option name="command" value="run -- checkout test_repo_2 6f3090b7-b05d-427e-91a0-7223fe36e602" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$/src" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="RustProjectSettings">
+    <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="" />
+      <created>1730681444628</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1730681444628</updated>
+      <workItem from="1730681445645" duration="11165000" />
+      <workItem from="1730747366060" duration="5587000" />
+      <workItem from="1730755366473" duration="818000" />
+      <workItem from="1731097972853" duration="631000" />
+      <workItem from="1731291141387" duration="812000" />
+      <workItem from="1732135864580" duration="816000" />
+      <workItem from="1732136684918" duration="408000" />
+      <workItem from="1732566722489" duration="32000" />
+      <workItem from="1732595563818" duration="662000" />
+    </task>
+    <task id="LOCAL-00001" summary="DAYS Merged First Prototype/Demo For 11/03.">
+      <option name="closed" value="true" />
+      <created>1730682171861</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1730682171861</updated>
+    </task>
+    <task id="LOCAL-00002" summary="DAYS Merged First Prototype/Demo For 11/03.">
+      <option name="closed" value="true" />
+      <created>1730682564249</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1730682564249</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Fixed bugs.">
+      <option name="closed" value="true" />
+      <created>1730683711187</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1730683711187</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fixed bugs.">
+      <option name="closed" value="true" />
+      <created>1730685830820</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1730685830820</updated>
+    </task>
+    <task id="LOCAL-00005" summary="This the working demo with working init, clone, commit, checkout, and status.">
+      <option name="closed" value="true" />
+      <created>1730690512771</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1730690512771</updated>
+    </task>
+    <task id="LOCAL-00006" summary="This the working demo with working init, clone, commit, checkout, and status.">
+      <option name="closed" value="true" />
+      <created>1730747905323</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1730747905323</updated>
+    </task>
+    <task id="LOCAL-00007" summary="This the working demo with working init, clone, commit, checkout, and status.">
+      <option name="closed" value="true" />
+      <created>1730748436099</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1730748436099</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Made checkout(...) work correctly.">
+      <option name="closed" value="true" />
+      <created>1730756173249</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1730756173249</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Made checkout(...) work correctly.">
+      <option name="closed" value="true" />
+      <created>1732136413302</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1732136413302</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Made checkout(...) work correctly.">
+      <option name="closed" value="true" />
+      <created>1732136733933</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1732136733933</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="DAYS Merged First Prototype/Demo For 11/03." />
+    <MESSAGE value="Fixed bugs." />
+    <MESSAGE value="This the working demo with working init, clone, commit, checkout, and status." />
+    <MESSAGE value="Update to support varies file extensions." />
+    <MESSAGE value="Made checkout(...) work correctly." />
+    <option name="LAST_COMMIT_MESSAGE" value="Made checkout(...) work correctly." />
+  </component>
+</project>
