@@ -21,25 +21,37 @@
 
 use super::b_2_1_command_parser::ValidCommand;
 use super::b_2_3_output_formatter::{OutputFormatter, OutputType};
+use crate::a_3_repository_hiding::b_3_1_repository_management::*;
+use crate::a_3_repository_hiding::b_3_2_revision_management::*;
+// use crate::a_3_repository_hiding::b_3_3_branch_management::*;
 
+use std::io;
 pub struct CommandHandler;
 
 impl CommandHandler {
+    
     /// Executes the given command.
-    pub fn handle_command(command: ValidCommand) -> Result<(), String> {
+    pub fn handle_command(command: ValidCommand) -> Result<(), io::Error> {
         match command {
             ValidCommand::Init { directory } => {
                 let dir = directory.unwrap_or_else(|| ".".to_string());
                 println!("Initializing repository in directory: {}", dir);
-                // Call the repository initialization function here
-                OutputFormatter::display(OutputType::Success, format!("Initialized repository in directory: {}", dir));
+                if init_repository(&dir).is_ok() {
+                    OutputFormatter::display(OutputType::Success, format!("Initialized repository in directory: {}", dir));
+                } else {
+                    OutputFormatter::display(OutputType::Error, "Failed to initialize repository".to_string());
+                }
+                
                 Ok(())
             }
             ValidCommand::Clone { remote_url, directory } => {
                 let dir = directory.unwrap_or_else(|| ".".to_string());
                 println!("Cloning repository from {} into directory: {}", remote_url, dir);
-                // Call repository cloning function
-                OutputFormatter::display(OutputType::Success, format!("Cloned repository from {} into directory: {}", remote_url, dir));
+                if clone_repository(&remote_url, &dir).is_ok() {
+                    OutputFormatter::display(OutputType::Success, format!("Cloned repository from {} into directory: {}", remote_url, dir));
+                } else {
+                    OutputFormatter::display(OutputType::Error, "Failed to clone repository".to_string());
+                }
                 Ok(())
             }
             ValidCommand::Add { file } => {
@@ -67,9 +79,12 @@ impl CommandHandler {
                 // Call diff function
                 Ok(())
             }
-            ValidCommand::Cat { file } => {
-                OutputFormatter::display(OutputType::Success, format!("Content of {}: ", file));
-                // Call file content display function
+            ValidCommand::Cat { directory, revision, file } => {
+                if let Ok(content) = cat(&directory.unwrap_or(".".to_string()), &revision, &file) {
+                    OutputFormatter::display(OutputType::Success, content);
+                } else {
+                    OutputFormatter::display(OutputType::Error, "Failed to read file".to_string());
+                }
                 Ok(())
             }
             ValidCommand::Checkout { branch } => {
@@ -77,10 +92,14 @@ impl CommandHandler {
                 OutputFormatter::display(OutputType::Success, format!("Switched to branch: {}", branch));
                 Ok(())
             }
-            ValidCommand::Commit { message } => {
+            ValidCommand::Commit { directory, message } => {
                 println!("Committing changes with message: {}", message);
-                // Call commit function
-                OutputFormatter::display(OutputType::Success, "Changes committed successfully".to_string());
+                let result = commit(&directory.unwrap_or(".".to_string()), &message);
+                if result.is_err() {
+                    OutputFormatter::display(OutputType::Error, format!("Failed to commit changes: {}", result.unwrap_err()));
+                } else {
+                    OutputFormatter::display(OutputType::Success, "Changes committed successfully".to_string());
+                }
                 Ok(())
             }
             ValidCommand::Log => {

@@ -1,29 +1,29 @@
 // days_dvcs/src/a_1_file_system_hiding/b_1_1_file_interaction.rs
 //
 //! B.1.1 File Interaction
-//! This component is responsible for reading, writing, appending, copying, 
+//! This component is responsible for reading, writing, appending, copying,
 //! and deleting files.
-//! 
+//!
 //! Parent Module: A.1 File System Hiding
-//! 
-//! ## Usage: 
+//!
+//! ## Usage:
 //! The `read_file` function reads the content of a file and returns it as a string.
-//! 
+//!
 //! The `read_struct` function reads the content of a file and deserializes it into a struct.
-//! 
+//!
 //! The `write_file` function writes content to a file.
-//! 
+//!
 //! The `write_struct` function serializes a struct and writes it to a file.
-//! 
+//!
 //! The `append_file` function appends content to a file.
-//! 
+//!
 //! The `copy_file` function copies a file from one location to another.
-//! 
+//!
 //! The `delete_file` function deletes a file.
-//! 
+//!
 //! ## Dependencies:
 //! - none
-//! 
+//!
 //! Author: Anakin (Yuesong Huang), Yifan (Alvin) Jiang
 //! Date: 11/14/2024
 

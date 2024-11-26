@@ -38,9 +38,9 @@ pub enum ValidCommand {
     Status,
     Heads,
     Diff { revision_1: String, revision_2: String },
-    Cat { file: String },
+    Cat { directory: Option<String>, revision: String, file: String },
     Checkout { branch: String },
-    Commit { message: String },
+    Commit { directory: Option<String>, message: String },
     Log,
     Merge { branch: String, directory: Option<String> },
     Pull { directory: Option<String> },
@@ -124,8 +124,25 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, String> {
             Command::new("cat")
                 .about("Inspect the content of a file")
                 .arg(
+                    Arg::new("directory")
+                        .help("Path to the repository")
+                        .short('d')
+                        .long("dir")
+                        .required(false)
+                        .num_args(1)
+                        .default_value("."),
+                )
+                .arg(
+                    Arg::new("revision")
+                        .help("Revision ID of the file")
+                        .short('r')
+                        .long("rev")
+                        .required(true)
+                        .num_args(1),
+                )
+                .arg(
                     Arg::new("file")
-                        .help("Path to the file to inspect")
+                        .help("File to inspect")
                         .required(true)
                         .num_args(1),
                 ),
@@ -143,6 +160,15 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, String> {
         .subcommand(
             Command::new("commit")
                 .about("Commit the changes in the staging area")
+                .arg(
+                    Arg::new("directory")
+                        .help("Path to the repository")
+                        .short('d')
+                        .long("dir")
+                        .required(false)
+                        .num_args(1)
+                        .default_value("."),
+                )
                 .arg(
                     Arg::new("message")
                         .help("Commit message")
@@ -253,8 +279,10 @@ fn parse_diff(matches: &ArgMatches) -> Result<ValidCommand, String> {
 }
 
 fn parse_cat(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let directory = matches.get_one::<String>("directory").cloned();
+    let revision = matches.get_one::<String>("revision").unwrap().to_string();
     let file = matches.get_one::<String>("file").unwrap().to_string();
-    Ok(ValidCommand::Cat { file })
+    Ok(ValidCommand::Cat { directory, revision, file })
 }
 
 fn parse_checkout(matches: &ArgMatches) -> Result<ValidCommand, String> {
@@ -263,8 +291,9 @@ fn parse_checkout(matches: &ArgMatches) -> Result<ValidCommand, String> {
 }
 
 fn parse_commit(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let directory = matches.get_one::<String>("directory").cloned();
     let message = matches.get_one::<String>("message").unwrap().to_string();
-    Ok(ValidCommand::Commit { message })
+    Ok(ValidCommand::Commit { directory, message })
 }
 
 fn parse_merge(matches: &ArgMatches) -> Result<ValidCommand, String> {

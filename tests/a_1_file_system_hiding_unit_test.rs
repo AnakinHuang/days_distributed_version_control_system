@@ -10,6 +10,7 @@ use days_dvcs::a_1_file_system_hiding::b_1_1_file_interaction::*;
 use days_dvcs::a_1_file_system_hiding::b_1_2_directory_interaction::*;
 use days_dvcs::a_1_file_system_hiding::b_1_3_metadata_management::*;
 
+#[allow(dead_code)]
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -8,6 +8,8 @@ use a_2_behavioral_hiding::b_2_1_command_parser::{parse_command};
 use a_2_behavioral_hiding::b_2_2_command_handler::CommandHandler;
 use a_2_behavioral_hiding::b_2_3_output_formatter::{OutputFormatter, OutputType};
 
+
+#[allow(dead_code)]
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     match parse_command(args) {

@@ -10,6 +10,7 @@ use days_dvcs::a_2_behavioral_hiding::b_2_1_command_parser::*;
 use days_dvcs::a_2_behavioral_hiding::b_2_2_command_handler::*;
 use days_dvcs::a_2_behavioral_hiding::b_2_3_output_formatter::*;
 
+#[allow(dead_code)]
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -125,11 +126,13 @@ mod tests {
 
     #[test]
     fn test_parse_cat() {
-        let args = vec!["days".to_string(), "cat".to_string(), "file.txt".to_string()];
+        let args = vec!["days".to_string(), "cat".to_string(), "test_repo".to_string(), "123".to_string(), "file.txt".to_string()];
         let command = parse_command(args).unwrap();
         assert_eq!(
             command,
             ValidCommand::Cat {
+                directory: Some("test_repo".to_string()),
+                revision: "123".to_string(),
                 file: "file.txt".to_string()
             }
         );
@@ -149,11 +152,12 @@ mod tests {
 
     #[test]
     fn test_parse_commit() {
-        let args = vec!["days".to_string(), "commit".to_string(), "message".to_string()];
+        let args = vec!["days".to_string(), "commit".to_string(), "test_repo".to_string(), "message".to_string()];
         let command = parse_command(args).unwrap();
         assert_eq!(
             command,
             ValidCommand::Commit {
+                directory: Some("test_repo".to_string()),
                 message: "message".to_string()
             }
         );

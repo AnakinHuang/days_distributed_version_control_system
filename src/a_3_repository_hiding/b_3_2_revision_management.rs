@@ -39,7 +39,9 @@ pub fn save_revision_metadata(path: &str, branch: &str, revision_id: &str, metad
 pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
     let mut repo_metadata = load_repo_metadata(path)?;
     let mut branch_metadata = load_branch_metadata(path, &repo_metadata.head)?;
-
+    
+    println!("{:?}", path);
+    println!("{:?}", branch_metadata);
     if branch_metadata.staging.is_empty() {
         return Err(io::Error::new(io::ErrorKind::InvalidInput, "No changes to commit."));
     }
@@ -52,6 +54,7 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
     
     let mut files = HashMap::new();
 
+    println!("{:?}", branch_metadata.staging);
     for file in branch_metadata.staging.iter() {
         let src_path = format!("{}/{}", staged_path, file);
         let dest_path = format!("{}/{}", commit_path, file);
@@ -70,13 +73,16 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
         message: message.to_string(),
         timestamp: SystemTime::now(),
     };
+    println!("{:?}", new_revision);
     save_revision_metadata(path, &repo_metadata.head, &revision_id, &new_revision)?;
     
+    println!("{:?}", branch_metadata);
     branch_metadata.head_commit = Some(revision_id.clone());
     branch_metadata.commits.push(revision_id.clone());
     branch_metadata.staging.clear();
     save_branch_metadata(path, &repo_metadata.head, &branch_metadata)?;
     
+    println!("{:?}", repo_metadata);
     repo_metadata.branches.insert(branch_metadata.name.clone(), revision_id.clone());
     save_repo_metadata(path, &repo_metadata)?;
     

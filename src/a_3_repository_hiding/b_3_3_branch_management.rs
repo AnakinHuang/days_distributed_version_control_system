@@ -1,6 +1,7 @@
 // days_dvcs/src/a_3_repository_hiding/b_3_3_branch_management.rs
 //
 
+use crate::a_1_file_system_hiding::b_1_1_file_interaction::write_struct;
 use crate::a_1_file_system_hiding::b_1_2_directory_interaction::create_directory;
 use serde::{Serialize, Deserialize};
 
@@ -24,7 +25,7 @@ pub fn init_branch(path: &str, branch: &str) -> Result<(), std::io::Error> {
         name: branch.to_string(),
         head_commit: None,
         commits: Vec::new(),
-        staging: Vec::new(),
+        staging: Vec::from(["program.rs".to_string()]),
         working: Vec::new(),
     };
     
@@ -40,6 +41,7 @@ pub fn load_branch_metadata(path: &str, branch: &str) -> Result<BranchMetadata, 
 
 pub fn save_branch_metadata(path: &str, branch: &str, metadata: &BranchMetadata) -> Result<(), std::io::Error> {
     let metadata_path = format!("{}/.dvcs/origin/{}/.metadata/metadata.json", path, branch);
-    crate::a_1_file_system_hiding::b_1_1_file_interaction::write_struct(&metadata_path, metadata)?;
+    println!("{:?}", metadata_path);
+    write_struct(&metadata_path, metadata)?;
     Ok(())
 }

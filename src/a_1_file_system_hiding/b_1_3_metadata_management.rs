@@ -19,7 +19,7 @@
 //! Author: Anakin (Yuesong Huang), Yifan (Alvin) Jiang
 //! Date: 11/14/2024
 
-use std::fs::{self, metadata};
+use std::fs::{metadata};
 use std::io;
 use std::time::SystemTime;
 
