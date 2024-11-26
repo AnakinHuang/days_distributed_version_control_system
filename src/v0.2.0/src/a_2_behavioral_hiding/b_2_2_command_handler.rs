@@ -1,4 +1,4 @@
-// days_dvcs/src/a_2_behavioral_hiding/b_2_2_command_handler.rs
+// days/src/a_2_behavioral_hiding/b_2_2_command_handler.rs
 //
 //! B.2.2 Command Handler
 //! The Command Handler is responsible for **executing valid commands** passed from `B.2.1 Command Parser`. It

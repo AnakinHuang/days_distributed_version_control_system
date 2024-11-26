@@ -1,4 +1,4 @@
-// days_dvcs/src/main.rs
+// days/src/main.rs
 
 mod a_1_file_system_hiding;
 mod a_2_behavioral_hiding;

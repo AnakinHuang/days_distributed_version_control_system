@@ -1,4 +1,4 @@
-// days_dvcs/src/a_2_behavioral_hiding/b_2_3_output_formatter.rs
+// days/src/a_2_behavioral_hiding/b_2_3_output_formatter.rs
 //
 //! B.2.3 Output Formatter
 //! This component is responsible for formatting output to the command line
