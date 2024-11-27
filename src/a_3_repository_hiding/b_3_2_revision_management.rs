@@ -4,11 +4,12 @@
 use crate::a_1_file_system_hiding::b_1_1_file_interaction::{delete_file, read_file, read_struct, write_file, write_struct};
 use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{create_directory, delete_directory};
 use crate::a_3_repository_hiding::b_3_1_repository_management::{load_repo_metadata, save_repo_metadata};
-use crate::a_3_repository_hiding::b_3_3_branch_management::{load_branch_metadata, save_branch_metadata};
+use crate::a_3_repository_hiding::b_3_3_branch_management::{load_branch_metadata, save_branch_metadata, add};
 
 use std::io;
 use std::collections::HashMap;
 use std::fmt::Debug;
+use std::process::exit;
 use chrono::DateTime;
 use std::time::SystemTime;
 use serde::{Deserialize, Serialize};
@@ -37,13 +38,15 @@ pub fn save_revision_metadata(path: &str, branch: &str, revision_id: &str, metad
 }
 
 pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
+    add(path, ".", Vec::from(["README.md".to_string()]))?;
+    
     let mut repo_metadata = load_repo_metadata(path)?;
     let mut branch_metadata = load_branch_metadata(path, &repo_metadata.head)?;
-    
     if branch_metadata.staging.is_empty() {
         return Err(io::Error::new(io::ErrorKind::InvalidInput, "No changes to commit."));
     }
-
+    
+    
     let revision_id = Uuid::new_v4().to_string();
     let staged_path = format!("{}/.dvcs/origin/{}/staging", path, repo_metadata.head);
     let commit_path = format!("{}/.dvcs/origin/{}/commits/{}", path, repo_metadata.head, revision_id);
@@ -62,6 +65,8 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
         files.insert(file.to_string(), file_hash);
         delete_file(&src_path)?;
     }
+
+    return Ok("yes".to_string());
     
     let new_revision = RevisionMetadata {
         id: revision_id.clone(),
@@ -70,6 +75,7 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
         message: message.to_string(),
         timestamp: SystemTime::now(),
     };
+    
     create_directory(&format!("{}/.metadata", commit_path))?;
     save_revision_metadata(path, &repo_metadata.head, &revision_id, &new_revision)?;
     

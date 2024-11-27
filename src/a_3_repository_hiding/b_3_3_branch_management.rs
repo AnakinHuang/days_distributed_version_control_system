@@ -109,16 +109,18 @@ pub fn status(path: &str) -> Result<String, io::Error> {
 pub fn add(repo_path: &str, files_path: &str, files: Vec<String>) -> Result<(), io::Error> {
     let repo_metadata = load_repo_metadata(repo_path)?;
     let branch = &repo_metadata.head;
-    let mut branch_metadata = load_branch_metadata(repo_path, branch)?;
 
+    let mut branch_metadata = load_branch_metadata(repo_path, branch)?;
+    
     for file in files {
         let file_path = format!("{}/{}", files_path, file);
+        println!("file_path: {}", file_path);
         if check_file(&file_path) {
             let staging_path = format!("{}/.dvcs/origin/{}/staging/{}", repo_path, branch, file);
 
             if branch_metadata.staging.contains(&file) {
-                delete_file(&staging_path)?;
                 branch_metadata.staging.retain(|f| f != &file);
+                delete_file(&staging_path)?;
             }
 
             let content = read_file(&file_path)?;

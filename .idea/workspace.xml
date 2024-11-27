@@ -9,7 +9,8 @@
   <component name="ChangeListManager">
     <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="Minor issues about log().">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_1_repository_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_1_repository_management.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_2_revision_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_2_revision_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/归档.zip" beforeDir="false" />
     </list>
@@ -54,7 +55,8 @@
     },
     "owner": "AnakinHuang",
     "repository": "days_dvcs"
-  }
+  },
+  "editorReviewEnabled": false
 }]]></component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="djkjq755" />
@@ -101,7 +103,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
     "git-widget-placeholder": "#2 on repository",
-    "last_opened_file_path": "/Users/yuesong.huang/RustroverProjects/days_dvcs/test_repo/.dvcs/origin/main/staging",
+    "last_opened_file_path": "/Users/yuesong.huang/RustroverProjects/days_dvcs/repo_test/.dvcs/origin/main/staging",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -116,6 +118,8 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/repo_test/.dvcs/origin/main/staging" />
+      <recent name="$PROJECT_DIR$/repo_test_1/.dvcs/origin/main/staging" />
       <recent name="$PROJECT_DIR$/test_repo/.dvcs/origin/main/staging" />
       <recent name="$PROJECT_DIR$/test_repo_2/.dvcs/origin/main/staging" />
     </key>
@@ -253,7 +257,7 @@
       <workItem from="1732136684918" duration="408000" />
       <workItem from="1732566722489" duration="32000" />
       <workItem from="1732595563818" duration="662000" />
-      <workItem from="1732600241081" duration="62523000" />
+      <workItem from="1732600241081" duration="64553000" />
     </task>
     <task id="LOCAL-00001" summary="DAYS Merged First Prototype/Demo For 11/03.">
       <option name="closed" value="true" />
@@ -399,7 +403,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732673500227</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Minor issues about log().">
+      <option name="closed" value="true" />
+      <created>1732674686800</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1732674686800</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
