@@ -8,6 +8,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="Minor issues.">
+      <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/归档.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,12 +38,22 @@
     &quot;assignee&quot;: &quot;AnakinHuang&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/AnakinHuang/days_dvcs.git&quot;,
-    &quot;accountId&quot;: &quot;15f7abf3-0318-4f50-af69-93d6566bc30f&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/AnakinHuang/days_dvcs.git",
+    "accountId": "15f7abf3-0318-4f50-af69-93d6566bc30f"
+  },
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
+    },
+    "owner": "AnakinHuang",
+    "repository": "days_dvcs"
   }
-}</component>
+}]]></component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="djkjq755" />
   </component>
@@ -87,7 +98,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
-    "git-widget-placeholder": "repository",
+    "git-widget-placeholder": "#2 on repository",
     "last_opened_file_path": "/Users/yuesong.huang/RustroverProjects/days_dvcs/test_repo/.dvcs/origin/main/staging",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -240,7 +251,7 @@
       <workItem from="1732136684918" duration="408000" />
       <workItem from="1732566722489" duration="32000" />
       <workItem from="1732595563818" duration="662000" />
-      <workItem from="1732600241081" duration="60540000" />
+      <workItem from="1732600241081" duration="61079000" />
     </task>
     <task id="LOCAL-00001" summary="DAYS Merged First Prototype/Demo For 11/03.">
       <option name="closed" value="true" />
@@ -362,7 +373,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732672369020</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Minor issues.">
+      <option name="closed" value="true" />
+      <created>1732672909426</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1732672909426</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
