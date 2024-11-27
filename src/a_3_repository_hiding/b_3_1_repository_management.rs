@@ -9,7 +9,7 @@ use std::io;
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RepositoryMetadata {
     pub head: String,                     // Current branch name
     pub branches: HashMap<String, String>, // Branch name -> commit ID
@@ -45,7 +45,7 @@ pub fn clone_repository(src: &str, dest: &str) -> Result<(), io::Error> {
             format!("Source repository metadata not found at {}", metadata_path),
         ));
     }
-    
+
     copy_directory(src, dest)?;
     Ok(())
 }

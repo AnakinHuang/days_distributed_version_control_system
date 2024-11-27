@@ -40,8 +40,6 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
     let mut repo_metadata = load_repo_metadata(path)?;
     let mut branch_metadata = load_branch_metadata(path, &repo_metadata.head)?;
     
-    println!("{:?}", path);
-    println!("{:?}", branch_metadata);
     if branch_metadata.staging.is_empty() {
         return Err(io::Error::new(io::ErrorKind::InvalidInput, "No changes to commit."));
     }
@@ -53,8 +51,7 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
     create_directory(&commit_path)?;
     
     let mut files = HashMap::new();
-
-    println!("{:?}", branch_metadata.staging);
+    
     for file in branch_metadata.staging.iter() {
         let src_path = format!("{}/{}", staged_path, file);
         let dest_path = format!("{}/{}", commit_path, file);
@@ -73,16 +70,14 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
         message: message.to_string(),
         timestamp: SystemTime::now(),
     };
-    println!("{:?}", new_revision);
+    create_directory(&format!("{}/.metadata", commit_path))?;
     save_revision_metadata(path, &repo_metadata.head, &revision_id, &new_revision)?;
     
-    println!("{:?}", branch_metadata);
     branch_metadata.head_commit = Some(revision_id.clone());
     branch_metadata.commits.push(revision_id.clone());
     branch_metadata.staging.clear();
     save_branch_metadata(path, &repo_metadata.head, &branch_metadata)?;
     
-    println!("{:?}", repo_metadata);
     repo_metadata.branches.insert(branch_metadata.name.clone(), revision_id.clone());
     save_repo_metadata(path, &repo_metadata)?;
     
@@ -99,11 +94,12 @@ pub fn log(path: &str) -> Result<Vec<String>, io::Error> {
         for revision_id in branch_metadata.commits.iter() {
             let revision_metadata = load_revision_metadata(path, branch, revision_id)?;
             let date_time: DateTime::<chrono::Local> = revision_metadata.timestamp.into();
-            
+
             let content = format!(
-                "commit {} (HEAD -> {})\nDate: {}\n\n\t{}\n\n",
+                "commit {} (HEAD -> {}, {})\nDate: {}\n\n\t{}\n\n",
                 revision_metadata.id,
                 branch,
+                format!("{}/{}", path, branch),
                 format!("{}", date_time.format("%Y-%m-%d %H:%M:%S")),
                 revision_metadata.message,
             );

@@ -9,13 +9,17 @@
 use days_dvcs::a_1_file_system_hiding::b_1_1_file_interaction::*;
 use days_dvcs::a_1_file_system_hiding::b_1_2_directory_interaction::*;
 use days_dvcs::a_3_repository_hiding::b_3_1_repository_management::*;
+use days_dvcs::a_3_repository_hiding::b_3_2_revision_management::*;
+use days_dvcs::a_3_repository_hiding::b_3_3_branch_management::*;
 
 #[allow(dead_code)]
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::io;
-    use std::path::Path;
+    use std::process::exit;
+
+    /// B.3.1 Repository Management
 
     #[test]
     fn test_init_repository() {
@@ -119,13 +123,13 @@ mod tests {
 
     #[test]
     fn test_save_and_load_repo_metadata() {
-        if Path::new("test_repo").exists() {
-            delete_directory("test_repo", true).unwrap();
+        if check_file("test_repo_save_and_load_repo") {
+            delete_directory("test_repo_save_and_load_repo", true).unwrap();
         }
         
-        init_repository("test_repo").unwrap();
+        init_repository("test_repo_save_and_load_repo").unwrap();
         
-        let mut metadata = load_repo_metadata("test_repo").unwrap();
+        let mut metadata = load_repo_metadata("test_repo_save_and_load_repo").unwrap();
         metadata.branches.insert("feature".to_string(), "commit123".to_string());
         save_repo_metadata("test_repo", &metadata).unwrap();
         
@@ -136,8 +140,114 @@ mod tests {
             "commit123",
             "Feature branch commit ID is incorrect"
         );
-
-        // Clean up
+        
         delete_directory("test_repo", true).unwrap();
+    }
+    
+    /// B.3.2 Revision Management
+    /// B.3.3 Branch Management
+
+    #[test]
+    fn test_init_branch() {
+        let repo_path = "test_branch_repo";
+        init_repository(repo_path).unwrap();
+        init_branch(repo_path, "feature").unwrap();
+
+        let branch_metadata = load_branch_metadata(repo_path, "feature").unwrap();
+        assert_eq!(branch_metadata.name, "feature");
+        assert!(branch_metadata.head_commit.is_none());
+
+        delete_directory(repo_path, true).unwrap();
+    }
+
+    #[test]
+    fn test_heads() {
+        let repo_path = "test_heads_repo";
+        init_repository(repo_path).unwrap();
+
+        let heads_output = heads(repo_path).unwrap();
+        assert!(heads_output.is_empty()); // No commits yet
+
+        delete_directory(repo_path, true).unwrap();
+    }
+
+    #[test]
+    fn test_status() {
+        let repo_path = "test_status_repo";
+        init_repository(repo_path).unwrap();
+
+        let status_report = status(repo_path).unwrap();
+        assert!(status_report.contains("Current branch: main"));
+        assert!(status_report.contains("HEAD commit: None"));
+
+        delete_directory(repo_path, true).unwrap();
+    }
+
+    #[test]
+    fn test_add() {
+        let repo_path = "test_add_repo";
+        let working_path = format!("{}/.dvcs/origin/main/working", repo_path);
+        init_repository(repo_path).unwrap();
+
+        let file_path = format!("{}/file.txt", working_path);
+        write_file(&file_path, "Test content").unwrap();
+
+        add(repo_path, &working_path, vec!["file.txt".to_string()]).unwrap();
+
+        let branch_metadata = load_branch_metadata(repo_path, "main").unwrap();
+        assert!(branch_metadata.staging.contains(&"file.txt".to_string()));
+
+        delete_directory(repo_path, true).unwrap();
+    }
+
+    #[test]
+    fn test_remove() {
+        let repo_path = "test_remove_repo";
+        let working_path = format!("{}/.dvcs/origin/main/working", repo_path);
+        init_repository(repo_path).unwrap();
+
+        let file_path = format!("{}/file.txt", working_path);
+        write_file(&file_path, "Test content").unwrap();
+
+        add(repo_path, &working_path, vec!["file.txt".to_string()]).unwrap();
+        
+        remove(repo_path, vec!["file.txt".to_string()]).unwrap();
+        exit(0);
+        
+        let branch_metadata = load_branch_metadata(repo_path, "main").unwrap();
+        assert!(!branch_metadata.staging.contains(&"file.txt".to_string()));
+
+        delete_directory(repo_path, true).unwrap();
+    }
+
+    #[test]
+    fn test_add_nonexistent_file() {
+        let repo_path = "test_nonexistent_repo";
+        let working_path = format!("{}/.dvcs/origin/main/working", repo_path);
+        init_repository(repo_path).unwrap();
+
+        let result = add(repo_path, &working_path, vec!["nonexistent.txt".to_string()]);
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().kind(),
+            std::io::ErrorKind::NotFound
+        );
+
+        delete_directory(repo_path, true).unwrap();
+    }
+
+    #[test]
+    fn test_remove_unstaged_file() {
+        let repo_path = "test_unstaged_repo";
+        init_repository(repo_path).unwrap();
+
+        let result = remove(repo_path, vec!["unstaged.txt".to_string()]);
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().kind(),
+            std::io::ErrorKind::NotFound
+        );
+
+        delete_directory(repo_path, true).unwrap();
     }
 }
