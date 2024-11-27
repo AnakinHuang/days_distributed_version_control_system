@@ -312,3 +312,4 @@ fn parse_push(matches: &ArgMatches) -> Result<ValidCommand, String> {
     let directory = matches.get_one::<String>("directory").cloned();
     Ok(ValidCommand::Push { branch, directory })
 }
+

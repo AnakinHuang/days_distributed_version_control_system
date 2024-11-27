@@ -7,11 +7,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="Working on B.2.1 - B.3.3.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_1_file_interaction.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_1_file_interaction.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/a_3_repository_hiding_unit_test.rs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/a_3_repository_hiding_unit_test.rs" afterDir="false" />
+    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="Minor issues.">
       <change beforePath="$PROJECT_DIR$/归档.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,6 +45,9 @@
 }</component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="djkjq755" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
@@ -241,7 +240,7 @@
       <workItem from="1732136684918" duration="408000" />
       <workItem from="1732566722489" duration="32000" />
       <workItem from="1732595563818" duration="662000" />
-      <workItem from="1732600241081" duration="60024000" />
+      <workItem from="1732600241081" duration="60540000" />
     </task>
     <task id="LOCAL-00001" summary="DAYS Merged First Prototype/Demo For 11/03.">
       <option name="closed" value="true" />
@@ -347,7 +346,23 @@
       <option name="project" value="LOCAL" />
       <updated>1732671890722</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Finished B.3.1 - B.3.3.">
+      <option name="closed" value="true" />
+      <created>1732672272582</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1732672272582</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Minor issues.">
+      <option name="closed" value="true" />
+      <created>1732672369020</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1732672369020</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -373,17 +388,8 @@
     <MESSAGE value="Start merging File System Hiding Modules." />
     <MESSAGE value="Finish entre A.1 and A.2, B.3.1 - B.3.3. Working on B.3.4 - B.3.5." />
     <MESSAGE value="Working on B.2.1 - B.3.3." />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on B.2.1 - B.3.3." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/tests/a_2_behavioral_hiding_unit_test.rs</url>
-          <line>43</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Finished B.3.1 - B.3.3." />
+    <MESSAGE value="Minor issues." />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor issues." />
   </component>
 </project>
