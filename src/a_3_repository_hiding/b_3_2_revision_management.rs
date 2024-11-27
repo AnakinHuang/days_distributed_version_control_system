@@ -99,7 +99,7 @@ pub fn log(path: &str) -> Result<Vec<String>, io::Error> {
             let date_time: DateTime::<chrono::Local> = revision_metadata.timestamp.into();
 
             let content = format!(
-                "commit {} (HEAD -> {}, {})\nDate: {}\n\n\t{}\n\n",
+                "commit {} (HEAD -> {}, {})\nDate: {}\n\n\t{}\n",
                 revision_metadata.id,
                 branch,
                 format!("{}/{}", path, branch),
