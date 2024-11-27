@@ -9,7 +9,6 @@ use crate::a_3_repository_hiding::b_3_3_branch_management::{load_branch_metadata
 use std::io;
 use std::collections::HashMap;
 use std::fmt::Debug;
-use std::process::exit;
 use chrono::DateTime;
 use std::time::SystemTime;
 use serde::{Deserialize, Serialize};
@@ -38,6 +37,7 @@ pub fn save_revision_metadata(path: &str, branch: &str, revision_id: &str, metad
 }
 
 pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
+    // debug
     add(path, ".", Vec::from(["README.md".to_string()]))?;
     
     let mut repo_metadata = load_repo_metadata(path)?;
@@ -45,7 +45,6 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
     if branch_metadata.staging.is_empty() {
         return Err(io::Error::new(io::ErrorKind::InvalidInput, "No changes to commit."));
     }
-    
     
     let revision_id = Uuid::new_v4().to_string();
     let staged_path = format!("{}/.dvcs/origin/{}/staging", path, repo_metadata.head);
@@ -65,8 +64,6 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
         files.insert(file.to_string(), file_hash);
         delete_file(&src_path)?;
     }
-
-    return Ok("yes".to_string());
     
     let new_revision = RevisionMetadata {
         id: revision_id.clone(),

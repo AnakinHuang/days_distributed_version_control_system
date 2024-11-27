@@ -52,14 +52,12 @@ pub fn clone_repository(src: &str, dest: &str) -> Result<(), io::Error> {
 
 pub fn save_repo_metadata(path: &str, metadata: &RepositoryMetadata) -> Result<(), io::Error> {
     let metadata_path = format!("{}/.dvcs/.metadata/metadata.json", path);
-    println!("metadata_path: {}", metadata_path);
     write_struct(&metadata_path, metadata)?;
     Ok(())
 }
 
 pub fn load_repo_metadata(path: &str) -> Result<RepositoryMetadata, io::Error> {
     let metadata_path = format!("{}/.dvcs/.metadata/metadata.json", path);
-    println!("metadata_path: {}", metadata_path);
     let metadata: RepositoryMetadata = read_struct(&metadata_path)?;
     Ok(metadata)
 }

@@ -114,7 +114,6 @@ pub fn add(repo_path: &str, files_path: &str, files: Vec<String>) -> Result<(), 
     
     for file in files {
         let file_path = format!("{}/{}", files_path, file);
-        println!("file_path: {}", file_path);
         if check_file(&file_path) {
             let staging_path = format!("{}/.dvcs/origin/{}/staging/{}", repo_path, branch, file);
 
