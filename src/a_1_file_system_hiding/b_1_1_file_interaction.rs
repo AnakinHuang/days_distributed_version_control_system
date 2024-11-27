@@ -58,6 +58,7 @@ pub fn write_file(path: &str, content: &str) -> Result<(), io::Error> {
     let mut file = OpenOptions::new()
         .write(true)
         .create(true)
+        .truncate(true) // Ensure truncation
         .open(path)?;
     file.write_all(content.as_bytes())?;
     Ok(())

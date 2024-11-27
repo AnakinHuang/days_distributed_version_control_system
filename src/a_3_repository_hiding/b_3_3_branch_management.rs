@@ -165,12 +165,7 @@ pub fn remove(path: &str, files: Vec<String>) -> Result<(), io::Error> {
         let staging_path = format!("{}/.dvcs/origin/{}/staging/{}", path, branch, file);
         delete_file(&staging_path)?;
         branch_metadata.staging.retain(|f| f != &file);
-        // Debugging
-        println!("Staging after removing '{}': {:?}", file, branch_metadata.staging); // Debugging
     }
-
-    // Debug the `branch_metadata` before saving
-    println!("Branch metadata before saving: {:?}", branch_metadata);
 
     save_branch_metadata(path, branch, &branch_metadata)?;
     Ok(())

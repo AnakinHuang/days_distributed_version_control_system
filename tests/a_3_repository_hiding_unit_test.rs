@@ -210,9 +210,7 @@ mod tests {
         write_file(&file_path, "Test content").unwrap();
 
         add(repo_path, &working_path, vec!["file.txt".to_string()]).unwrap();
-        
         remove(repo_path, vec!["file.txt".to_string()]).unwrap();
-        exit(0);
         
         let branch_metadata = load_branch_metadata(repo_path, "main").unwrap();
         assert!(!branch_metadata.staging.contains(&"file.txt".to_string()));
@@ -245,7 +243,7 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().kind(),
-            std::io::ErrorKind::NotFound
+            io::ErrorKind::NotFound
         );
 
         delete_directory(repo_path, true).unwrap();
