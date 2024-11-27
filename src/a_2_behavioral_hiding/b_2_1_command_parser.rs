@@ -176,16 +176,18 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, String> {
                         .num_args(1),
                 ),
         )
-        .subcommand(Command::new("log")
-            .about("Displays the commit log of the repository"))
-        .arg(
-            Arg::new("directory")
-                .help("Path to the repository")
-                .short('d')
-                .long("dir")
-                .required(false)
-                .num_args(1)
-                .default_value("."),
+        .subcommand(
+            Command::new("log")
+                .about("Display the commit log of the repository")
+                .arg(
+                    Arg::new("directory")
+                        .help("Path to the repository")
+                        .short('d')
+                        .long("dir")
+                        .required(false)
+                        .num_args(1)
+                        .default_value("."),
+                ),
         )
         .subcommand(
             Command::new("merge")

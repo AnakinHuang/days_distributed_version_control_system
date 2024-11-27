@@ -7,10 +7,10 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="Minor issues.">
+    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="Minor issues about log().">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_2_command_handler.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_2_command_handler.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/归档.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -253,7 +253,7 @@
       <workItem from="1732136684918" duration="408000" />
       <workItem from="1732566722489" duration="32000" />
       <workItem from="1732595563818" duration="662000" />
-      <workItem from="1732600241081" duration="61312000" />
+      <workItem from="1732600241081" duration="62523000" />
     </task>
     <task id="LOCAL-00001" summary="DAYS Merged First Prototype/Demo For 11/03.">
       <option name="closed" value="true" />
@@ -391,7 +391,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732673251383</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Minor issues about log().">
+      <option name="closed" value="true" />
+      <created>1732673500227</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1732673500227</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -419,6 +427,7 @@
     <MESSAGE value="Working on B.2.1 - B.3.3." />
     <MESSAGE value="Finished B.3.1 - B.3.3." />
     <MESSAGE value="Minor issues." />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor issues." />
+    <MESSAGE value="Minor issues about log()." />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor issues about log()." />
   </component>
 </project>

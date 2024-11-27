@@ -26,7 +26,7 @@ pub fn init_branch(path: &str, branch: &str) -> Result<(), std::io::Error> {
     create_directory(&format!("{}/staging", branch_path))?;
     create_directory(&format!("{}/.metadata", branch_path))?;
     create_directory(&format!("{}/working", branch_path))?;
-    
+
     let init_metadata = BranchMetadata {
         name: branch.to_string(),
         head_commit: None,
@@ -34,7 +34,7 @@ pub fn init_branch(path: &str, branch: &str) -> Result<(), std::io::Error> {
         staging: Vec::new(),
         working: Vec::new(),
     };
-    
+
     save_branch_metadata(path, branch, &init_metadata)?;
     Ok(())
 }
@@ -56,7 +56,7 @@ pub fn heads(path: &str) -> Result<Vec<String>, io::Error> {
     let branch_metadata = load_branch_metadata(path, &repo_metadata.head)?;
     let branch = branch_metadata.name;
     let mut heads_map = HashMap::new();
-    
+
     for revision_id in branch_metadata.commits.iter() {
         let revision_metadata = load_revision_metadata(path, &branch, revision_id)?;
         let date_time: DateTime::<chrono::Local> = revision_metadata.timestamp.into();
@@ -76,7 +76,7 @@ pub fn heads(path: &str) -> Result<Vec<String>, io::Error> {
     let mut sorted_heads_map: Vec<_> = heads_map.into_iter().collect();
     sorted_heads_map.sort_by(|a, b| b.0.cmp(&a.0));
     let sorted_logs = sorted_heads_map.into_iter().map(|(_, content)| content).collect();
-    
+
     Ok(sorted_logs)
 }
 
@@ -115,12 +115,12 @@ pub fn add(repo_path: &str, files_path: &str, files: Vec<String>) -> Result<(), 
         let file_path = format!("{}/{}", files_path, file);
         if check_file(&file_path) {
             let staging_path = format!("{}/.dvcs/origin/{}/staging/{}", repo_path, branch, file);
-            
+
             if branch_metadata.staging.contains(&file) {
                 delete_file(&staging_path)?;
                 branch_metadata.staging.retain(|f| f != &file);
             }
-            
+
             let content = read_file(&file_path)?;
             write_struct(&staging_path, &content)?;
             branch_metadata.staging.push(file.to_string());
@@ -160,7 +160,7 @@ pub fn remove(path: &str, files: Vec<String>) -> Result<(), io::Error> {
             ));
         }
     }
-    
+
     for file in files {
         let staging_path = format!("{}/.dvcs/origin/{}/staging/{}", path, branch, file);
         delete_file(&staging_path)?;
