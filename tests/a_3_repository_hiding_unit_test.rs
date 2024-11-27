@@ -9,7 +9,7 @@
 use days_dvcs::a_1_file_system_hiding::b_1_1_file_interaction::*;
 use days_dvcs::a_1_file_system_hiding::b_1_2_directory_interaction::*;
 use days_dvcs::a_3_repository_hiding::b_3_1_repository_management::*;
-use days_dvcs::a_3_repository_hiding::b_3_2_revision_management::*;
+// use days_dvcs::a_3_repository_hiding::b_3_2_revision_management::*;
 use days_dvcs::a_3_repository_hiding::b_3_3_branch_management::*;
 
 #[allow(dead_code)]
@@ -17,7 +17,6 @@ use days_dvcs::a_3_repository_hiding::b_3_3_branch_management::*;
 mod tests {
     use super::*;
     use std::io;
-    use std::process::exit;
 
     /// B.3.1 Repository Management
 
@@ -48,8 +47,6 @@ mod tests {
 
     #[test]
     fn test_init_repository_already_exists() {
-        let result = init_repository("test_init_repo");
-        
         let result = init_repository("test_init_repo");
         assert!(
             result.is_err(),
