@@ -41,7 +41,7 @@ pub enum ValidCommand {
     Cat { directory: Option<String>, revision: String, file: String },
     Checkout { branch: String },
     Commit { directory: Option<String>, message: String },
-    Log,
+    Log { directory: Option<String> },
     Merge { branch: String, directory: Option<String> },
     Pull { directory: Option<String> },
     Push { branch: Option<String>, directory: Option<String> },
@@ -253,7 +253,7 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, String> {
         Some(("cat", sub_m)) => parse_cat(sub_m),
         Some(("checkout", sub_m)) => parse_checkout(sub_m),
         Some(("commit", sub_m)) => parse_commit(sub_m),
-        Some(("log", _)) => Ok(ValidCommand::Log),
+        Some(("log", sub_m)) => parse_log(sub_m),
         Some(("merge", sub_m)) => parse_merge(sub_m),
         Some(("pull", sub_m)) => parse_pull(sub_m),
         Some(("push", sub_m)) => parse_push(sub_m),
@@ -304,6 +304,11 @@ fn parse_commit(matches: &ArgMatches) -> Result<ValidCommand, String> {
     let directory = matches.get_one::<String>("directory").cloned();
     let message = matches.get_one::<String>("message").unwrap().to_string();
     Ok(ValidCommand::Commit { directory, message })
+}
+
+fn parse_log(matches: &ArgMatches) -> Result<ValidCommand, String> {
+    let directory = matches.get_one::<String>("directory").cloned();
+    Ok(ValidCommand::Log { directory })
 }
 
 fn parse_merge(matches: &ArgMatches) -> Result<ValidCommand, String> {

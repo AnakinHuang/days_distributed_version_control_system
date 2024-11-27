@@ -102,9 +102,16 @@ impl CommandHandler {
                 }
                 Ok(())
             }
-            ValidCommand::Log => {
-                OutputFormatter::display(OutputType::Success, "Displaying commit log ...".to_string());
-                // Call log function
+            ValidCommand::Log { directory } => {
+                println!("Displaying commit log for repository in directory: {}", directory.clone().unwrap_or_else(|| ".".to_string()));
+                let result = log(&directory.unwrap_or_else(|| ".".to_string()));
+                if result.is_err() {
+                    OutputFormatter::display(OutputType::Error, format!("Failed to display commit log: {}", result.unwrap_err()));
+                } else {
+                    for entry in result? {
+                        OutputFormatter::display(OutputType::Success, entry);
+                    }
+                }
                 Ok(())
             }
             ValidCommand::Merge { branch, directory } => {
