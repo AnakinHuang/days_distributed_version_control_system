@@ -1,7 +1,7 @@
 // days_dvcs/tests/a_1_file_system_hiding_unit_test.rs
 //
 // Unit tests for the A.1 File System Hiding Module
-// To run these tests, use: cargo test --test a_1_file_system_hiding_unit_test
+// To run these tests, use: cargo beta_tests --beta_tests a_1_file_system_hiding_unit_test
 //
 // Author: Anakin (Yuesong Huang), Yifan (Alvin) Jiang
 // Date: 11/14/2024
@@ -14,10 +14,10 @@ use days_dvcs::a_1_file_system_hiding::b_1_3_metadata_management::*;
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde::{Deserialize, Serialize};
     use std::fs;
     use std::path::Path;
     use std::time::SystemTime;
-    use serde::{Deserialize, Serialize};
 
     /// B.1.1 File Interaction
 
@@ -30,15 +30,15 @@ mod tests {
     #[test]
     fn test_check_file() {
         let path = "test_file.txt";
-        fs::write(path, "test").unwrap();
+        fs::write(path, "beta_tests").unwrap();
         assert!(check_file(path));
         fs::remove_file(path).unwrap();
         assert!(!check_file(path));
     }
-    
+
     #[test]
     fn test_read_file() {
-        let path = "./src/test_files/a_1_file_system_hiding_unit_test_files/test_read.txt";
+        let path = "./src/test_files/test_read.txt";
         let content = "Hello, world!";
         write_file(path, content).unwrap();
 
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_write_file() {
-        let path = "./src/test_files/a_1_file_system_hiding_unit_test_files/test_write.txt";
+        let path = "./src/test_files/test_write.txt";
         let content = "Hello, world!";
         write_file(path, content).unwrap();
 
@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn test_delete_file() {
-        let path = "./src/test_files/a_1_file_system_hiding_unit_test_files/test_delete.txt";
+        let path = "./src/test_files/test_delete.txt";
         write_file(path, "Hello, world!").unwrap();
         delete_file(path).unwrap();
 
@@ -103,7 +103,7 @@ mod tests {
 
     #[test]
     fn test_append_file() {
-        let path = "./src/test_files/a_1_file_system_hiding_unit_test_files/test_append.txt";
+        let path = "./src/test_files/test_append.txt";
         write_file(path, "Hello").unwrap();
         append_file(path, ", world!").unwrap();
 
@@ -112,10 +112,10 @@ mod tests {
 
         delete_file(path).unwrap();
     }
-    
+
     #[test]
     fn test_copy_file() {
-        let from = "./src/test_files/a_1_file_system_hiding_unit_test_files/test_copy_from.txt";
+        let from = "./src/test_files/test_copy_from.txt";
         let to = "./src/test_files/test_copy_to.txt";
         write_file(from, "Copy this").unwrap();
         copy_file(from, to).unwrap();
@@ -126,9 +126,15 @@ mod tests {
         delete_file(from).unwrap();
         delete_file(to).unwrap();
     }
-    
+
+    #[test]
+    fn test_get_filename() {
+        let path = "test_file.txt";
+        assert_eq!(get_filename(path), "test_file.txt");
+    }
+
     /// B.1.2 Directory Interaction
-    
+
     #[test]
     fn test_create_directory() {
         let path = "./test_dir_create";
@@ -149,7 +155,7 @@ mod tests {
     #[test]
     fn test_delete_directory_recursive() {
         let dir_path = "./test_dir_delete_recursive";
-        let file_path = "./test_dir_delete_recursive/test.txt";
+        let file_path = "./test_dir_delete_recursive/beta_tests.txt";
 
         create_directory(dir_path).unwrap();
         write_file(file_path, "Hello World").unwrap();
@@ -168,7 +174,7 @@ mod tests {
         write_file(file_path1, "test1.txt").unwrap();
         write_file(file_path2, "test2.txt").unwrap();
 
-        let entries = list_directory(dir_path).unwrap();
+        let entries = list_directory(dir_path, false, true).unwrap();
         assert!(entries.contains(&"test1.txt".to_string()));
         assert!(entries.contains(&"test2.txt".to_string()));
 
@@ -182,17 +188,20 @@ mod tests {
 
         create_directory(src_dir).unwrap();
         let file_path = format!("{}/file.txt", src_dir);
-        fs::write(&file_path, "test content").unwrap();
+        fs::write(&file_path, "beta_tests content").unwrap();
 
         copy_directory(src_dir, dest_dir).unwrap();
 
         assert!(check_file(&format!("{}/file.txt", dest_dir)));
-        assert_eq!(fs::read_to_string(&format!("{}/file.txt", dest_dir)).unwrap(), "test content");
+        assert_eq!(
+            fs::read_to_string(&format!("{}/file.txt", dest_dir)).unwrap(),
+            "beta_tests content"
+        );
 
         delete_directory(src_dir, true).unwrap();
         delete_directory(dest_dir, true).unwrap();
     }
-    
+
     /// B.1.3 Metadata Management
 
     #[test]

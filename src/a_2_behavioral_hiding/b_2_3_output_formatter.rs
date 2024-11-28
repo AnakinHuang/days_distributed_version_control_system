@@ -4,7 +4,7 @@
 //! This component is responsible for formatting output to the command line
 //! based on the success or failure of an operation. It clearly distinguishes
 //! between success and error messages with color coding.
-//! 
+//!
 //! Parent Module: A.2 Behavioral Hiding
 //!
 //! ## Features
@@ -28,13 +28,13 @@ pub struct OutputFormatter;
 
 impl OutputFormatter {
     pub fn display(output_type: OutputType, message: String) {
-        match output_type {
-            OutputType::Success => {
-                println!("\x1b[32m{}\x1b[0m", message);
-            }
-            OutputType::Error => {
-                eprintln!("\x1b[31m{}\x1b[0m", message);
-            }
+        let color_code = match output_type {
+            OutputType::Success => "\x1b[32m", // Green
+            OutputType::Error => "\x1b[31m",   // Red
+        };
+
+        for line in message.replace("\\n", "\n").lines() {
+            println!("{}{}\x1b[0m", color_code, line);
         }
     }
 }

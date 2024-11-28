@@ -21,120 +21,218 @@
 
 use super::b_2_1_command_parser::ValidCommand;
 use super::b_2_3_output_formatter::{OutputFormatter, OutputType};
-use crate::a_3_repository_hiding::b_3_1_repository_management::*;
-use crate::a_3_repository_hiding::b_3_2_revision_management::*;
-// use crate::a_3_repository_hiding::b_3_3_branch_management::*;
 
-use std::io;
 pub struct CommandHandler;
+pub use crate::a_3_repository_hiding::b_3_1_repository_management::*;
+pub use crate::a_3_repository_hiding::b_3_2_revision_management::*;
+pub use crate::a_3_repository_hiding::b_3_3_branch_management::*;
 
 impl CommandHandler {
-    
     /// Executes the given command.
-    pub fn handle_command(command: ValidCommand) -> Result<(), io::Error> {
+
+    #[allow(dead_code, unused_variables)]
+    pub fn handle_command(command: ValidCommand) {
         match command {
             ValidCommand::Init { directory } => {
-                let dir = directory.unwrap_or_else(|| ".".to_string());
-                println!("Initializing repository in directory: {}", dir);
-                if init_repository(&dir).is_ok() {
-                    OutputFormatter::display(OutputType::Success, format!("Initialized repository in directory: {}", dir));
+                println!("Initializing repository in directory: {}", directory);
+                let result = init_repository(&directory);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Initialized repository in directory: {}", directory),
+                    )
                 } else {
-                    OutputFormatter::display(OutputType::Error, "Failed to initialize repository".to_string());
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!(
+                            "Failed to initialize repository in {}: {}",
+                            directory,
+                            result.unwrap_err()
+                        ),
+                    )
                 }
-                
-                Ok(())
             }
-            ValidCommand::Clone { remote_url, directory } => {
-                let dir = directory.unwrap_or_else(|| ".".to_string());
-                println!("Cloning repository from {} into directory: {}", remote_url, dir);
-                if clone_repository(&remote_url, &dir).is_ok() {
-                    OutputFormatter::display(OutputType::Success, format!("Cloned repository from {} into directory: {}", remote_url, dir));
+            ValidCommand::Clone { repo, directory } => {
+                println!("Cloning repository from {} to {}", repo, directory);
+                let result = clone_repository(&repo, &directory);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Cloned repository from {} to {}", repo, directory),
+                    );
                 } else {
-                    OutputFormatter::display(OutputType::Error, "Failed to clone repository".to_string());
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!(
+                            "Failed to clone repository from {} to {}: {}",
+                            repo,
+                            directory,
+                            result.unwrap_err()
+                        ),
+                    );
                 }
-                Ok(())
             }
-            ValidCommand::Add { file } => {
-                // Call the file staging function
-                OutputFormatter::display(OutputType::Success, format!("Added file to staging: {}", file));
-                Ok(())
-            }
-            ValidCommand::Remove { file } => {
-                // Call the file unstaging function
-                OutputFormatter::display(OutputType::Success, format!("Removed file from staging: {}", file));
-                Ok(())
-            }
-            ValidCommand::Status => {
-                OutputFormatter::display(OutputType::Success, "Repository status:".to_string());
-                // Call repository status function
-                Ok(())
-            }
-            ValidCommand::Heads => {
-                OutputFormatter::display(OutputType::Success, "All branches: ".to_string());
-                // Call branch listing function
-                Ok(())
-            }
-            ValidCommand::Diff { revision_1, revision_2 } => {
-                OutputFormatter::display(OutputType::Success, format!("Differences between {} and {}: ", revision_1, revision_2));
-                // Call diff function
-                Ok(())
-            }
-            ValidCommand::Cat { directory, revision, file } => {
-                if let Ok(content) = cat(&directory.unwrap_or(".".to_string()), &revision, &file) {
-                    OutputFormatter::display(OutputType::Success, content);
+            ValidCommand::Add { pathspec } => {
+                let files = pathspec.join(" ");
+                println!("Adding file: {}", files);
+                let result = add(".", pathspec);
+                if result.is_ok() {
+                    OutputFormatter::display(OutputType::Success, format!("Added file: {}", files));
                 } else {
-                    OutputFormatter::display(OutputType::Error, "Failed to read file".to_string());
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to add {} :", result.unwrap_err()),
+                    );
                 }
-                Ok(())
             }
-            ValidCommand::Checkout { branch } => {
-                // Call branch checkout function
-                OutputFormatter::display(OutputType::Success, format!("Switched to branch: {}", branch));
-                Ok(())
-            }
-            ValidCommand::Commit { directory, message } => {
-                println!("Committing changes with message: {}", message);
-                let result = commit(&directory.unwrap_or(".".to_string()), &message);
-                if result.is_err() {
-                    OutputFormatter::display(OutputType::Error, format!("Failed to commit changes: {}", result.unwrap_err()));
+            ValidCommand::Remove { pathspec } => {
+                let files = pathspec.join(" ");
+                println!("Removing file: {}", files);
+                let result = remove(".", pathspec);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Removed file: {}", files),
+                    );
                 } else {
-                    OutputFormatter::display(OutputType::Success, "Changes committed successfully".to_string());
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to remove {} :", result.unwrap_err()),
+                    );
                 }
-                Ok(())
             }
-            ValidCommand::Log { directory } => {
-                println!("Displaying commit log for repository in directory: {}", directory.clone().unwrap_or_else(|| ".".to_string()));
-                let result = log(&directory.unwrap_or_else(|| ".".to_string()));
-                if result.is_err() {
-                    OutputFormatter::display(OutputType::Error, format!("Failed to display commit log: {}", result.unwrap_err()));
+            ValidCommand::Status { repo } => {
+                println!("Checking status of repository");
+                let result = status(&repo);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Status: \n{}", result.unwrap()),
+                    );
                 } else {
-                    for entry in result? {
-                        OutputFormatter::display(OutputType::Success, entry);
-                    }
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to check status: {}", result.unwrap_err()),
+                    );
                 }
-                Ok(())
             }
-            ValidCommand::Merge { branch, directory } => {
-                let dir = directory.unwrap_or_else(|| ".".to_string());
-                println!("Merging branch '{}' into repository in directory: {}", branch, dir);
-                // Call merge function
-                OutputFormatter::display(OutputType::Success, format!("Merged branch '{}' into repository in directory: {}", branch, dir));
-                Ok(())
+            ValidCommand::Heads { repo } => {
+                println!("Checking heads of repository");
+                let result = heads(&repo);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Heads: \n{}", result.unwrap()),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to check heads: \n{}", result.unwrap_err()),
+                    );
+                }
             }
-            ValidCommand::Pull { directory } => {
-                let dir = directory.unwrap_or_else(|| ".".to_string());
-                println!("Pulling changes into directory: {}", dir);
-                // Call pull function
-                OutputFormatter::display(OutputType::Success, format!("Pulled changes into directory: {}", dir));
-                Ok(())
+            ValidCommand::Diff { commit_1, commit_2 } => {
+                println!(
+                    "Checking diff between revisions {} and {}",
+                    commit_1, commit_2
+                );
+                // let result = diff(&commit_1, &commit_2);
+                // if result.is_ok() {
+                //     OutputFormatter::display(OutputType::Success, format!("Diff: \n{}", result.unwrap()));
+                // } else {
+                //     OutputFormatter::display(OutputType::Error, format!("Failed to check diff: \n{}", result.unwrap_err()));
+                // }
             }
-            ValidCommand::Push { branch, directory } => {
-                let dir = directory.unwrap_or_else(|| ".".to_string());
-                let br = branch.unwrap_or_else(|| "main".to_string());
-                println!("Pushing branch '{}' to remote repository in directory: {}", br, dir);
-                // Call push function
-                OutputFormatter::display(OutputType::Success, format!("Pushed branch '{}' to remote repository in directory: {}", br, dir));
-                Ok(())
+            ValidCommand::Cat { commit, path } => {
+                println!("Displaying contents of file: {}", path);
+                let result = cat(".", &commit, &path);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Contents: \n{}", result.unwrap()),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to display contents: {}", result.unwrap_err()),
+                    );
+                }
+            }
+            ValidCommand::Checkout { branch_or_commit } => {
+                println!("Checking out branch or commit: {}", branch_or_commit);
+                let result = checkout(".", &branch_or_commit);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Checked out branch or commit: {}", branch_or_commit),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!(
+                            "Failed to check out {}: {}",
+                            branch_or_commit,
+                            result.unwrap_err()
+                        ),
+                    );
+                }
+            }
+            ValidCommand::Commit { msg } => {
+                println!("Committing changes with message: {}", msg);
+                let result = commit(".", &msg);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Committed changes with message: {}", msg),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to commit changes: {}", result.unwrap_err()),
+                    );
+                }
+            }
+            ValidCommand::Log { repo } => {
+                println!("Displaying commit log");
+                let result = log(&repo);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Log: \n{}", result.unwrap()),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to display log: \n{}", result.unwrap_err()),
+                    );
+                }
+            }
+            ValidCommand::Merge { branch } => {
+                println!("Merging branch: {}", branch);
+                // let result = merge(".", &branch);
+                // if result.is_ok() {
+                //     OutputFormatter::display(OutputType::Success, format!("Merged branch: {}", branch));
+                // } else {
+                //     OutputFormatter::display(OutputType::Error, format!("Failed to merge {} branch: {}", branch, result.unwrap_err()));
+                // }
+            }
+            ValidCommand::Pull { path, branch } => {
+                println!("Pulling changes to {} branch(es) from remote", branch);
+                // let result = pull(".", &path, &branch);
+                // if pull(".", &path, &branch).is_ok() {
+                //     OutputFormatter::display(OutputType::Success, format!("Pulled changes to {} branch(es) from remote", branch));
+                // } else {
+                //     OutputFormatter::display(OutputType::Error, format!("Failed to pull changes to {} branch(es): ", branch, result.unwrap_err()));
+                // }
+            }
+            ValidCommand::Push { path, branch } => {
+                println!("Pushing changes from {} branch(es) to remote", branch);
+                // let result = push(".", &path, &branch);
+                // if result.is_ok() {
+                //     OutputFormatter::display(OutputType::Success, format!("Pushed changes from {} branch(es) to remote", branch));
+                // } else {
+                //     OutputFormatter::display(OutputType::Error, format!("Failed to push changes from {} branch(es): ", branch, result.unwrap_err()));
+                // }
             }
         }
     }
