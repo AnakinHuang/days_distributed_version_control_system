@@ -44,14 +44,15 @@ echo "Hello World" > tests.txt
 cargo run add tests.txt
 cargo run commit "Add test.txt"
 cargo run checkout main
-cd ..
-cargo run checkout 3a686763-a07e-47c6-96f9-ad5b7d338485
+cd ../.. || exit
+cargo run checkout '1f1f6c33-e94e-4b59-8452-c3a5e4db73ef'
 
 # LEVEL-3: Status, Heads, Cat, Log
 echo "Level-3: Status, Heads, Cat, Log"
 
 # Test-3a: Status and log commands
 echo "Test-3a: Displaying status and log in repo_3"
+cd acceptance_tests || exit
 cargo run init repo_3
 cd repo_3 || exit
 echo "Hello World" > test_1.txt
@@ -75,8 +76,8 @@ cargo run heads
 
 # Test-3d: Cat command
 echo "Test-3d: Inspect file content from a specific revision"
-cd .. || exit
-cargo run cat ab6f22db-fd04-4d2d-8afa-9e42145584d5 README.md
+cd ../ || exit
+cargo run cat 'a75ea01b-fc02-4e06-a5cc-56fed3f7068e' README.md
 cd repo_3 || exit
 
 # LEVEL-4: Remove, Diff
@@ -154,7 +155,7 @@ cargo run pull
 
 # Cleanup: Remove all tests repositories
 echo "Cleaning up test directories..."
-rm -rf repo_0 repo_1 repo_2 repo_3 repo_4 repo_5 repo_6 test_*.txt ../README.md
+rm -rf repo_* test_*.txt ../README.md ../program.rs
 cd ../../ || exit
 
 echo "All DVCS acceptance tests executed successfully!"

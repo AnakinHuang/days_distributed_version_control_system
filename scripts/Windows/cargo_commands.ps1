@@ -43,7 +43,7 @@ cargo run add tests.txt
 cargo run commit "Add test.txt"
 cargo run checkout main
 Set-Location -Path ..
-cargo run checkout 3a686763-a07e-47c6-96f9-ad5b7d338485
+cargo run checkout 1f1f6c33-e94e-4b59-8452-c3a5e4db73ef
 
 # LEVEL-3: Status, Heads, Cat, Log
 Write-Host "Level-3: Status, Heads, Cat, Log"
@@ -74,7 +74,7 @@ cargo run heads
 # Test-3d: Cat command
 Write-Host "Test-3d: Inspect file content from a specific revision"
 Set-Location -Path ..
-cargo run cat ab6f22db-fd04-4d2d-8afa-9e42145584d5 README.md
+cargo run cat a75ea01b-fc02-4e06-a5cc-56fed3f7068e README.md
 Set-Location -Path repo_3
 
 # LEVEL-4: Remove, Diff
