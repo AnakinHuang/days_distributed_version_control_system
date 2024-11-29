@@ -20,15 +20,16 @@
 //! Date: 11/14/2024
 
 use super::b_1_1_file_interaction::{check_file, copy_file};
-use std::fs::{canonicalize, read_dir, create_dir_all, remove_dir, remove_dir_all};
+use std::fs::{canonicalize, create_dir_all, read_dir, remove_dir, remove_dir_all};
 use std::io;
 use std::path::Path;
 
 pub fn check_directory(path: &str) -> bool {
-    Path::new(path).is_dir() || match canonicalize(path) { 
-        Ok(path) => path.is_dir(),
-        Err(_) => false,
-    }
+    Path::new(path).is_dir()
+        || match canonicalize(path) {
+            Ok(path) => path.is_dir(),
+            Err(_) => false,
+        }
 }
 
 pub fn create_directory(path: &str) -> Result<(), io::Error> {
@@ -48,6 +49,17 @@ pub fn delete_directory(path: &str, recursive: bool) -> Result<(), io::Error> {
         Err(io::Error::new(
             io::ErrorKind::NotFound,
             "Directory not found.",
+        ))
+    }
+}
+
+pub fn is_empty_directory(path: &str) -> Result<(), io::Error> {
+    if read_dir(path)?.next().is_none() {
+        Ok(())
+    } else {
+        Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Directory is not empty.",
         ))
     }
 }

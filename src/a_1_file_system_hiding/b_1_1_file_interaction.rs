@@ -30,31 +30,50 @@
 use serde::de::DeserializeOwned;
 use std::fs::{self, OpenOptions};
 use std::io::{self, Read, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 pub fn check_file(path: &str) -> bool {
     Path::new(path).is_file()
 }
 
 pub fn get_filename(path: &str) -> String {
-    Path::new(path).file_name().and_then(|s| s.to_str()).unwrap_or("")
+    Path::new(path)
+        .file_name()
+        .and_then(|s| s.to_str())
+        .unwrap_or("")
         .to_string()
 }
 
 pub fn get_parent(path: &str) -> String {
     Path::new(path)
         .parent()
-        .unwrap_or_else(|| Path::new(path))
+        .unwrap_or_else(|| Path::new(""))
         .to_string_lossy()
         .into_owned()
 }
 
-pub fn get_relative_path(path: &str, base: &str) -> String {
-    Path::new(path)
-        .strip_prefix(base)
-        .unwrap_or_else(|_| Path::new(path))
+pub fn get_relative_path(path: &str, base: &str, sanitize: bool) -> String {
+    let relative_path = pathdiff::diff_paths(Path::new(&path), Path::new(&base))
+        .unwrap_or_else(|| Path::new(path).to_path_buf());
+
+    if sanitize {
+        relative_path
+            .components()
+            .filter(|comp| matches!(comp, std::path::Component::Normal(_)))
+            .collect::<PathBuf>()
+            .to_string_lossy()
+            .into_owned()
+    } else {
+        relative_path.to_string_lossy().into_owned()
+    }
+}
+
+pub fn get_absolute_path(path: &str, base: &str) -> Result<String, io::Error> {
+    Ok(Path::new(base)
+        .join(path)
+        .canonicalize()?
         .to_string_lossy()
-        .into_owned()
+        .into_owned())
 }
 
 pub fn read_file(path: &str) -> Result<String, io::Error> {
