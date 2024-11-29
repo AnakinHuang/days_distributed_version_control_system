@@ -30,7 +30,10 @@ mod tests {
         assert!(result.is_ok(), "Failed to initialize repository");
 
         let dvcs_path = format!("{}/.dvcs", "test_repo");
-        assert!(check_directory(&dvcs_path), ".dvcs directory does not exist");
+        assert!(
+            check_directory(&dvcs_path),
+            ".dvcs directory does not exist"
+        );
 
         let metadata_path = format!("{}/.metadata", dvcs_path);
         assert!(
@@ -126,7 +129,6 @@ mod tests {
         }
 
         create_directory("test_missing_repo").unwrap();
-
         let result = clone_repository("test_missing_repo", "test_missing_clone");
         assert!(
             result.is_err(),
@@ -175,7 +177,7 @@ mod tests {
     fn test_init_branch() {
         let repo_path = "test_branch_repo";
         init_repository(repo_path).unwrap();
-        init_branch(repo_path, "feature").unwrap();
+        init_branch(repo_path, "feature", false).unwrap();
 
         let branch_metadata = load_branch_metadata(repo_path, "feature").unwrap();
         assert_eq!(branch_metadata.name, "feature");
@@ -190,7 +192,7 @@ mod tests {
         init_repository(repo_path).unwrap();
 
         let heads_output = heads(repo_path).unwrap();
-        assert!(heads_output.contains("commits N/A (main, origin/main)\nDate"));
+        assert!(heads_output.contains("commit N/A (HEAD -> main, origin/main)\nDate"));
 
         delete_directory(repo_path, true).unwrap();
     }
@@ -214,8 +216,7 @@ mod tests {
 
         let file_path = format!("{}/file.txt", repo_path);
         write_file(&file_path, "Test content").unwrap();
-
-        add(repo_path, vec![file_path.clone()]).unwrap();
+        add(repo_path, vec![file_path]).unwrap();
 
         let branch_metadata = load_branch_metadata(repo_path, "main").unwrap();
         assert!(branch_metadata.staging.contains(&"file.txt".to_string()));
@@ -225,6 +226,10 @@ mod tests {
 
     #[test]
     fn test_remove() {
+        if check_directory("test_remove_repo") {
+            delete_directory("test_remove_repo", true).unwrap();
+        }
+
         let repo_path = "test_remove_repo";
         init_repository(repo_path).unwrap();
 
@@ -232,7 +237,7 @@ mod tests {
         write_file(&file_path, "Test content").unwrap();
 
         add(repo_path, vec![file_path.clone()]).unwrap();
-        remove(repo_path, vec!["file.txt".to_string()]).unwrap();
+        remove(repo_path, vec![file_path]).unwrap();
 
         let branch_metadata = load_branch_metadata(repo_path, "main").unwrap();
         assert!(!branch_metadata.staging.contains(&"file.txt".to_string()));
@@ -247,7 +252,7 @@ mod tests {
 
         let result = add(repo_path, vec!["nonexistent.txt".to_string()]);
         assert!(result.is_err());
-        assert_eq!(result.unwrap_err().kind(), std::io::ErrorKind::NotFound);
+        assert_eq!(result.unwrap_err().kind(), io::ErrorKind::NotFound);
 
         delete_directory(repo_path, true).unwrap();
     }

@@ -1,8 +1,12 @@
 // days_dvcs/src/a_3_repository_hiding/b_3_2_revision_management.rs
 //
 
-use crate::a_1_file_system_hiding::b_1_1_file_interaction::{check_file, get_parent, read_file, read_struct, write_file, write_struct};
-use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{check_directory, create_directory, delete_directory};
+use crate::a_1_file_system_hiding::b_1_1_file_interaction::{
+    check_file, get_parent, read_file, read_struct, write_file, write_struct,
+};
+use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
+    check_directory, create_directory, delete_directory,
+};
 use crate::a_3_repository_hiding::b_3_1_repository_management::{
     load_repo_metadata, save_repo_metadata, RepositoryMetadata,
 };
@@ -88,7 +92,7 @@ pub fn save_revision_metadata(
 }
 
 pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
-    is_repository(path)?;
+    let path = &is_repository(path)?;
 
     let mut repo_metadata = load_repo_metadata(path)?;
     let branch = &repo_metadata.head;
@@ -104,18 +108,18 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
     let revision_id = Uuid::new_v4().to_string();
     let staged_path = format!("{}/.dvcs/origin/{}/staging", path, branch);
     let commit_path = format!("{}/.dvcs/origin/{}/commits/{}", path, branch, revision_id);
-    
+
     // Create the commit directory
     create_directory(&commit_path)?;
 
     let mut files = HashMap::new();
-    
+
     // Prepare files and compute their hashes
     for file in &branch_metadata.staging {
         let src_path = format!("{}/{}", staged_path, file);
         let dest_path = format!("{}/{}", commit_path, file);
         let dest_dir = get_parent(&dest_path);
-        
+
         if !check_directory(&dest_dir) {
             create_directory(&dest_dir)?;
         }
@@ -161,22 +165,25 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
     save_branch_metadata(path, branch, &branch_metadata)?;
 
     // Update repository metadata
-    repo_metadata.branches.insert(branch.clone(), revision_id.clone());
+    repo_metadata
+        .branches
+        .insert(branch.clone(), revision_id.clone());
     save_repo_metadata(path, &repo_metadata)?;
 
-    // Update HEAD
     write_file(
         &format!("{}/.dvcs/HEAD", path),
         &format!(
             "commit: {}\nref: {}/.dvcs/origin/{}",
-            revision_id, path, branch
+            revision_id,
+            get_parent(&path),
+            branch
         ),
     )?;
     Ok(revision_id)
 }
 
 pub fn log(path: &str) -> Result<String, io::Error> {
-    is_repository(path)?;
+    let path = &is_repository(path)?;
 
     let repo_metadata = load_repo_metadata(path)?;
     let head_branch = &repo_metadata.head;
@@ -190,13 +197,13 @@ pub fn log(path: &str) -> Result<String, io::Error> {
             let date_time: DateTime<chrono::Local> = revision_metadata.timestamp.into();
 
             let header = if branch == head_branch {
-                format!("HEAD -> {}", head_branch)
+                format!("HEAD -> {}, origin/{}", head_branch, branch)
             } else {
                 format!("origin/{}", branch)
             };
 
             let content = format!(
-                "commit {} ({})\nDate: {}\n\n\t{}\n",
+                "commit {} ({})\nDate: {}\n\n\t{}\n\n",
                 revision_metadata.id,
                 header,
                 format!("{}", date_time.format("%Y-%m-%d %H:%M:%S")),
@@ -239,7 +246,7 @@ fn get_revision_id(
 }
 
 pub fn cat(path: &str, revision_id: &str, file_name: &str) -> Result<String, io::Error> {
-    is_repository(path)?;
+    let path = &is_repository(path)?;
 
     let (repo_metadata, last_revision_id) = get_revision_id(path, revision_id)?;
 
@@ -287,49 +294,59 @@ fn get_branch_or_revision_id(
             .to_string();
         return Ok((repo_metadata, revision_id));
     }
-    
+
     get_revision_id(path, branch_or_revision_id)
 }
 
 pub fn checkout(path: &str, branch_or_revision_id: &str) -> Result<(), io::Error> {
-    is_repository(path)?;
+    let path = &is_repository(path)?;
 
     let (mut repo_metadata, last_revision_id) =
         get_branch_or_revision_id(path, branch_or_revision_id)?;
-    
+
     for (branch, _) in repo_metadata.branches.iter() {
         let mut branch_metadata = load_branch_metadata(path, branch)?;
 
-        if branch_metadata.commits.contains(&last_revision_id) || branch == branch_or_revision_id {
-            let revision_metadata = load_revision_metadata(path, branch, &last_revision_id)?;
-            let commit_path = format!(
-                "{}/.dvcs/origin/{}/commits/{}",
-                path, branch, &last_revision_id
-            );
-            
-            if !check_directory(path) {
-                create_directory(path)?;
-            }
+        if branch == branch_or_revision_id || branch_metadata.commits.contains(&last_revision_id) {
+            if !branch_metadata.head_commit.is_none() {
+                let revision_metadata = load_revision_metadata(path, branch, &last_revision_id)?;
+                let commit_path = format!(
+                    "{}/.dvcs/origin/{}/commits/{}",
+                    path, branch, &last_revision_id
+                );
 
-            for (file, _) in revision_metadata.files.iter() {
-                let src_path = format!("{}/{}", commit_path, file);
-                let dest_path = format!("{}/{}", path, file);
+                if !check_directory(path) {
+                    create_directory(path)?;
+                }
 
-                let content = read_file(&src_path)?;
-                write_file(&dest_path, &content)?;
+                for (file, _) in revision_metadata.files.iter() {
+                    let src_path = format!("{}/{}", commit_path, file);
+                    let dest_path = format!("{}/{}", path, file);
+
+                    let content = read_file(&src_path)?;
+                    write_file(&dest_path, &content)?;
+                }
+
+                branch_metadata.head_commit = Some(last_revision_id.to_string());
+                save_branch_metadata(path, branch, &branch_metadata)?;
             }
 
             repo_metadata.head = branch.to_string();
-            branch_metadata.head_commit = Some(last_revision_id.to_string());
-
-            save_branch_metadata(path, branch, &branch_metadata)?;
             save_repo_metadata(path, &repo_metadata)?;
-            write_file(&format!("{}/.dvcs/HEAD", path), 
-                       &format!("commit: {}\nref: {}/.dvcs/origin/{}", 
-                                branch_metadata.head_commit.unwrap_or("".to_string()), 
-                                path, 
-                                branch))?;
-            return Ok(())
+
+            write_file(
+                &format!("{}/.dvcs/HEAD", path),
+                &format!(
+                    "commit: {}\nref: {}/.dvcs/origin/{}",
+                    branch_metadata
+                        .head_commit
+                        .clone()
+                        .unwrap_or("N/A".to_string()),
+                    get_parent(&path),
+                    branch
+                ),
+            )?;
+            return Ok(());
         }
     }
 

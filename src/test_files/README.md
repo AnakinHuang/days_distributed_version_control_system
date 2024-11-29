@@ -1,6 +1,7 @@
 # Simple Rust Greeting Program
 
-This is a simple Rust program that prompts the user for their name and greets them. It's a great starting point to understand basic input/output operations in Rust.
+This is a simple Rust program that prompts the user for their name and greets them. It's a great starting point to
+understand basic input/output operations in Rust.
 
 ## Features
 

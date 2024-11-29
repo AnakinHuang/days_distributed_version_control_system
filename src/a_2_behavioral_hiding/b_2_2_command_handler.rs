@@ -234,6 +234,21 @@ impl CommandHandler {
                 //     OutputFormatter::display(OutputType::Error, format!("Failed to push changes from {} branch(es): ", branch, result.unwrap_err()));
                 // }
             }
+            ValidCommand::Branch { branch } => {
+                println!("Creating branch: {}", branch);
+                let result = init_branch(".", &branch, false);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Created branch: {}", branch),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to create branch: {}", result.unwrap_err()),
+                    );
+                }
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ echo "DAYS DVCS BETA ACCEPTANCE TESTS"
 
 # Step 1: Build the project
 echo "Building the project..."
-cd beta_tests || exit
+cd beta_tests/acceptance_tests || exit
 cargo build
 
 # LEVEL-1: Init
@@ -45,7 +45,7 @@ cargo run add tests.txt
 cargo run commit "Add test.txt"
 cargo run checkout main
 cd ..
-cargo run checkout 05d6da56-d49e-4710-a77c-185a76ee29b6
+cargo run checkout 3a686763-a07e-47c6-96f9-ad5b7d338485
 
 # LEVEL-3: Status, Heads, Cat, Log
 echo "Level-3: Status, Heads, Cat, Log"
@@ -75,8 +75,8 @@ cargo run heads
 
 # Test-3d: Cat command
 echo "Test-3d: Inspect file content from a specific revision"
-cd ..
-cargo run cat f38a2caf-5b15-4d21-9c9e-8f1f679ce365 README.md
+cd .. || exit
+cargo run cat ab6f22db-fd04-4d2d-8afa-9e42145584d5 README.md
 cd repo_3 || exit
 
 # LEVEL-4: Remove, Diff
@@ -154,7 +154,7 @@ cargo run pull
 
 # Cleanup: Remove all tests repositories
 echo "Cleaning up test directories..."
-rm -rf repo_0 repo_1 repo_2 repo_3 repo_4 repo_5 repo_6 README.md test_*.txt
-cd ..
+rm -rf repo_0 repo_1 repo_2 repo_3 repo_4 repo_5 repo_6 test_*.txt ../README.md
+cd ../../ || exit
 
 echo "All DVCS acceptance tests executed successfully!"

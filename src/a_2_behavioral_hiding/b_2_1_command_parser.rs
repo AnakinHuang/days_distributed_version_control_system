@@ -47,6 +47,7 @@ pub enum ValidCommand {
     Merge { branch: String },
     Pull { path: String, branch: String },
     Push { path: String, branch: String },
+    Branch { branch: String },
 }
 
 pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
@@ -145,6 +146,12 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
                 .arg(arg!([PATH] "Directory of the repository to push to").default_value(REMOTE))
                 .arg(arg!([BRANCH] "Branch to pull").default_value("all")),
         )
+        .subcommand(
+            Command::new("branch")
+                .about("Create a new branch")
+                .arg(arg!(<branch> "Branch name"))
+                .arg_required_else_help(true),
+        )
         .get_matches_from(args);
 
     match matches.subcommand() {
@@ -162,6 +169,7 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
         Some(("merge", sub_m)) => parse_merge(sub_m),
         Some(("pull", sub_m)) => parse_pull(sub_m),
         Some(("push", sub_m)) => parse_push(sub_m),
+        Some(("branch", sub_m)) => parse_branch(sub_m),
         _ => Err(clap::Error::new(InvalidSubcommand)),
     }
 }
@@ -250,4 +258,9 @@ fn parse_push(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
     let path = matches.get_one::<String>("PATH").unwrap().to_string();
     let branch = matches.get_one::<String>("BRANCH").unwrap().to_string();
     Ok(ValidCommand::Push { path, branch })
+}
+
+fn parse_branch(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
+    let branch = matches.get_one::<String>("branch").unwrap().to_string();
+    Ok(ValidCommand::Branch { branch })
 }
