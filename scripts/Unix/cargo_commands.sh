@@ -76,9 +76,9 @@ cargo run heads
 
 # Test-3d: Cat command
 echo "Test-3d: Inspect file content from a specific revision"
-cd ../ || exit
+cd ../.. || exit
 cargo run cat 'a75ea01b-fc02-4e06-a5cc-56fed3f7068e' README.md
-cd repo_3 || exit
+cd acceptance_tests/repo_3 || exit
 
 # LEVEL-4: Remove, Diff
 echo "Level-4: Remove, Diff"

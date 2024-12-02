@@ -73,9 +73,9 @@ cargo run heads
 
 # Test-3d: Cat command
 Write-Host "Test-3d: Inspect file content from a specific revision"
-Set-Location -Path ..
+Set-Location -Path ../..
 cargo run cat a75ea01b-fc02-4e06-a5cc-56fed3f7068e README.md
-Set-Location -Path repo_3
+Set-Location -Path acceptance_tests/repo_3
 
 # LEVEL-4: Remove, Diff
 Write-Host "Level-4: Remove, Diff"
@@ -152,8 +152,7 @@ cargo run pull
 
 # Cleanup: Remove all test repositories
 Write-Host "Cleaning up test directories..."
-Remove-Item -Recurse -Force repo_0, repo_1, repo_2, repo_3, repo_4, repo_5, repo_6
-Remove-Item -Recurse -Force README.md, test_*.txt
-Set-Location -Path ..
+Remove-Item -Recurse -Force repo_* test_*.txt ../README.md ../program.rs
+Set-Location -Path ../..
 
 Write-Host "All DVCS acceptance tests executed successfully!"

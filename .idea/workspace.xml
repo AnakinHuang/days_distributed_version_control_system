@@ -7,15 +7,23 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="Minor issues about log().">
+    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="v1.3 Finalized. Well done!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_2_revision_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_2_revision_management.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/.metadata/metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/beta/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/beta/.metadata/metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/Unix/cargo_commands.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/Unix/cargo_commands.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/归档.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:test" />
   <component name="FileTemplateManagerImpl">
@@ -39,23 +47,23 @@
     &quot;assignee&quot;: &quot;AnakinHuang&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/AnakinHuang/days_dvcs.git",
-    "accountId": "15f7abf3-0318-4f50-af69-93d6566bc30f"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/AnakinHuang/days_dvcs.git&quot;,
+    &quot;accountId&quot;: &quot;15f7abf3-0318-4f50-af69-93d6566bc30f&quot;
   },
-  "recentNewPullRequestHead": {
-    "server": {
-      "useHttp": false,
-      "host": "github.com",
-      "port": null,
-      "suffix": null
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
     },
-    "owner": "AnakinHuang",
-    "repository": "days_dvcs"
+    &quot;owner&quot;: &quot;AnakinHuang&quot;,
+    &quot;repository&quot;: &quot;days_dvcs&quot;
   },
-  "editorReviewEnabled": false
-}]]></component>
+  &quot;editorReviewEnabled&quot;: false
+}</component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="djkjq755" />
   </component>
@@ -70,86 +78,71 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Cargo.Run days_dvcs (1).executor": "Debug",
-    "Cargo.Run days_dvcs.executor": "Run",
-    "Cargo.Run.executor": "Run",
-    "Cargo.Test a_1_file_system_hiding_unit_test.executor": "Run",
-    "Cargo.Test a_1_file_system_hiding_unit_test::tests.executor": "Run",
-    "Cargo.Test a_2_behavioral_hiding_unit_test.executor": "Run",
-    "Cargo.Test a_2_behavioral_hiding_unit_test::tests.executor": "Debug",
-    "Cargo.Test a_3_repository_hiding_unit_test (1).executor": "Run",
-    "Cargo.Test a_3_repository_hiding_unit_test.executor": "Run",
-    "Cargo.Test a_3_repository_hiding_unit_test::tests.executor": "Run",
-    "Cargo.Test tests::test_add.executor": "Run",
-    "Cargo.Test tests::test_add_nonexistent_file.executor": "Run",
-    "Cargo.Test tests::test_clone_repository.executor": "Run",
-    "Cargo.Test tests::test_clone_repository_missing_metadata.executor": "Run",
-    "Cargo.Test tests::test_copy_file.executor": "Run",
-    "Cargo.Test tests::test_create_directory.executor": "Run",
-    "Cargo.Test tests::test_delete_directory_non_recursive.executor": "Run",
-    "Cargo.Test tests::test_delete_directory_recursive.executor": "Run",
-    "Cargo.Test tests::test_init_repository.executor": "Run",
-    "Cargo.Test tests::test_init_repository_already_exists.executor": "Run",
-    "Cargo.Test tests::test_list_directory.executor": "Run",
-    "Cargo.Test tests::test_remove.executor": "Run",
-    "Cargo.Test tests::test_remove_unstaged_file.executor": "Run",
-    "Cargo.Test tests::test_save_and_load_metadata.executor": "Run",
-    "Cargo.Test tests::test_save_and_load_repo_metadata.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.rust.reset.selective.auto.import": "true",
-    "git-widget-placeholder": "#2 on repository",
-    "last_opened_file_path": "/Users/yuesong.huang/RustroverProjects/days_dvcs/repo_test/.dvcs/origin/main/staging",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
-    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
-    "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Cargo.Run days_dvcs (1).executor&quot;: &quot;Debug&quot;,
+    &quot;Cargo.Run days_dvcs.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Run.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test a_1_file_system_hiding_unit_test.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test a_1_file_system_hiding_unit_test::tests.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test a_2_behavioral_hiding_unit_test.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test a_2_behavioral_hiding_unit_test::tests.executor&quot;: &quot;Debug&quot;,
+    &quot;Cargo.Test a_3_repository_hiding_unit_test (1).executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test a_3_repository_hiding_unit_test.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test a_3_repository_hiding_unit_test::tests.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_add.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_add_nonexistent_file.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_clone_repository.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_clone_repository_missing_metadata.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_copy_file.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_create_directory.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_delete_directory_non_recursive.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_delete_directory_recursive.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_init_repository.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_init_repository_already_exists.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_list_directory.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_remove.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_remove_unstaged_file.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_save_and_load_metadata.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test tests::test_save_and_load_repo_metadata.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
+    &quot;Shell Script.cargo_commands.sh.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/yuesong.huang/RustroverProjects/days_dvcs/beta_tests/.dvcs/origin/main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
+    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/beta_tests/.dvcs/origin/main" />
       <recent name="$PROJECT_DIR$/repo_test/.dvcs/origin/main/staging" />
       <recent name="$PROJECT_DIR$/repo_test_1/.dvcs/origin/main/staging" />
       <recent name="$PROJECT_DIR$/test_repo/.dvcs/origin/main/staging" />
       <recent name="$PROJECT_DIR$/test_repo_2/.dvcs/origin/main/staging" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/test_repo/.dvcs/origin/main/staging" />
-      <recent name="$PROJECT_DIR$/src/v0.2.0" />
-      <recent name="$PROJECT_DIR$/src/test_files/a_1_file_system_hiding_unit_test_files" />
-      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/scripts/Unix" />
+      <recent name="$PROJECT_DIR$/src/test_files" />
+      <recent name="$PROJECT_DIR$/beta_tests" />
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/test_repo/.dvcs/origin/main/staging" />
     </key>
   </component>
   <component name="RsExternalLinterProjectSettings">
     <option name="runOnTheFly" value="true" />
   </component>
-  <component name="RunManager" selected="Cargo.Test tests::test_remove_unstaged_file">
-    <configuration name="Test a_3_repository_hiding_unit_test (1)" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="command" value="test --package days_dvcs --test a_3_repository_hiding_unit_test &quot;&quot;" />
-      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <envs />
-      <option name="emulateTerminal" value="true" />
-      <option name="channel" value="DEFAULT" />
-      <option name="requiredFeatures" value="true" />
-      <option name="allFeatures" value="false" />
-      <option name="withSudo" value="false" />
-      <option name="buildTarget" value="REMOTE" />
-      <option name="backtrace" value="SHORT" />
-      <option name="isRedirectInput" value="false" />
-      <option name="redirectInputPath" value="" />
-      <method v="2">
-        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Shell Script.cargo_commands.sh">
     <configuration name="Test tests::test_add" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="command" value="test --package days_dvcs --test a_3_repository_hiding_unit_test tests::test_add -- --exact" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -218,20 +211,35 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <configuration name="cargo_commands.sh" type="ShConfigurationType" temporary="true">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/scripts/Unix/cargo_commands.sh" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <list>
-      <item itemvalue="Cargo.Test a_3_repository_hiding_unit_test (1)" />
       <item itemvalue="Cargo.Test tests::test_add" />
       <item itemvalue="Cargo.Test tests::test_add_nonexistent_file" />
       <item itemvalue="Cargo.Test tests::test_remove" />
       <item itemvalue="Cargo.Test tests::test_remove_unstaged_file" />
+      <item itemvalue="Shell Script.cargo_commands.sh" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Shell Script.cargo_commands.sh" />
         <item itemvalue="Cargo.Test tests::test_remove_unstaged_file" />
         <item itemvalue="Cargo.Test tests::test_add_nonexistent_file" />
         <item itemvalue="Cargo.Test tests::test_remove" />
         <item itemvalue="Cargo.Test tests::test_add" />
-        <item itemvalue="Cargo.Test a_3_repository_hiding_unit_test (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -256,6 +264,8 @@
       <workItem from="1732566722489" duration="32000" />
       <workItem from="1732595563818" duration="662000" />
       <workItem from="1732600241081" duration="64994000" />
+      <workItem from="1732878392454" duration="4875000" />
+      <workItem from="1733171375859" duration="802000" />
     </task>
     <task id="LOCAL-00001" summary="DAYS Merged First Prototype/Demo For 11/03.">
       <option name="closed" value="true" />
@@ -425,7 +435,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732677029115</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="v1.3 Finalized. Well done!">
+      <option name="closed" value="true" />
+      <created>1732882640184</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1732882640184</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -454,6 +472,7 @@
     <MESSAGE value="Finished B.3.1 - B.3.3." />
     <MESSAGE value="Minor issues." />
     <MESSAGE value="Minor issues about log()." />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor issues about log()." />
+    <MESSAGE value="v1.3 Finalized. Well done!" />
+    <option name="LAST_COMMIT_MESSAGE" value="v1.3 Finalized. Well done!" />
   </component>
 </project>

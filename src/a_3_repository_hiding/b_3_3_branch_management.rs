@@ -415,7 +415,8 @@ pub fn status(path: &str) -> Result<String, io::Error> {
         !branch_metadata.staging.contains(&relative_path)
             && !latest_revision.files.contains_key(&relative_path)
             && !file.contains(".dvcs")
-            && !file.contains(".git") // Ignore .dvcs directory
+            && !file.contains(".git")
+            && !file.contains(".DS_Store")
     });
 
     if !untracked_files.is_empty() {
