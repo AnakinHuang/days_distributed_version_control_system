@@ -29,5 +29,5 @@ Run the shell script:
 
 ```bash
 ./scripts/Unix/cargo_commands.sh
-chmod +x cargo_commands.sh
+chmod +x ./scripts/Unix/cargo_commands.sh
 ```
