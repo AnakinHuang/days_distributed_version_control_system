@@ -27,9 +27,10 @@
 //! Author: Yifan (Alvin) Jiang
 //! Date: 11/13/2024
 
-use crate::a_3_repository_hiding::REMOTE;
-use clap::error::ErrorKind::InvalidSubcommand;
+use crate::a_1_file_system_hiding::REMOTE;
+
 use clap::{arg, ArgMatches, Command};
+use clap::error::ErrorKind::InvalidSubcommand;
 
 #[derive(Debug, PartialEq)]
 pub enum ValidCommand {

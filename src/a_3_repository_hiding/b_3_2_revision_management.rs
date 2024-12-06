@@ -1,28 +1,30 @@
 // days_dvcs/src/a_3_repository_hiding/b_3_2_revision_management.rs
 //
 
+
+use super::b_3_1_repository_management::{
+    load_repo_metadata, save_repo_metadata, RepositoryMetadata,
+};
+use super::b_3_3_branch_management::{
+    load_branch_metadata, save_branch_metadata,
+};
+
 use crate::a_1_file_system_hiding::b_1_1_file_interaction::{
     check_file, get_parent, read_file, read_struct, write_file, write_struct,
 };
 use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
     check_directory, create_directory, delete_directory,
 };
-use crate::a_3_repository_hiding::b_3_1_repository_management::{
-    load_repo_metadata, save_repo_metadata, RepositoryMetadata,
-};
-use crate::a_3_repository_hiding::b_3_3_branch_management::{
-    load_branch_metadata, save_branch_metadata,
-};
-
 use crate::a_2_behavioral_hiding::b_2_2_command_handler::is_repository;
+
+use std::io;
+use std::fmt::Debug;
+use std::collections::HashMap;
+use std::time::SystemTime;
 use chrono::DateTime;
+use uuid::Uuid;
 use md5;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::fmt::Debug;
-use std::io;
-use std::time::SystemTime;
-use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RevisionMetadata {

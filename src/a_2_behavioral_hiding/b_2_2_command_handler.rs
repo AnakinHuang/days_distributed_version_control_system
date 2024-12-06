@@ -22,10 +22,11 @@
 use super::b_2_1_command_parser::ValidCommand;
 use super::b_2_3_output_formatter::{OutputFormatter, OutputType};
 
-pub struct CommandHandler;
 pub use crate::a_3_repository_hiding::b_3_1_repository_management::*;
 pub use crate::a_3_repository_hiding::b_3_2_revision_management::*;
 pub use crate::a_3_repository_hiding::b_3_3_branch_management::*;
+
+pub struct CommandHandler;
 
 impl CommandHandler {
     /// Executes the given command.

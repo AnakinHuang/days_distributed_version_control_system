@@ -155,7 +155,7 @@ cargo run pull
 
 # Cleanup: Remove all tests repositories
 echo "Cleaning up test directories..."
-rm -rf repo_* test_*.txt ../README.md ../program.rs
+rm -rf .remote repo_* test_*.txt ../README.md ../program.rs
 cd ../../ || exit
 
 echo "All DVCS acceptance tests executed successfully!"

@@ -14,5 +14,3 @@ pub mod b_3_4_synchronization_handler;
 
 #[allow(dead_code)]
 pub mod b_3_5_repository_helper;
-
-pub const REMOTE: &str = ".remote";

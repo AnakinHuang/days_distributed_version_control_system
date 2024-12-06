@@ -152,7 +152,7 @@ cargo run pull
 
 # Cleanup: Remove all test repositories
 Write-Host "Cleaning up test directories..."
-Remove-Item -Recurse -Force repo_* test_*.txt ../README.md ../program.rs
+Remove-Item -Recurse -Force .remote repo_* test_*.txt ../README.md ../program.rs
 Set-Location -Path ../..
 
 Write-Host "All DVCS acceptance tests executed successfully!"

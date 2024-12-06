@@ -27,10 +27,10 @@
 //! Author: Anakin (Yuesong Huang), Yifan (Alvin) Jiang
 //! Date: 11/14/2024
 
-use serde::de::DeserializeOwned;
 use std::fs::{self, OpenOptions};
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
+use serde::de::DeserializeOwned;
 
 pub fn check_file(path: &str) -> bool {
     Path::new(path).is_file()

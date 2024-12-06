@@ -1,13 +1,17 @@
 // days_dvcs/src/a_3_repository_hiding/b_3_1_repository_management.rs
 //
 
-use crate::a_1_file_system_hiding::b_1_1_file_interaction::{
-    check_file, get_absolute_path, get_parent, read_struct, write_struct,
-};
+use super::b_3_3_branch_management::{init_branch, is_branch};
+
 use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
     check_directory, copy_directory, create_directory, is_empty_directory,
 };
-use crate::a_3_repository_hiding::b_3_3_branch_management::{init_branch, is_branch};
+use crate::a_1_file_system_hiding::{
+    b_1_1_file_interaction::{
+        check_file, get_absolute_path, get_parent, read_struct, write_struct,
+    },
+    REMOTE,
+};
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -80,7 +84,7 @@ pub fn init_repository(path: &str) -> Result<(), io::Error> {
         Ok(root_path) => {
             let current_path = get_absolute_path("", path)?;
 
-            if root_path == current_path {
+            if root_path == current_path && path != REMOTE {
                 return Err(io::Error::new(
                     io::ErrorKind::AlreadyExists,
                     format!("The directory {} is already a repository.", path),
@@ -98,6 +102,7 @@ pub fn init_repository(path: &str) -> Result<(), io::Error> {
         branches: HashMap::from([("main".to_string(), String::new())]),
     };
     save_repo_metadata(&path, &init_metadata)?;
+    init_repository(REMOTE)?;
     Ok(())
 }
 

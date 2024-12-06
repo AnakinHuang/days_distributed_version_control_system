@@ -1,6 +1,11 @@
 // days_dvcs/src/a_3_repository_hiding/b_3_3_branch_management.rs
 //
 
+use super::b_3_1_repository_management::{
+    is_repository, load_repo_metadata, save_repo_metadata,
+};
+use super::b_3_2_revision_management::load_revision_metadata;
+
 use crate::a_1_file_system_hiding::b_1_1_file_interaction::{
     check_file, delete_file, get_absolute_path, get_filename, get_parent, get_relative_path,
     read_file, read_struct, write_file, write_struct,
@@ -8,21 +13,12 @@ use crate::a_1_file_system_hiding::b_1_1_file_interaction::{
 use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
     check_directory, create_directory, delete_directory, list_directory,
 };
-use crate::a_3_repository_hiding::b_3_1_repository_management::{
-    is_repository, load_repo_metadata, save_repo_metadata,
-};
-#[allow(unused_imports)]
-use crate::a_3_repository_hiding::b_3_2_revision_management::{
-    init_revision_metadata, load_revision_metadata,
-};
-use std::collections::HashMap;
 
-use crate::a_2_behavioral_hiding::b_2_2_command_handler::RevisionMetadata;
+use std::io;
+use std::fmt::Debug;
+use std::time::SystemTime;
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
-use std::io;
-use std::time::SystemTime;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchMetadata {
@@ -157,7 +153,9 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
             files_to_stage.extend(
                 list_directory(&file_path, true, true)?
                     .into_iter()
-                    .filter(|f| !f.strip_suffix(path).unwrap_or_default().contains(".dvcs")),
+                    .filter(|f| !f.strip_suffix(path).unwrap_or_default().contains(".dvcs") &&
+                    !f.contains(".git") &&
+                    !f.contains(".DS_Store")),
             );
         } else {
             return Err(io::Error::new(
@@ -344,13 +342,8 @@ pub fn status(path: &str) -> Result<String, io::Error> {
     let latest_revision = if let Some(head_commit) = branch_metadata.head_commit.as_ref() {
         load_revision_metadata(&repo_root, branch, head_commit)?
     } else {
-        RevisionMetadata {
-            id: String::new(),
-            timestamp: SystemTime::now(),
-            message: String::new(),
-            files: HashMap::new(),
-            parents: Vec::new(),
-        }
+        status_report.push_str("No commits yet...\n");
+        return Ok(status_report);
     };
 
     // Changes to Be Committed
