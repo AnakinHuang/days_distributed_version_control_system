@@ -26,7 +26,7 @@ mod tests {
             delete_directory("test_repo", true).unwrap();
         }
 
-        let result = init_repository("test_repo");
+        let result = init_repository("test_repo", true);
         assert!(result.is_ok(), "Failed to initialize repository");
 
         let dvcs_path = format!("{}/.dvcs", "test_repo");
@@ -56,8 +56,8 @@ mod tests {
 
     #[test]
     fn test_init_repository_already_exists() {
-        init_repository("test_init_repo").unwrap();
-        let result = init_repository("test_init_repo");
+        init_repository("test_init_repo", true).unwrap();
+        let result = init_repository("test_init_repo", true);
         assert!(
             result.is_err(),
             "Expected error when initializing an already existing repository"
@@ -80,7 +80,7 @@ mod tests {
             delete_directory("test_clone_clone", true).unwrap();
         }
 
-        init_repository("test_clone_repo").unwrap();
+        init_repository("test_clone_repo", true).unwrap();
 
         let result = clone_repository("test_clone_repo", "test_clone_clone");
         assert!(result.is_ok(), "Failed to clone repository");
@@ -149,7 +149,7 @@ mod tests {
             delete_directory("test_repo_save_and_load_repo", true).unwrap();
         }
 
-        init_repository("test_repo_save_and_load_repo").unwrap();
+        init_repository("test_repo_save_and_load_repo", true).unwrap();
 
         let mut metadata = load_repo_metadata("test_repo_save_and_load_repo").unwrap();
         metadata
@@ -176,7 +176,7 @@ mod tests {
     #[test]
     fn test_init_branch() {
         let repo_path = "test_branch_repo";
-        init_repository(repo_path).unwrap();
+        init_repository(repo_path, true).unwrap();
         init_branch(repo_path, "feature", false).unwrap();
 
         let branch_metadata = load_branch_metadata(repo_path, "feature").unwrap();
@@ -189,7 +189,7 @@ mod tests {
     #[test]
     fn test_heads() {
         let repo_path = "test_heads_repo";
-        init_repository(repo_path).unwrap();
+        init_repository(repo_path, true).unwrap();
 
         let heads_output = heads(repo_path).unwrap();
         assert!(heads_output.contains("commit N/A (HEAD -> main, origin/main)\nDate"));
@@ -200,7 +200,7 @@ mod tests {
     #[test]
     fn test_status() {
         let repo_path = "test_status_repo";
-        init_repository(repo_path).unwrap();
+        init_repository(repo_path, true).unwrap();
 
         let status_report = status(repo_path).unwrap();
         assert!(status_report.contains("On branch main"));
@@ -212,7 +212,7 @@ mod tests {
     #[test]
     fn test_add() {
         let repo_path = "test_add_repo";
-        init_repository(repo_path).unwrap();
+        init_repository(repo_path, true).unwrap();
 
         let file_path = format!("{}/file.txt", repo_path);
         write_file(&file_path, "Test content").unwrap();
@@ -231,7 +231,7 @@ mod tests {
         }
 
         let repo_path = "test_remove_repo";
-        init_repository(repo_path).unwrap();
+        init_repository(repo_path, true).unwrap();
 
         let file_path = format!("{}/file.txt", repo_path);
         write_file(&file_path, "Test content").unwrap();
@@ -248,7 +248,7 @@ mod tests {
     #[test]
     fn test_add_nonexistent_file() {
         let repo_path = "test_nonexistent_repo";
-        init_repository(repo_path).unwrap();
+        init_repository(repo_path, true).unwrap();
 
         let result = add(repo_path, vec!["nonexistent.txt".to_string()]);
         assert!(result.is_err());
@@ -260,7 +260,7 @@ mod tests {
     #[test]
     fn test_remove_unstaged_file() {
         let repo_path = "test_unstaged_repo";
-        init_repository(repo_path).unwrap();
+        init_repository(repo_path, true).unwrap();
 
         let result = remove(repo_path, vec!["unstaged.txt".to_string()]);
         assert!(result.is_err());

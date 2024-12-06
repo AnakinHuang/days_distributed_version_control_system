@@ -1,6 +1,7 @@
 {
   "head": "main",
   "branches": {
-    "main": ""
+    "main": "",
+    "beta": "bf782b77-1500-455a-b764-808683ecbe7b"
   }
 }

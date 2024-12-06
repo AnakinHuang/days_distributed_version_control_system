@@ -27,7 +27,7 @@
 //! Author: Anakin (Yuesong Huang), Yifan (Alvin) Jiang
 //! Date: 11/14/2024
 
-use std::fs::{self, OpenOptions};
+use std::fs::{self, rename, OpenOptions};
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use serde::de::DeserializeOwned;
@@ -76,6 +76,15 @@ pub fn get_absolute_path(path: &str, base: &str) -> Result<String, io::Error> {
         .into_owned())
 }
 
+#[allow(unused)]
+pub fn rename_file(old_path: &str, new_path: &str) -> Result<(), io::Error> {
+    if Path::new(old_path).is_file() {
+        rename(old_path, new_path)
+    } else {
+        Err(io::Error::new(io::ErrorKind::NotFound, "File not found."))
+    }
+}
+
 pub fn read_file(path: &str) -> Result<String, io::Error> {
     let mut file = OpenOptions::new().read(true).open(path)?;
     let mut content = String::new();
@@ -111,7 +120,7 @@ where
     Ok(())
 }
 
-#[allow(dead_code)]
+#[allow(unused)]
 pub fn append_file(path: &str, content: &str) -> Result<(), io::Error> {
     let mut file = OpenOptions::new().write(true).append(true).open(path)?;
     file.write_all(content.as_bytes())?;

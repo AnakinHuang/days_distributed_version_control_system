@@ -255,7 +255,9 @@ mod tests {
             command,
             ValidCommand::Pull {
                 path: ".remote".to_string(),
-                branch: "all".to_string()
+                branch: String::new(),
+                all: false,
+                force: false,
             }
         );
     }
@@ -272,7 +274,9 @@ mod tests {
             command,
             ValidCommand::Pull {
                 path: "/path/to/repo".to_string(),
-                branch: "all".to_string()
+                branch: String::new(),
+                all: false,
+                force: false,
             }
         );
     }
@@ -282,14 +286,17 @@ mod tests {
         let args = vec![
             "days_dvcs".to_string(),
             "push".to_string(),
+            "remote".to_string(),
             "branch".to_string(),
         ];
         let command = parse_command(args).unwrap();
         assert_eq!(
             command,
             ValidCommand::Push {
-                path: "branch".to_string(),
-                branch: "all".to_string()
+                path: "remote".to_string(),
+                branch: "branch".to_string(),
+                all: false,
+                force: false,
             }
         );
     }
@@ -302,7 +309,9 @@ mod tests {
             command,
             ValidCommand::Push {
                 path: ".remote".to_string(),
-                branch: "all".to_string()
+                branch: String::new(),
+                all: false,
+                force: false,
             }
         );
     }
@@ -320,7 +329,9 @@ mod tests {
             command,
             ValidCommand::Push {
                 path: "/path/to/repo".to_string(),
-                branch: "branch".to_string()
+                branch: "branch".to_string(),
+                all: false,
+                force: false,
             }
         );
     }

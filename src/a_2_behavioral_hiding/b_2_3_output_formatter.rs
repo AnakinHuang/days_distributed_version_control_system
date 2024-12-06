@@ -21,6 +21,7 @@
 #[derive(Debug, PartialEq)]
 pub enum OutputType {
     Success,
+    Process,
     Error,
 }
 
@@ -30,6 +31,7 @@ impl OutputFormatter {
     pub fn display(output_type: OutputType, message: String) {
         let color_code = match output_type {
             OutputType::Success => "\x1b[32m", // Green
+            OutputType::Process => "\x1b[33m", // Yellow
             OutputType::Error => "\x1b[31m",   // Red
         };
 

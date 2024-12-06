@@ -46,15 +46,15 @@ pub enum ValidCommand {
     Commit { msg: String },
     Log { repo: String },
     Merge { branch: String },
-    Pull { path: String, branch: String },
-    Push { path: String, branch: String },
+    Pull { path: String, branch: String, all: bool, force: bool },
+    Push { path: String, branch: String, all: bool, force: bool },
     Branch { branch: String },
 }
 
 pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
     let matches = Command::new("days_dvcs")
         .about("Group DAYS distributed version control system developed in Rust")
-        .version("1.0")
+        .version("2.0")
         .author(
             "Yuesong Huang <yhu116@ur.rochester.edu>\n\
             Alvin Jiang <yjiang54@ur.rochester.edu>\n\
@@ -139,13 +139,17 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
             Command::new("pull")
                 .about("Pull changes from another repository")
                 .arg(arg!([PATH] "Directory of the remote repository").default_value(REMOTE))
-                .arg(arg!([BRANCH] "Branch to pull").default_value("all")),
+                .arg(arg!([BRANCH] "Branch to pull"))
+                .arg(arg!(--all "Pull all branches"))
+                .arg(arg!(-f --force "Force overwrite of local branch")),
         )
         .subcommand(
             Command::new("push")
                 .about("Push changes to another repository")
                 .arg(arg!([PATH] "Directory of the repository to push to").default_value(REMOTE))
-                .arg(arg!([BRANCH] "Branch to pull").default_value("all")),
+                .arg(arg!([BRANCH] "Branch to pull"))
+                .arg(arg!(--all "Push all branches"))
+                .arg(arg!(-f --force "Force overwrite of local branch")),
         )
         .subcommand(
             Command::new("branch")
@@ -251,14 +255,18 @@ fn parse_merge(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
 
 fn parse_pull(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
     let path = matches.get_one::<String>("PATH").unwrap().to_string();
-    let branch = matches.get_one::<String>("BRANCH").unwrap().to_string();
-    Ok(ValidCommand::Pull { path, branch })
+    let branch = matches.get_one::<String>("BRANCH").unwrap_or(&String::new()).to_string();
+    let all = matches.get_flag("all");
+    let force = matches.get_flag("force");
+    Ok(ValidCommand::Pull { path, branch, all, force })
 }
 
 fn parse_push(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
     let path = matches.get_one::<String>("PATH").unwrap().to_string();
-    let branch = matches.get_one::<String>("BRANCH").unwrap().to_string();
-    Ok(ValidCommand::Push { path, branch })
+    let branch = matches.get_one::<String>("BRANCH").unwrap_or(&String::new()).to_string();
+    let all = matches.get_flag("all");
+    let force = matches.get_flag("force");
+    Ok(ValidCommand::Push { path, branch, all, force })
 }
 
 fn parse_branch(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {

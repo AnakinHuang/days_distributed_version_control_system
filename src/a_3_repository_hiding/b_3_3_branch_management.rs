@@ -1,24 +1,25 @@
 // days_dvcs/src/a_3_repository_hiding/b_3_3_branch_management.rs
 //
 
-use super::b_3_1_repository_management::{
-    is_repository, load_repo_metadata, save_repo_metadata,
-};
-use super::b_3_2_revision_management::load_revision_metadata;
+use super::b_3_1_repository_management::{is_repository, load_repo_metadata, save_repo_metadata};
+use super::b_3_2_revision_management::{init_revision_metadata, load_revision_metadata};
 
-use crate::a_1_file_system_hiding::b_1_1_file_interaction::{
-    check_file, delete_file, get_absolute_path, get_filename, get_parent, get_relative_path,
-    read_file, read_struct, write_file, write_struct,
-};
 use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
     check_directory, create_directory, delete_directory, list_directory,
 };
+use crate::a_1_file_system_hiding::{
+    b_1_1_file_interaction::{
+        check_file, delete_file, get_absolute_path, get_filename, get_parent, get_relative_path,
+        read_file, read_struct, write_file, write_struct,
+    },
+    REMOTE,
+};
 
-use std::io;
-use std::fmt::Debug;
-use std::time::SystemTime;
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
+use std::fmt::Debug;
+use std::io;
+use std::time::SystemTime;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchMetadata {
@@ -59,7 +60,7 @@ pub fn is_branch(path: &str) -> Result<String, io::Error> {
 
     Err(io::Error::new(
         io::ErrorKind::NotFound,
-        format!("No branch found starting from {}", path),
+        format!("No branch found starting from {}", get_filename(&path)),
     ))
 }
 
@@ -101,7 +102,7 @@ pub fn init_branch(test_path: &str, branch: &str, init_repo: bool) -> Result<(),
 
     write_file(
         &format!("{}/.dvcs/HEAD", path),
-        &format!("commit: {}\nref: origin/{}", "N/A", branch,),
+        &format!("commit: {}\nref: origin/{}", "N/A", branch),
     )?;
     Ok(())
 }
@@ -122,7 +123,6 @@ pub fn save_branch_metadata(
     Ok(())
 }
 
-#[allow(unused)]
 pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
     if files.len() > 1 && files.contains(&".".to_string()) {
         return Err(io::Error::new(
@@ -150,13 +150,17 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
         if check_file(&file_path) {
             files_to_stage.push(file_path.clone());
         } else if check_directory(&file_path) {
-            files_to_stage.extend(
-                list_directory(&file_path, true, true)?
-                    .into_iter()
-                    .filter(|f| !f.strip_suffix(path).unwrap_or_default().contains(".dvcs") &&
-                    !f.contains(".git") &&
-                    !f.contains(".DS_Store")),
-            );
+            files_to_stage.extend(list_directory(&file_path, true, true)?.into_iter().filter(
+                |f| {
+                    !f.strip_suffix(path).unwrap_or_default().contains(".dvcs")
+                        && !f.strip_suffix(path).unwrap_or_default().contains(REMOTE)
+                        && !f.strip_suffix(path).unwrap_or_default().contains(".git")
+                        && !f
+                            .strip_suffix(path)
+                            .unwrap_or_default()
+                            .contains(".DS_Store")
+                },
+            ));
         } else {
             return Err(io::Error::new(
                 io::ErrorKind::NotFound,
@@ -201,7 +205,6 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
     Ok(())
 }
 
-#[allow(unused)]
 pub fn remove(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
     let path = &is_repository(test_path)?;
 
@@ -224,8 +227,8 @@ pub fn remove(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
     } else {
         for file in files.iter() {
             let staging_path = format!("{}/.dvcs/origin/{}/staging", path, branch);
-            let file_path = get_absolute_path("", file)?;
-            let relative_path = get_relative_path(&file_path, &path, true);
+            let file_path = get_absolute_path(file, &staging_path)?;
+            let relative_path = get_relative_path(&file_path, &staging_path, true);
 
             if !branch_metadata.staging.contains(&relative_path) {
                 return Err(io::Error::new(
@@ -245,10 +248,10 @@ pub fn remove(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
             }
         }
 
-        for file in files {
+        for file in files.iter() {
             let staging_path = format!("{}/.dvcs/origin/{}/staging", path, branch,);
-            let file_path = get_absolute_path("", &file)?;
-            let relative_path = get_relative_path(&file_path, &path, true);
+            let file_path = get_absolute_path(file, &staging_path)?;
+            let relative_path = get_relative_path(&file_path, &staging_path, true);
 
             if check_file(&file_path) {
                 delete_file(&file_path)?;
@@ -305,19 +308,72 @@ pub fn heads(path: &str) -> Result<String, io::Error> {
     Ok(heads.into_iter().map(|(_, content)| content).collect())
 }
 
+fn count_commits_ahead(
+    path: &str,
+    branch: &str,
+    local: &str,
+    upstream: &str,
+) -> Result<isize, io::Error> {
+    let ahead = 0;
+
+    let local_revision = load_revision_metadata(path, branch, local).map_err(|e| {
+        io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Local commit {} not found: {}", local, e),
+        )
+    })?;
+
+    let upstream_revision = load_revision_metadata(path, branch, upstream).map_err(|e| {
+        io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Upstream commit {} not found: {}", upstream, e),
+        )
+    })?;
+
+    if local_revision.id == upstream_revision.id {
+        return Ok(ahead);
+    }
+
+    if let Some(index) = local_revision
+        .parents
+        .iter()
+        .position(|id| *id == upstream_revision.id)
+    {
+        return Ok(ahead + (local_revision.parents.len() - index) as isize);
+    }
+
+    if let Some(index) = upstream_revision
+        .parents
+        .iter()
+        .position(|id| *id == local_revision.id)
+    {
+        return Ok(ahead - (upstream_revision.parents.len() - index) as isize);
+    }
+
+    Err(io::Error::new(
+        io::ErrorKind::Other,
+        format!(
+            "Cannot determine ahead/behind status: commits {} and {} have diverged.",
+            local, upstream
+        ),
+    ))
+}
+
 pub fn status(path: &str) -> Result<String, io::Error> {
     let repo_root = is_repository(path)?; // Get the root of the repository
     let current_path = get_absolute_path("", ".")?; // Get current working directory
     let repo_metadata = load_repo_metadata(&repo_root)?;
     let branch = &repo_metadata.head;
-    let branch_metadata = load_branch_metadata(&repo_root, branch)?;
+    let local_branch_metadata = load_branch_metadata(&repo_root, branch)?;
+    let remote_repo_root = is_repository(&format!("{}/{}", repo_root, REMOTE))?;
+    let remote_branch_metadata = load_branch_metadata(&remote_repo_root, branch)?;
 
     let mut status_report = String::new();
     status_report.push_str(&format!("On branch {}\n", branch));
 
     // Ahead/Behind Status
-    if let Some(upstream_commit) = branch_metadata.head_commit.as_ref() {
-        if let Some(local_commit) = repo_metadata.branches.get(branch) {
+    if let Some(upstream_commit) = remote_branch_metadata.head_commit.as_ref() {
+        if let Some(local_commit) = local_branch_metadata.head_commit.as_ref() {
             let ahead_count =
                 count_commits_ahead(&repo_root, branch, local_commit, upstream_commit)?;
             if ahead_count > 0 {
@@ -327,31 +383,40 @@ pub fn status(path: &str) -> Result<String, io::Error> {
                     ahead_count,
                     if ahead_count > 1 { "s" } else { "" }
                 ));
+            } else if ahead_count < 0 {
+                status_report.push_str(&format!(
+                    "Your branch is behind 'origin/{}' by {} commit{}.\n",
+                    branch,
+                    ahead_count.abs(),
+                    if ahead_count.abs() > 1 { "s" } else { "" }
+                ));
             } else {
                 status_report.push_str(&format!(
                     "Your branch is up to date with 'origin/{}'.\n",
                     branch
                 ));
             }
+        } else {
+            status_report.push_str("No commits yet...\n"); // Please finish the status_report the same as git status
         }
     } else {
-        status_report.push_str("No upstream branch.\n");
+        status_report.push_str("No upstream commits yet...\n");
     }
 
     // Retrieve Latest Revision Metadata
-    let latest_revision = if let Some(head_commit) = branch_metadata.head_commit.as_ref() {
+    let latest_revision = if let Some(head_commit) = local_branch_metadata.head_commit.as_ref() {
         load_revision_metadata(&repo_root, branch, head_commit)?
     } else {
-        status_report.push_str("No commits yet...\n");
-        return Ok(status_report);
+        status_report.push_str("\nNo commits yet...\n");
+        init_revision_metadata()
     };
 
     // Changes to Be Committed
-    if !branch_metadata.staging.is_empty() {
+    if !local_branch_metadata.staging.is_empty() {
         status_report.push_str(
             "\nChanges to be committed:\n  (use \"cargo run remove <pathspec>...\" to unstage)\n",
         );
-        for file in &branch_metadata.staging {
+        for file in &local_branch_metadata.staging {
             let staging_path = format!("{}/.dvcs/origin/{}/staging/{}", path, branch, file);
             let relative_path = get_relative_path(&staging_path, &current_path, false);
 
@@ -405,9 +470,10 @@ pub fn status(path: &str) -> Result<String, io::Error> {
     let mut untracked_files = list_directory(&repo_root, true, true)?;
     untracked_files.retain(|file| {
         let relative_path = get_relative_path(file, &current_path, false);
-        !branch_metadata.staging.contains(&relative_path)
+        !local_branch_metadata.staging.contains(&relative_path)
             && !latest_revision.files.contains_key(&relative_path)
             && !file.contains(".dvcs")
+            && !file.contains(REMOTE)
             && !file.contains(".git")
             && !file.contains(".DS_Store")
     });
@@ -423,32 +489,4 @@ pub fn status(path: &str) -> Result<String, io::Error> {
     }
 
     Ok(status_report)
-}
-
-fn count_commits_ahead(
-    path: &str,
-    branch: &str,
-    local: &str,
-    upstream: &str,
-) -> Result<usize, io::Error> {
-    let mut ahead = 0;
-    let mut current = local.to_string();
-
-    while current != upstream {
-        let current_metadata = load_revision_metadata(path, branch, &current).map_err(|e| {
-            io::Error::new(
-                e.kind(),
-                format!("Failed to load metadata for commit '{}': {}", current, e),
-            )
-        })?;
-
-        if let Some(parent) = current_metadata.parents.first() {
-            current = parent.clone();
-            ahead += 1;
-        } else {
-            break;
-        }
-    }
-
-    Ok(ahead)
 }

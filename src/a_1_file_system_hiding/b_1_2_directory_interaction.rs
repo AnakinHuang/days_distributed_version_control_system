@@ -21,7 +21,7 @@
 
 use super::b_1_1_file_interaction::{check_file, copy_file};
 
-use std::fs::{canonicalize, create_dir_all, read_dir, remove_dir, remove_dir_all};
+use std::fs::{rename, canonicalize, create_dir_all, read_dir, remove_dir, remove_dir_all};
 use std::io;
 use std::path::Path;
 
@@ -31,6 +31,17 @@ pub fn check_directory(path: &str) -> bool {
             Ok(path) => path.is_dir(),
             Err(_) => false,
         }
+}
+
+pub fn rename_directory(old_path: &str, new_path: &str) -> Result<(), io::Error> {
+    if Path::new(old_path).is_dir() {
+        rename(old_path, new_path)
+    } else {
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            "Directory not found.",
+        ))
+    }
 }
 
 pub fn create_directory(path: &str) -> Result<(), io::Error> {

@@ -22,21 +22,25 @@
 use super::b_2_1_command_parser::ValidCommand;
 use super::b_2_3_output_formatter::{OutputFormatter, OutputType};
 
-pub use crate::a_3_repository_hiding::b_3_1_repository_management::*;
-pub use crate::a_3_repository_hiding::b_3_2_revision_management::*;
-pub use crate::a_3_repository_hiding::b_3_3_branch_management::*;
+use crate::a_3_repository_hiding::b_3_1_repository_management::*;
+use crate::a_3_repository_hiding::b_3_2_revision_management::*;
+use crate::a_3_repository_hiding::b_3_3_branch_management::*;
+use crate::a_3_repository_hiding::b_3_4_synchronization_handler::*;
 
 pub struct CommandHandler;
 
 impl CommandHandler {
     /// Executes the given command.
 
-    #[allow(dead_code, unused_variables)]
+    #[allow(unused_variables)]
     pub fn handle_command(command: ValidCommand) {
         match command {
             ValidCommand::Init { directory } => {
-                println!("Initializing repository in directory: {}", directory);
-                let result = init_repository(&directory);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Initializing repository in directory: {}", directory),
+                );
+                let result = init_repository(&directory, true);
                 if result.is_ok() {
                     OutputFormatter::display(
                         OutputType::Success,
@@ -54,7 +58,10 @@ impl CommandHandler {
                 }
             }
             ValidCommand::Clone { repo, directory } => {
-                println!("Cloning repository from {} to {}", repo, directory);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Cloning repository from {} to {}", repo, directory),
+                );
                 let result = clone_repository(&repo, &directory);
                 if result.is_ok() {
                     OutputFormatter::display(
@@ -75,20 +82,26 @@ impl CommandHandler {
             }
             ValidCommand::Add { pathspec } => {
                 let files = pathspec.join(" ");
-                println!("Adding file: {}", files);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Adding file: {}", files),
+                );
                 let result = add(".", pathspec);
                 if result.is_ok() {
                     OutputFormatter::display(OutputType::Success, format!("Added file: {}", files));
                 } else {
                     OutputFormatter::display(
                         OutputType::Error,
-                        format!("Failed to add {} :", result.unwrap_err()),
+                        format!("Failed to add {}: {}", files, result.unwrap_err()),
                     );
                 }
             }
             ValidCommand::Remove { pathspec } => {
                 let files = pathspec.join(" ");
-                println!("Removing file: {}", files);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Removing file: {}", files),
+                );
                 let result = remove(".", pathspec);
                 if result.is_ok() {
                     OutputFormatter::display(
@@ -98,12 +111,15 @@ impl CommandHandler {
                 } else {
                     OutputFormatter::display(
                         OutputType::Error,
-                        format!("Failed to remove {} :", result.unwrap_err()),
+                        format!("Failed to remove {}: {}", files, result.unwrap_err()),
                     );
                 }
             }
             ValidCommand::Status { repo } => {
-                println!("Checking status of repository");
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Checking status of repository: {}", repo),
+                );
                 let result = status(&repo);
                 if result.is_ok() {
                     OutputFormatter::display(
@@ -118,7 +134,10 @@ impl CommandHandler {
                 }
             }
             ValidCommand::Heads { repo } => {
-                println!("Checking heads of repository");
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Checking heads of repository: {}", repo),
+                );
                 let result = heads(&repo);
                 if result.is_ok() {
                     OutputFormatter::display(
@@ -133,9 +152,9 @@ impl CommandHandler {
                 }
             }
             ValidCommand::Diff { commit_1, commit_2 } => {
-                println!(
-                    "Checking diff between revisions {} and {}",
-                    commit_1, commit_2
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Checking diff between revisions {} and {}", commit_1, commit_2),
                 );
                 // let result = diff(&commit_1, &commit_2);
                 // if result.is_ok() {
@@ -145,7 +164,10 @@ impl CommandHandler {
                 // }
             }
             ValidCommand::Cat { commit, path } => {
-                println!("Displaying contents of file: {}", path);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Displaying contents of file: {}", path),
+                );
                 let result = cat(".", &commit, &path);
                 if result.is_ok() {
                     OutputFormatter::display(
@@ -160,7 +182,10 @@ impl CommandHandler {
                 }
             }
             ValidCommand::Checkout { branch_or_commit } => {
-                println!("Checking out branch or commit: {}", branch_or_commit);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Checking out branch or commit: {}", branch_or_commit),
+                );
                 let result = checkout(".", &branch_or_commit);
                 if result.is_ok() {
                     OutputFormatter::display(
@@ -179,7 +204,10 @@ impl CommandHandler {
                 }
             }
             ValidCommand::Commit { msg } => {
-                println!("Committing changes with message: {}", msg);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Committing changes with message: {}", msg),
+                );
                 let result = commit(".", &msg);
                 if result.is_ok() {
                     OutputFormatter::display(
@@ -194,7 +222,10 @@ impl CommandHandler {
                 }
             }
             ValidCommand::Log { repo } => {
-                println!("Displaying commit log");
+                OutputFormatter::display(
+                    OutputType::Process,
+                    "Displaying commit log".to_string(),
+                );
                 let result = log(&repo);
                 if result.is_ok() {
                     OutputFormatter::display(
@@ -209,7 +240,10 @@ impl CommandHandler {
                 }
             }
             ValidCommand::Merge { branch } => {
-                println!("Merging branch: {}", branch);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Merging branch: {}", branch),
+                );
                 // let result = merge(".", &branch);
                 // if result.is_ok() {
                 //     OutputFormatter::display(OutputType::Success, format!("Merged branch: {}", branch));
@@ -217,26 +251,55 @@ impl CommandHandler {
                 //     OutputFormatter::display(OutputType::Error, format!("Failed to merge {} branch: {}", branch, result.unwrap_err()));
                 // }
             }
-            ValidCommand::Pull { path, branch } => {
-                println!("Pulling changes to {} branch(es) from remote", branch);
-                // let result = pull(".", &path, &branch);
-                // if pull(".", &path, &branch).is_ok() {
-                //     OutputFormatter::display(OutputType::Success, format!("Pulled changes to {} branch(es) from remote", branch));
-                // } else {
-                //     OutputFormatter::display(OutputType::Error, format!("Failed to pull changes to {} branch(es): ", branch, result.unwrap_err()));
-                // }
+            ValidCommand::Pull { path, branch, all, force } => {
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Pulling changes from local {} to {}", branch, path),
+                );
+                let result = pull(".", &path, &branch, all, force);
+                if let Ok(report) = result {
+                    OutputFormatter::display(
+                        OutputType::Process,
+                        report,
+                    );
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Pulled changes from local {} to {}", branch, path),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to pull changes: {}", result.unwrap_err()),
+                    );
+                }
             }
-            ValidCommand::Push { path, branch } => {
-                println!("Pushing changes from {} branch(es) to remote", branch);
-                // let result = push(".", &path, &branch);
-                // if result.is_ok() {
-                //     OutputFormatter::display(OutputType::Success, format!("Pushed changes from {} branch(es) to remote", branch));
-                // } else {
-                //     OutputFormatter::display(OutputType::Error, format!("Failed to push changes from {} branch(es): ", branch, result.unwrap_err()));
-                // }
+            ValidCommand::Push { path, branch, all, force } => {
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Pushing changes from local {} to {}", branch, path),
+                );
+                let result = push(".", &path, &branch, all, force);
+                if let Ok(report) = result {
+                    OutputFormatter::display(
+                        OutputType::Process,
+                        report,
+                    );
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("Pushed changes from local {} to {}", branch, path),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to push changes: {}", result.unwrap_err()),
+                    );
+                }
             }
             ValidCommand::Branch { branch } => {
-                println!("Creating branch: {}", branch);
+                OutputFormatter::display(
+                    OutputType::Process,
+                    format!("Creating branch: {}", branch),
+                );
                 let result = init_branch(".", &branch, false);
                 if result.is_ok() {
                     OutputFormatter::display(
