@@ -77,8 +77,9 @@ cargo run heads
 # Test-3d: Cat command
 echo "Test-3d: Inspect file content from a specific revision"
 cd ../.. || exit
-ls -a
 cargo run cat 'a75ea01b-fc02-4e06-a5cc-56fed3f7068e' README.md
+cargo run add README.md
+cargo run commit "Add README.md"
 cd acceptance_tests/repo_3 || exit
 
 # LEVEL-4: Remove, Diff
@@ -97,14 +98,16 @@ cargo run status
 echo "Test-4b: Comparing revisions using diff"
 cargo run commit "Add test_5.txt"
 echo "Modified content" > test_5.txt
-cargo run diff test_4.txt test_5.txt
+cd ..
+ls
+cargo run diff
+cargo run diff 'a75ea01b-fc02-4e06-a5cc-56fed3f7068e' 'main'
 
 # LEVEL-5: Merge
 echo "Level-5: Merge"
 
 # Test-5a: Merging branches
 echo "Test-5a: Merging beta branch into main"
-cd ..
 cargo run checkout beta
 cargo run status
 tree ./beta_tests
@@ -118,6 +121,7 @@ cargo run merge beta
 
 # Test-5b: Merging main branch into beta
 echo "Test-5b: Merging main into beta"
+cargo run push
 cargo run checkout beta
 cargo run merge main
 cargo run log
@@ -138,8 +142,8 @@ echo "Level-7: Push, Pull"
 
 # Test-7a: Push changes to remote repository
 echo "Test-7a: Pushing changes from repo_4"
-cd repo_4 || exit
 cargo run push
+cd repo_4 || exit
 cd ..
 cargo run clone repo_5 repo_6
 cargo run pull
@@ -152,6 +156,7 @@ cargo run add test_7.txt
 cargo run commit "Add test_7.txt"
 cargo run push
 cargo run checkout main
+cargo run push
 cargo run pull
 
 # Cleanup: Remove all tests repositories

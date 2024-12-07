@@ -1,5 +1,17 @@
 use std::io;
 
+fn get_name() -> String {
+    println!("What is your name?");
+
+    let mut name = String::new();
+
+    io::stdin()
+        .read_line(&mut name)
+        .expect("Failed to read input");
+
+    name.trim().to_string()
+}
+
 fn main() {
     println!("What is your name?");
 

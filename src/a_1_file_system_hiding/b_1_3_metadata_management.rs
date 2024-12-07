@@ -21,6 +21,7 @@
 
 use std::fs::metadata;
 use std::io;
+use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
 
 #[derive(Debug)]
@@ -28,6 +29,7 @@ pub struct FileMetadata {
     pub size: u64,
     pub last_modified: SystemTime,
     pub is_directory: bool,
+    pub mode: u32,
 }
 
 pub fn get_file_metadata(path: &str) -> Result<FileMetadata, io::Error> {
@@ -36,6 +38,7 @@ pub fn get_file_metadata(path: &str) -> Result<FileMetadata, io::Error> {
         size: metadata.len(),
         last_modified: metadata.modified()?,
         is_directory: metadata.is_dir(),
+        mode: metadata.permissions().mode(),
     };
     Ok(file_metadata)
 }
@@ -48,4 +51,12 @@ pub fn get_file_size(path: &str) -> Result<u64, io::Error> {
 pub fn get_last_modified(path: &str) -> Result<SystemTime, io::Error> {
     let metadata = metadata(path)?;
     Ok(metadata.modified()?)
+}
+
+pub fn get_mode(path: &str) -> Result<u32, io::Error> {
+    let metadata = metadata(path).map_err(|e| io::Error::new(
+        e.kind(),
+        format!("Failed to get mode for file '{}': {}", path, e)
+    ))?;
+    Ok(metadata.permissions().mode())
 }

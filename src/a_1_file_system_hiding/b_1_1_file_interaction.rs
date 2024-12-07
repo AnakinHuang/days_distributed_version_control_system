@@ -36,6 +36,10 @@ pub fn check_file(path: &str) -> bool {
     Path::new(path).is_file()
 }
 
+pub fn is_binary_file(content: &str) -> bool {
+    content.bytes().any(|b| b < 0x20 && b != b'\n' && b != b'\r')
+}
+
 pub fn get_filename(path: &str) -> String {
     Path::new(path)
         .file_name()

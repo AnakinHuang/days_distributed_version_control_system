@@ -2,9 +2,7 @@
 
 ## Description
 
-days is a distributed version control system developed developed for the University of Rochester
-Computer Science Undergraduate Council (CSUG) hosted Fedora machines.
-days currently supports local repository creation, commits, and file inspection.
+This is a project for the course CS 453: Secure Coding at Portland State University. The project is a simple command-line diary application that allows users to create, read, update, and delete diary entries. The project is written in Rust and uses the `structopt` crate for command-line argument parsing.
 
 ## Contributors:
 
@@ -12,17 +10,7 @@ Yuesong (Anakin) Huang - A.3 Repository Hiding
 Yifan (Alvin) Jiang - A.2 Behavioral Hiding
 Duy Pham - A.3 Repository Hiding
 Shervin Tursun-Zade - A.2 File System Hiding
-
-## Usage
-
-### On Windows
-
-Run the PowerShell script:
-
-```powershell
-./scripts/Windows/cargo_commands.ps1
-```
-
+    
 ### On Linux/Unix-based OS
 
 Run the shell script:
@@ -31,3 +19,5 @@ Run the shell script:
 ./scripts/Unix/cargo_commands.sh
 chmod +x cargo_commands.sh
 ```
+
+### On Windows OS

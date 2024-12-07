@@ -60,7 +60,7 @@ pub fn is_repository(path: &str) -> Result<String, io::Error> {
         } else {
             error = io::Error::new(
                 io::ErrorKind::NotFound,
-                format!("No repository found starting from {}", path),
+                format!("No .dvcs directory found in repository {}", repo_path),
             );
         }
 

@@ -7,22 +7,30 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="v1.4 Improved acceptance tests and make the status ignore the .DS_store shit.">
+    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="v1.6 Fixed many bugs. Finished the pull and push. Starting working on B.3.5 merge and diff.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/.metadata/metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/HEAD" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/HEAD" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/beta/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/beta/.metadata/metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/.metadata/metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/commits/a75ea01b-fc02-4e06-a5cc-56fed3f7068e/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/commits/a75ea01b-fc02-4e06-a5cc-56fed3f7068e/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/commits/a75ea01b-fc02-4e06-a5cc-56fed3f7068e/program.rs" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/commits/a75ea01b-fc02-4e06-a5cc-56fed3f7068e/program.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/.metadata/metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/HEAD" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/HEAD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/origin/beta/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/origin/beta/.metadata/metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/origin/main/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/origin/main/.metadata/metadata.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/Unix/cargo_commands.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/Unix/cargo_commands.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/Windows/cargo_commands.ps1" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/Windows/cargo_commands.ps1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_1_file_interaction.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_1_file_interaction.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_2_directory_interaction.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_2_directory_interaction.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/a_1_file_system_hiding/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_1_file_system_hiding/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_3_metadata_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_3_metadata_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_2_command_handler.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_2_command_handler.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_3_output_formatter.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_3_output_formatter.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_1_repository_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_1_repository_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_2_revision_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_2_revision_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_4_synchronization_handler.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_4_synchronization_handler.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_5_cross_revision_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_5_cross_revision_management.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +85,7 @@
     <option name="directoryName" value="djkjq755" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
@@ -151,9 +159,10 @@
   <component name="RsExternalLinterProjectSettings">
     <option name="runOnTheFly" value="true" />
   </component>
-  <component name="RunManager" selected="Shell Script.cargo_commands.sh">
-    <configuration name="Test tests::test_add" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="command" value="test --package days_dvcs --test a_3_repository_hiding_unit_test tests::test_add -- --exact" />
+  <component name="RunManager" selected="Cargo.Test a_2_behavioral_hiding_unit_test">
+    <configuration name="Test a_2_behavioral_hiding_unit_test" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="buildProfileId" value="test" />
+      <option name="command" value="test --package days_dvcs --test a_2_behavioral_hiding_unit_test " />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
       <option name="emulateTerminal" value="true" />
@@ -236,7 +245,7 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Cargo.Test tests::test_add" />
+      <item itemvalue="Cargo.Test a_2_behavioral_hiding_unit_test" />
       <item itemvalue="Cargo.Test tests::test_add_nonexistent_file" />
       <item itemvalue="Cargo.Test tests::test_remove" />
       <item itemvalue="Cargo.Test tests::test_remove_unstaged_file" />
@@ -244,11 +253,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Cargo.Test a_2_behavioral_hiding_unit_test" />
         <item itemvalue="Shell Script.cargo_commands.sh" />
         <item itemvalue="Cargo.Test tests::test_remove_unstaged_file" />
         <item itemvalue="Cargo.Test tests::test_add_nonexistent_file" />
         <item itemvalue="Cargo.Test tests::test_remove" />
-        <item itemvalue="Cargo.Test tests::test_add" />
       </list>
     </recent_temporary>
   </component>
@@ -278,7 +287,8 @@
       <workItem from="1733173748948" duration="141000" />
       <workItem from="1733176138302" duration="162000" />
       <workItem from="1733450338603" duration="3835000" />
-      <workItem from="1733454186756" duration="3883000" />
+      <workItem from="1733454186756" duration="79135000" />
+      <workItem from="1733546372674" duration="21803000" />
     </task>
     <task id="LOCAL-00001" summary="DAYS Merged First Prototype/Demo For 11/03.">
       <option name="closed" value="true" />
@@ -472,7 +482,31 @@
       <option name="project" value="LOCAL" />
       <updated>1733172566983</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="v1.5 Added the .remote repo, preparing for the diff, merge, pull, and push.">
+      <option name="closed" value="true" />
+      <created>1733458265765</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1733458265765</updated>
+    </task>
+    <task id="LOCAL-00026" summary="v1.5.1 Added the .remote repo, preparing for the diff, merge, pull, and push. Added beta tests demo.">
+      <option name="closed" value="true" />
+      <created>1733458314993</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1733458314993</updated>
+    </task>
+    <task id="LOCAL-00027" summary="v1.6 Fixed many bugs. Finished the pull and push. Starting working on B.3.5 merge and diff.">
+      <option name="closed" value="true" />
+      <created>1733518784415</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1733518784415</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -503,6 +537,9 @@
     <MESSAGE value="Minor issues about log()." />
     <MESSAGE value="v1.3 Finalized. Well done!" />
     <MESSAGE value="v1.4 Improved acceptance tests and make the status ignore the .DS_store shit." />
-    <option name="LAST_COMMIT_MESSAGE" value="v1.4 Improved acceptance tests and make the status ignore the .DS_store shit." />
+    <MESSAGE value="v1.5 Added the .remote repo, preparing for the diff, merge, pull, and push." />
+    <MESSAGE value="v1.5.1 Added the .remote repo, preparing for the diff, merge, pull, and push. Added beta tests demo." />
+    <MESSAGE value="v1.6 Fixed many bugs. Finished the pull and push. Starting working on B.3.5 merge and diff." />
+    <option name="LAST_COMMIT_MESSAGE" value="v1.6 Fixed many bugs. Finished the pull and push. Starting working on B.3.5 merge and diff." />
   </component>
 </project>

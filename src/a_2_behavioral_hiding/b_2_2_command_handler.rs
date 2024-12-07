@@ -19,6 +19,7 @@
 //! Author: Yifan (Alvin) Jiang
 //! Date: 11/16/2024
 
+use crate::a_1_file_system_hiding::REMOTE;
 use super::b_2_1_command_parser::ValidCommand;
 use super::b_2_3_output_formatter::{OutputFormatter, OutputType};
 
@@ -26,6 +27,7 @@ use crate::a_3_repository_hiding::b_3_1_repository_management::*;
 use crate::a_3_repository_hiding::b_3_2_revision_management::*;
 use crate::a_3_repository_hiding::b_3_3_branch_management::*;
 use crate::a_3_repository_hiding::b_3_4_synchronization_handler::*;
+use crate::a_3_repository_hiding::b_3_5_cross_revision_management::*;
 
 pub struct CommandHandler;
 
@@ -124,7 +126,12 @@ impl CommandHandler {
                 if result.is_ok() {
                     OutputFormatter::display(
                         OutputType::Success,
-                        format!("Status: \n{}", result.unwrap()),
+                        "Status: \n".to_string(),
+                    );
+                    
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("{}", result.unwrap()),
                     );
                 } else {
                     OutputFormatter::display(
@@ -142,7 +149,12 @@ impl CommandHandler {
                 if result.is_ok() {
                     OutputFormatter::display(
                         OutputType::Success,
-                        format!("Heads: \n{}", result.unwrap()),
+                        "Heads: \n".to_string(),
+                    );
+                    
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("{}", result.unwrap()),
                     );
                 } else {
                     OutputFormatter::display(
@@ -152,16 +164,29 @@ impl CommandHandler {
                 }
             }
             ValidCommand::Diff { commit_1, commit_2 } => {
+                let id_1 = if commit_1 == REMOTE { "remote HEAD" } else { &commit_1 };
+                let id_2 = if commit_2.is_empty() { "local HEAD" } else { &commit_2 };
                 OutputFormatter::display(
                     OutputType::Process,
-                    format!("Checking diff between revisions {} and {}", commit_1, commit_2),
+                    format!("Checking diff between branches or revisions {} and {}", id_1, id_2),
                 );
-                // let result = diff(&commit_1, &commit_2);
-                // if result.is_ok() {
-                //     OutputFormatter::display(OutputType::Success, format!("Diff: \n{}", result.unwrap()));
-                // } else {
-                //     OutputFormatter::display(OutputType::Error, format!("Failed to check diff: \n{}", result.unwrap_err()));
-                // }
+                let result = diff(".", &commit_1, &commit_2);
+                if result.is_ok() {
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        "Changes: \n".to_string(),
+                    );
+                    
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("{}", result.unwrap()),
+                    );
+                } else {
+                    OutputFormatter::display(
+                        OutputType::Error,
+                        format!("Failed to check diff: \n{}", result.unwrap_err()),
+                    );
+                }
             }
             ValidCommand::Cat { commit, path } => {
                 OutputFormatter::display(
@@ -172,7 +197,12 @@ impl CommandHandler {
                 if result.is_ok() {
                     OutputFormatter::display(
                         OutputType::Success,
-                        format!("Contents: \n{}", result.unwrap()),
+                        "Contents: \n".to_string(),
+                    );
+                    
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("{}", result.unwrap()),
                     );
                 } else {
                     OutputFormatter::display(
@@ -230,7 +260,12 @@ impl CommandHandler {
                 if result.is_ok() {
                     OutputFormatter::display(
                         OutputType::Success,
-                        format!("Log: \n{}", result.unwrap()),
+                        "Log: \n".to_string(),
+                    );
+                    
+                    OutputFormatter::display(
+                        OutputType::Success,
+                        format!("{}", result.unwrap()),
                     );
                 } else {
                     OutputFormatter::display(
@@ -254,7 +289,7 @@ impl CommandHandler {
             ValidCommand::Pull { path, branch, all, force } => {
                 OutputFormatter::display(
                     OutputType::Process,
-                    format!("Pulling changes from local {} to {}", branch, path),
+                    format!("Pulling changes from {} {} to local", if branch.is_empty() { "HEAD" } else { &branch }, path),
                 );
                 let result = pull(".", &path, &branch, all, force);
                 if let Ok(report) = result {
@@ -264,7 +299,7 @@ impl CommandHandler {
                     );
                     OutputFormatter::display(
                         OutputType::Success,
-                        format!("Pulled changes from local {} to {}", branch, path),
+                        format!("Pulled changes from {} {} to local", if branch.is_empty() { "HEAD" } else { &branch }, path),
                     );
                 } else {
                     OutputFormatter::display(
@@ -276,7 +311,7 @@ impl CommandHandler {
             ValidCommand::Push { path, branch, all, force } => {
                 OutputFormatter::display(
                     OutputType::Process,
-                    format!("Pushing changes from local {} to {}", branch, path),
+                    format!("Pushing changes from local {} to {}", if branch.is_empty() { "HEAD" } else { &branch }, path),
                 );
                 let result = push(".", &path, &branch, all, force);
                 if let Ok(report) = result {
@@ -286,7 +321,7 @@ impl CommandHandler {
                     );
                     OutputFormatter::display(
                         OutputType::Success,
-                        format!("Pushed changes from local {} to {}", branch, path),
+                        format!("Pushed changes from local {} to {}", if branch.is_empty() { "HEAD" } else { &branch }, path),
                     );
                 } else {
                     OutputFormatter::display(

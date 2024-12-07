@@ -16,6 +16,7 @@ use crate::a_1_file_system_hiding::{
 };
 
 use chrono::DateTime;
+use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::io;
@@ -367,7 +368,6 @@ pub fn status(path: &str) -> Result<String, io::Error> {
     let local_branch_metadata = load_branch_metadata(&repo_root, branch)?;
     let remote_repo_root = is_repository(&format!("{}/{}", repo_root, REMOTE))?;
     let remote_branch_metadata = load_branch_metadata(&remote_repo_root, branch)?;
-
     let mut status_report = String::new();
     status_report.push_str(&format!("On branch {}\n", branch));
 
@@ -425,7 +425,7 @@ pub fn status(path: &str) -> Result<String, io::Error> {
                     // File exists in the latest revision
                     let revision_hash = &latest_revision.files[file];
                     let staged_content = read_file(&staging_path)?;
-                    let staged_hash = format!("{:x}", md5::compute(staged_content));
+                    let staged_hash = format!("{:x}", Uuid::new_v5(&Uuid::NAMESPACE_OID, staged_content.as_bytes()));
 
                     if &staged_hash != revision_hash {
                         status_report.push_str(&format!("\tmodified:   {}\n", relative_path));
@@ -450,7 +450,7 @@ pub fn status(path: &str) -> Result<String, io::Error> {
             not_staged.push((relative_path.clone(), "deleted".to_string()));
         } else {
             let content = read_file(&full_path)?;
-            let current_hash = format!("{:x}", md5::compute(content));
+            let current_hash = format!("{:x}", Uuid::new_v5(&Uuid::NAMESPACE_OID, content.as_bytes()));
             if current_hash != *hash {
                 not_staged.push((relative_path.clone(), "modified".to_string()));
             }

@@ -34,9 +34,15 @@ impl OutputFormatter {
             OutputType::Process => "\x1b[33m", // Yellow
             OutputType::Error => "\x1b[31m",   // Red
         };
-
-        for line in message.replace("\\n", "\n").lines() {
-            println!("{}{}\x1b[0m", color_code, line);
+        
+        if message.contains("\x1b[") {
+            for line in message.lines() {
+                println!("{}", line);
+            }
+        } else { 
+            for line in message.lines() {
+                println!("{}{}\x1b[0m", color_code, line);
+            }
         }
     }
 }

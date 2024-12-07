@@ -56,8 +56,9 @@ pub fn push(
                 format!(
                     "Branch '{}' not found in repository '{}'.",
                     branch_to_push,
-                    get_filename(&local_absolute_path)
-                ),
+                    get_filename(&remote_absolute_path)
+                )
+                ,
             ));
         }
 

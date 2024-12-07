@@ -101,10 +101,9 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
         )
         .subcommand(
             Command::new("diff")
-                .about("Display the difference between two revisions")
-                .arg(arg!(base: <commit> "First revision ID"))
-                .arg(arg!(head: <commit> "Second revision ID"))
-                .arg_required_else_help(true),
+                .about("Display the difference between two branches or revisions")
+                .arg(arg!(base: [branch_or_commit] "First branch or revision ID").default_value(REMOTE))
+                .arg(arg!(head: [branch_or_commit] "Second branch or revision ID"))
         )
         .subcommand(
             Command::new("cat")
@@ -138,16 +137,16 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
         .subcommand(
             Command::new("pull")
                 .about("Pull changes from another repository")
-                .arg(arg!([PATH] "Directory of the remote repository").default_value(REMOTE))
-                .arg(arg!([BRANCH] "Branch to pull"))
+                .arg(arg!([path] "Directory of the remote repository").default_value(REMOTE))
+                .arg(arg!([branch] "Branch to pull"))
                 .arg(arg!(--all "Pull all branches"))
                 .arg(arg!(-f --force "Force overwrite of local branch")),
         )
         .subcommand(
             Command::new("push")
                 .about("Push changes to another repository")
-                .arg(arg!([PATH] "Directory of the repository to push to").default_value(REMOTE))
-                .arg(arg!([BRANCH] "Branch to pull"))
+                .arg(arg!([path] "Directory of the repository to push to").default_value(REMOTE))
+                .arg(arg!([branch] "Branch to pull"))
                 .arg(arg!(--all "Push all branches"))
                 .arg(arg!(-f --force "Force overwrite of local branch")),
         )
@@ -220,7 +219,7 @@ fn parse_heads(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
 
 fn parse_diff(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
     let commit_1 = matches.get_one::<String>("base").unwrap().to_string();
-    let commit_2 = matches.get_one::<String>("head").unwrap().to_string();
+    let commit_2 = matches.get_one::<String>("head").unwrap_or(&String::new()).to_string();
     Ok(ValidCommand::Diff { commit_1, commit_2 })
 }
 
@@ -254,16 +253,16 @@ fn parse_merge(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
 }
 
 fn parse_pull(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
-    let path = matches.get_one::<String>("PATH").unwrap().to_string();
-    let branch = matches.get_one::<String>("BRANCH").unwrap_or(&String::new()).to_string();
+    let path = matches.get_one::<String>("path").unwrap().to_string();
+    let branch = matches.get_one::<String>("branch").unwrap_or(&String::new()).to_string();
     let all = matches.get_flag("all");
     let force = matches.get_flag("force");
     Ok(ValidCommand::Pull { path, branch, all, force })
 }
 
 fn parse_push(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
-    let path = matches.get_one::<String>("PATH").unwrap().to_string();
-    let branch = matches.get_one::<String>("BRANCH").unwrap_or(&String::new()).to_string();
+    let path = matches.get_one::<String>("path").unwrap().to_string();
+    let branch = matches.get_one::<String>("branch").unwrap_or(&String::new()).to_string();
     let all = matches.get_flag("all");
     let force = matches.get_flag("force");
     Ok(ValidCommand::Push { path, branch, all, force })
