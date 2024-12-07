@@ -1,26 +1,25 @@
 // days_dvcs/src/a_3_repository_hiding/b_3_2_revision_management.rs
 //
 
-
 use super::b_3_1_repository_management::{
     is_repository, load_repo_metadata, save_repo_metadata, RepositoryMetadata,
 };
-use super::b_3_3_branch_management::{
-    load_branch_metadata, save_branch_metadata,
-};
+use super::b_3_3_branch_management::{load_branch_metadata, save_branch_metadata};
 
-use crate::a_1_file_system_hiding::b_1_1_file_interaction::{check_file, get_filename, get_parent, read_file, read_struct, write_file, write_struct};
+use crate::a_1_file_system_hiding::b_1_1_file_interaction::{
+    check_file, get_filename, get_parent, read_file, read_struct, write_file, write_struct,
+};
 use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
     check_directory, create_directory, delete_directory,
 };
 
-use std::io;
-use std::fmt::Debug;
-use std::collections::HashMap;
-use std::time::SystemTime;
 use chrono::DateTime;
-use uuid::Uuid;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fmt::Debug;
+use std::io;
+use std::time::SystemTime;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RevisionMetadata {
@@ -127,7 +126,10 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
         if check_file(&src_path) {
             let content = read_file(&src_path)?;
             write_file(&dest_path, &content)?; // Copy the file content to the commit
-            let file_hash = format!("{:x}", Uuid::new_v5(&Uuid::NAMESPACE_OID, &content.as_bytes()));
+            let file_hash = format!(
+                "{:x}",
+                Uuid::new_v5(&Uuid::NAMESPACE_OID, &content.as_bytes())
+            );
             files.insert(file.clone(), file_hash);
         } else {
             return Err(io::Error::new(
@@ -148,7 +150,9 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
 
     if let Some(parent_revision_id) = branch_metadata.head_commit {
         let parent_revision_metadata = load_revision_metadata(path, branch, &parent_revision_id)?;
-        new_revision.parents.extend(parent_revision_metadata.parents);
+        new_revision
+            .parents
+            .extend(parent_revision_metadata.parents);
         new_revision.parents.push(parent_revision_id);
     }
 
@@ -237,11 +241,19 @@ fn get_revision_id(
         if head_branch_metadata.head_commit.is_none() {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
-                format!("In repository {}: No commits in branch {} yet...", get_filename(path), head_branch_metadata.name),
+                format!(
+                    "In repository {}: No commits in branch {} yet...",
+                    get_filename(path),
+                    head_branch_metadata.name
+                ),
             ));
         }
 
-        return Ok((repo_metadata, head_branch_metadata.name, head_branch_metadata.head_commit.unwrap()));
+        return Ok((
+            repo_metadata,
+            head_branch_metadata.name,
+            head_branch_metadata.head_commit.unwrap(),
+        ));
     }
 
     for (branch, _) in repo_metadata.branches.iter() {
@@ -254,7 +266,11 @@ fn get_revision_id(
 
     Err(io::Error::new(
         io::ErrorKind::NotFound,
-        format!("Revision {} not found in the repository {}.", revision_id, get_filename(path)),
+        format!(
+            "Revision {} not found in the repository {}.",
+            revision_id,
+            get_filename(path)
+        ),
     ))
 }
 
@@ -270,7 +286,11 @@ pub fn get_branch_or_revision_id(
             .get(branch_or_revision_id)
             .unwrap()
             .to_string();
-        return Ok((repo_metadata, branch_or_revision_id.to_string(), revision_id));
+        return Ok((
+            repo_metadata,
+            branch_or_revision_id.to_string(),
+            revision_id,
+        ));
     }
 
     get_revision_id(path, branch_or_revision_id)
@@ -327,13 +347,11 @@ pub fn checkout(path: &str, branch_or_revision_id: &str) -> Result<(), io::Error
         &format!("{}/.dvcs/HEAD", path),
         &format!(
             "commit: {}\nref: {}/.dvcs/origin/{}",
-            branch_metadata
-                .head_commit
-                .unwrap_or("N/A".to_string()),
+            branch_metadata.head_commit.unwrap_or("N/A".to_string()),
             get_parent(&path),
             branch
         ),
     )?;
-    
+
     Ok(())
 }

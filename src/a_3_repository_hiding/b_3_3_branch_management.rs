@@ -16,11 +16,11 @@ use crate::a_1_file_system_hiding::{
 };
 
 use chrono::DateTime;
-use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::io;
 use std::time::SystemTime;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BranchMetadata {
@@ -372,49 +372,56 @@ pub fn status(path: &str) -> Result<String, io::Error> {
     status_report.push_str(&format!("On branch {}\n", branch));
 
     // Ahead/Behind Status
-    if let Some(upstream_commit) = remote_branch_metadata.head_commit.as_ref() {
-        if let Some(local_commit) = local_branch_metadata.head_commit.as_ref() {
-            let ahead_count =
-                count_commits_ahead(&repo_root, branch, local_commit, upstream_commit)?;
-            if ahead_count > 0 {
-                status_report.push_str(&format!(
-                    "Your branch is ahead of 'origin/{}' by {} commit{}.\n",
-                    branch,
-                    ahead_count,
-                    if ahead_count > 1 { "s" } else { "" }
-                ));
-            } else if ahead_count < 0 {
-                status_report.push_str(&format!(
-                    "Your branch is behind 'origin/{}' by {} commit{}.\n",
-                    branch,
-                    ahead_count.abs(),
-                    if ahead_count.abs() > 1 { "s" } else { "" }
-                ));
-            } else {
-                status_report.push_str(&format!(
-                    "Your branch is up to date with 'origin/{}'.\n",
-                    branch
-                ));
-            }
+    if let Some(local_commit) = local_branch_metadata.head_commit.as_ref() {
+        let ahead_count = if let Some(upstream_commit) = remote_branch_metadata.head_commit.as_ref()
+        {
+            count_commits_ahead(&repo_root, branch, local_commit, upstream_commit)?
         } else {
-            status_report.push_str("No commits yet...\n"); // Please finish the status_report the same as git status
+            let local_revision =
+                load_revision_metadata(path, branch, local_commit).map_err(|e| {
+                    io::Error::new(
+                        io::ErrorKind::NotFound,
+                        format!("Local commit {} not found: {}", local_commit, e),
+                    )
+                })?;
+            local_revision.parents.len() as isize
+        };
+
+        if ahead_count > 0 {
+            status_report.push_str(&format!(
+                "Your branch is ahead of 'origin/{}' by {} commit{}.",
+                branch,
+                ahead_count,
+                if ahead_count > 1 { "s" } else { "" }
+            ));
+        } else if ahead_count < 0 {
+            status_report.push_str(&format!(
+                "Your branch is behind 'origin/{}' by {} commit{}.",
+                branch,
+                ahead_count.abs(),
+                if ahead_count.abs() > 1 { "s" } else { "" }
+            ));
+        } else {
+            status_report.push_str(&format!(
+                "Your branch is up to date with 'origin/{}'.",
+                branch
+            ));
         }
     } else {
-        status_report.push_str("No upstream commits yet...\n");
+        status_report.push_str("\nNo commits yet..."); // Please finish the status_report the same as git status
     }
 
     // Retrieve Latest Revision Metadata
     let latest_revision = if let Some(head_commit) = local_branch_metadata.head_commit.as_ref() {
         load_revision_metadata(&repo_root, branch, head_commit)?
     } else {
-        status_report.push_str("\nNo commits yet...\n");
         init_revision_metadata()
     };
 
     // Changes to Be Committed
     if !local_branch_metadata.staging.is_empty() {
         status_report.push_str(
-            "\nChanges to be committed:\n  (use \"cargo run remove <pathspec>...\" to unstage)\n",
+            "\n\nChanges to be committed:\n  (use \"cargo run remove <pathspec>...\" to unstage)\n",
         );
         for file in &local_branch_metadata.staging {
             let staging_path = format!("{}/.dvcs/origin/{}/staging/{}", path, branch, file);
@@ -425,7 +432,10 @@ pub fn status(path: &str) -> Result<String, io::Error> {
                     // File exists in the latest revision
                     let revision_hash = &latest_revision.files[file];
                     let staged_content = read_file(&staging_path)?;
-                    let staged_hash = format!("{:x}", Uuid::new_v5(&Uuid::NAMESPACE_OID, staged_content.as_bytes()));
+                    let staged_hash = format!(
+                        "{:x}",
+                        Uuid::new_v5(&Uuid::NAMESPACE_OID, staged_content.as_bytes())
+                    );
 
                     if &staged_hash != revision_hash {
                         status_report.push_str(&format!("\tmodified:   {}\n", relative_path));
@@ -450,11 +460,18 @@ pub fn status(path: &str) -> Result<String, io::Error> {
             not_staged.push((relative_path.clone(), "deleted".to_string()));
         } else {
             let content = read_file(&full_path)?;
-            let current_hash = format!("{:x}", Uuid::new_v5(&Uuid::NAMESPACE_OID, content.as_bytes()));
+            let current_hash = format!(
+                "{:x}",
+                Uuid::new_v5(&Uuid::NAMESPACE_OID, content.as_bytes())
+            );
             if current_hash != *hash {
                 not_staged.push((relative_path.clone(), "modified".to_string()));
             }
         }
+    }
+
+    if local_branch_metadata.staging.is_empty() && !not_staged.is_empty() {
+        status_report.push_str("\n");
     }
 
     if !not_staged.is_empty() {
@@ -462,8 +479,6 @@ pub fn status(path: &str) -> Result<String, io::Error> {
         for (file, status) in &not_staged {
             status_report.push_str(&format!("\t{}:   {}\n", status, file));
         }
-    } else {
-        status_report.push_str("\n");
     }
 
     // Untracked Files
@@ -478,14 +493,19 @@ pub fn status(path: &str) -> Result<String, io::Error> {
             && !file.contains(".DS_Store")
     });
 
+    if local_branch_metadata.staging.is_empty()
+        && not_staged.is_empty()
+        && !untracked_files.is_empty()
+    {
+        status_report.push_str("\n");
+    }
+
     if !untracked_files.is_empty() {
         status_report.push_str("\nUntracked files:\n  (use \"cargo run add <pathspec>...\" to include in what will be committed)\n");
         for file in untracked_files {
             let relative_path = get_relative_path(&file, &current_path, true);
             status_report.push_str(&format!("\t{}\n", relative_path));
         }
-    } else {
-        status_report.push_str("\n");
     }
 
     Ok(status_report)

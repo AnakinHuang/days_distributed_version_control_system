@@ -7,21 +7,10 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="v1.6 Fixed many bugs. Finished the pull and push. Starting working on B.3.5 merge and diff.">
+    <list default="true" id="bb656bb7-4c4d-442b-bec8-2845b683f428" name="Changes" comment="v1.9 Fixed many bugs. Finished the diff. Starting working on B.3.5 merge. The last one!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/.metadata/metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/HEAD" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/HEAD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/beta/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/beta/.metadata/metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/.metadata/metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/commits/a75ea01b-fc02-4e06-a5cc-56fed3f7068e/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/commits/a75ea01b-fc02-4e06-a5cc-56fed3f7068e/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/commits/a75ea01b-fc02-4e06-a5cc-56fed3f7068e/program.rs" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.dvcs/origin/main/commits/a75ea01b-fc02-4e06-a5cc-56fed3f7068e/program.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/.metadata/metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/HEAD" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/HEAD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/origin/beta/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/origin/beta/.metadata/metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/origin/main/.metadata/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/beta_tests/.remote/.dvcs/origin/main/.metadata/metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/Unix/cargo_commands.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/Unix/cargo_commands.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_1_file_interaction.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_1_file_interaction.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_2_directory_interaction.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_2_directory_interaction.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_3_metadata_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_1_file_system_hiding/b_1_3_metadata_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_1_command_parser.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_2_command_handler.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_2_behavioral_hiding/b_2_2_command_handler.rs" afterDir="false" />
@@ -31,6 +20,8 @@
       <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_3_branch_management.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_4_synchronization_handler.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_4_synchronization_handler.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_5_cross_revision_management.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/a_3_repository_hiding/b_3_5_cross_revision_management.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/a_3_repository_hiding_unit_test.rs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/a_3_repository_hiding_unit_test.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,51 +86,53 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Cargo.Run days_dvcs (1).executor&quot;: &quot;Debug&quot;,
-    &quot;Cargo.Run days_dvcs.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Run.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test a_1_file_system_hiding_unit_test.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test a_1_file_system_hiding_unit_test::tests.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test a_2_behavioral_hiding_unit_test.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test a_2_behavioral_hiding_unit_test::tests.executor&quot;: &quot;Debug&quot;,
-    &quot;Cargo.Test a_3_repository_hiding_unit_test (1).executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test a_3_repository_hiding_unit_test.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test a_3_repository_hiding_unit_test::tests.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_add.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_add_nonexistent_file.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_clone_repository.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_clone_repository_missing_metadata.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_copy_file.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_create_directory.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_delete_directory_non_recursive.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_delete_directory_recursive.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_init_repository.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_init_repository_already_exists.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_list_directory.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_remove.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_remove_unstaged_file.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_save_and_load_metadata.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test tests::test_save_and_load_repo_metadata.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
-    &quot;Shell Script.cargo_commands.sh.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/yuesong.huang/RustroverProjects/days_dvcs/beta_tests/.dvcs/origin/main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
-    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
-    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Cargo.Run days_dvcs (1).executor": "Debug",
+    "Cargo.Run days_dvcs.executor": "Run",
+    "Cargo.Run.executor": "Run",
+    "Cargo.Test a_1_file_system_hiding_unit_test.executor": "Run",
+    "Cargo.Test a_1_file_system_hiding_unit_test::tests.executor": "Run",
+    "Cargo.Test a_2_behavioral_hiding_unit_test (1).executor": "Run",
+    "Cargo.Test a_2_behavioral_hiding_unit_test.executor": "Run",
+    "Cargo.Test a_2_behavioral_hiding_unit_test::tests.executor": "Debug",
+    "Cargo.Test a_3_repository_hiding_unit_test (1).executor": "Run",
+    "Cargo.Test a_3_repository_hiding_unit_test.executor": "Run",
+    "Cargo.Test a_3_repository_hiding_unit_test::tests.executor": "Run",
+    "Cargo.Test tests::test_add.executor": "Run",
+    "Cargo.Test tests::test_add_nonexistent_file.executor": "Run",
+    "Cargo.Test tests::test_clone_repository.executor": "Run",
+    "Cargo.Test tests::test_clone_repository_missing_metadata.executor": "Run",
+    "Cargo.Test tests::test_copy_file.executor": "Run",
+    "Cargo.Test tests::test_create_directory.executor": "Run",
+    "Cargo.Test tests::test_delete_directory_non_recursive.executor": "Run",
+    "Cargo.Test tests::test_delete_directory_recursive.executor": "Run",
+    "Cargo.Test tests::test_init_repository.executor": "Run",
+    "Cargo.Test tests::test_init_repository_already_exists.executor": "Run",
+    "Cargo.Test tests::test_list_directory.executor": "Run",
+    "Cargo.Test tests::test_remove.executor": "Run",
+    "Cargo.Test tests::test_remove_unstaged_file.executor": "Run",
+    "Cargo.Test tests::test_save_and_load_metadata.executor": "Run",
+    "Cargo.Test tests::test_save_and_load_repo_metadata.executor": "Run",
+    "Cargo.Test tests::test_status.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "Shell Script.cargo_commands.sh.executor": "Run",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/yuesong.huang/RustroverProjects/days_dvcs/beta_tests/.dvcs/origin/main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
+    "org.rust.first.attach.projects": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/beta_tests/.dvcs/origin/main" />
@@ -159,10 +152,9 @@
   <component name="RsExternalLinterProjectSettings">
     <option name="runOnTheFly" value="true" />
   </component>
-  <component name="RunManager" selected="Cargo.Test a_2_behavioral_hiding_unit_test">
-    <configuration name="Test a_2_behavioral_hiding_unit_test" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="buildProfileId" value="test" />
-      <option name="command" value="test --package days_dvcs --test a_2_behavioral_hiding_unit_test " />
+  <component name="RunManager" selected="Cargo.Test tests::test_status">
+    <configuration name="Test a_1_file_system_hiding_unit_test" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package days_dvcs --test a_1_file_system_hiding_unit_test &quot;&quot;" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
       <option name="emulateTerminal" value="true" />
@@ -178,8 +170,25 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Test tests::test_add_nonexistent_file" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="command" value="test --package days_dvcs --test a_3_repository_hiding_unit_test tests::test_add_nonexistent_file -- --exact" />
+    <configuration name="Test a_2_behavioral_hiding_unit_test (1)" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package days_dvcs --test a_2_behavioral_hiding_unit_test &quot;&quot;" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test a_3_repository_hiding_unit_test" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package days_dvcs --test a_3_repository_hiding_unit_test &quot;&quot;" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
       <option name="emulateTerminal" value="true" />
@@ -212,8 +221,8 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Test tests::test_remove_unstaged_file" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="command" value="test --package days_dvcs --test a_3_repository_hiding_unit_test tests::test_remove_unstaged_file -- --exact" />
+    <configuration name="Test tests::test_status" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package days_dvcs --test a_3_repository_hiding_unit_test tests::test_status -- --exact" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
       <option name="emulateTerminal" value="true" />
@@ -229,35 +238,20 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
-    <configuration name="cargo_commands.sh" type="ShConfigurationType" temporary="true">
-      <option name="SCRIPT_TEXT" value="" />
-      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
-      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/scripts/Unix/cargo_commands.sh" />
-      <option name="SCRIPT_OPTIONS" value="" />
-      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
-      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
-      <option name="INTERPRETER_PATH" value="/bin/bash" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="EXECUTE_IN_TERMINAL" value="true" />
-      <option name="EXECUTE_SCRIPT_FILE" value="true" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <list>
-      <item itemvalue="Cargo.Test a_2_behavioral_hiding_unit_test" />
-      <item itemvalue="Cargo.Test tests::test_add_nonexistent_file" />
+      <item itemvalue="Cargo.Test a_1_file_system_hiding_unit_test" />
+      <item itemvalue="Cargo.Test a_2_behavioral_hiding_unit_test (1)" />
+      <item itemvalue="Cargo.Test a_3_repository_hiding_unit_test" />
+      <item itemvalue="Cargo.Test tests::test_status" />
       <item itemvalue="Cargo.Test tests::test_remove" />
-      <item itemvalue="Cargo.Test tests::test_remove_unstaged_file" />
-      <item itemvalue="Shell Script.cargo_commands.sh" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Cargo.Test a_2_behavioral_hiding_unit_test" />
-        <item itemvalue="Shell Script.cargo_commands.sh" />
-        <item itemvalue="Cargo.Test tests::test_remove_unstaged_file" />
-        <item itemvalue="Cargo.Test tests::test_add_nonexistent_file" />
+        <item itemvalue="Cargo.Test tests::test_status" />
+        <item itemvalue="Cargo.Test a_3_repository_hiding_unit_test" />
         <item itemvalue="Cargo.Test tests::test_remove" />
+        <item itemvalue="Cargo.Test a_2_behavioral_hiding_unit_test (1)" />
+        <item itemvalue="Cargo.Test a_1_file_system_hiding_unit_test" />
       </list>
     </recent_temporary>
   </component>
@@ -288,7 +282,7 @@
       <workItem from="1733176138302" duration="162000" />
       <workItem from="1733450338603" duration="3835000" />
       <workItem from="1733454186756" duration="79135000" />
-      <workItem from="1733546372674" duration="21803000" />
+      <workItem from="1733546372674" duration="23898000" />
     </task>
     <task id="LOCAL-00001" summary="DAYS Merged First Prototype/Demo For 11/03.">
       <option name="closed" value="true" />
@@ -506,7 +500,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733518784415</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="v1.9 Fixed many bugs. Finished the diff. Starting working on B.3.5 merge. The last one!">
+      <option name="closed" value="true" />
+      <created>1733569113211</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1733569113211</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -540,6 +542,7 @@
     <MESSAGE value="v1.5 Added the .remote repo, preparing for the diff, merge, pull, and push." />
     <MESSAGE value="v1.5.1 Added the .remote repo, preparing for the diff, merge, pull, and push. Added beta tests demo." />
     <MESSAGE value="v1.6 Fixed many bugs. Finished the pull and push. Starting working on B.3.5 merge and diff." />
-    <option name="LAST_COMMIT_MESSAGE" value="v1.6 Fixed many bugs. Finished the pull and push. Starting working on B.3.5 merge and diff." />
+    <MESSAGE value="v1.9 Fixed many bugs. Finished the diff. Starting working on B.3.5 merge. The last one!" />
+    <option name="LAST_COMMIT_MESSAGE" value="v1.9 Fixed many bugs. Finished the diff. Starting working on B.3.5 merge. The last one!" />
   </component>
 </project>

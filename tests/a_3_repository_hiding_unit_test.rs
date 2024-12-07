@@ -204,7 +204,8 @@ mod tests {
 
         let status_report = status(repo_path).unwrap();
         assert!(status_report.contains("On branch main"));
-        assert!(status_report.contains("No upstream branch."));
+        assert!(status_report.contains("No commits yet..."));
+        println!("{}", status_report);
 
         delete_directory(repo_path, true).unwrap();
     }
@@ -237,7 +238,7 @@ mod tests {
         write_file(&file_path, "Test content").unwrap();
 
         add(repo_path, vec![file_path.clone()]).unwrap();
-        remove(repo_path, vec![file_path]).unwrap();
+        remove(repo_path, vec!["file.txt".to_string()]).unwrap();
 
         let branch_metadata = load_branch_metadata(repo_path, "main").unwrap();
         assert!(!branch_metadata.staging.contains(&"file.txt".to_string()));

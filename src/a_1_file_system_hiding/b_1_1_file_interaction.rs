@@ -27,17 +27,19 @@
 //! Author: Anakin (Yuesong Huang), Yifan (Alvin) Jiang
 //! Date: 11/14/2024
 
+use serde::de::DeserializeOwned;
 use std::fs::{self, rename, OpenOptions};
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
-use serde::de::DeserializeOwned;
 
 pub fn check_file(path: &str) -> bool {
     Path::new(path).is_file()
 }
 
 pub fn is_binary_file(content: &str) -> bool {
-    content.bytes().any(|b| b < 0x20 && b != b'\n' && b != b'\r')
+    content
+        .bytes()
+        .any(|b| b < 0x20 && b != b'\n' && b != b'\r')
 }
 
 pub fn get_filename(path: &str) -> String {

@@ -54,9 +54,11 @@ pub fn get_last_modified(path: &str) -> Result<SystemTime, io::Error> {
 }
 
 pub fn get_mode(path: &str) -> Result<u32, io::Error> {
-    let metadata = metadata(path).map_err(|e| io::Error::new(
-        e.kind(),
-        format!("Failed to get mode for file '{}': {}", path, e)
-    ))?;
+    let metadata = metadata(path).map_err(|e| {
+        io::Error::new(
+            e.kind(),
+            format!("Failed to get mode for file '{}': {}", path, e),
+        )
+    })?;
     Ok(metadata.permissions().mode())
 }

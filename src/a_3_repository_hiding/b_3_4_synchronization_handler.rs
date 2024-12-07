@@ -5,18 +5,16 @@ use super::b_3_1_repository_management::{is_repository, load_repo_metadata, save
 use super::b_3_2_revision_management::load_revision_metadata;
 use super::b_3_3_branch_management::{init_branch, load_branch_metadata, save_branch_metadata};
 
-use crate::a_1_file_system_hiding::{
-    b_1_1_file_interaction::{
-        get_filename, write_file,
-    },
-    REMOTE,
-};
 use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
     check_directory, copy_directory, create_directory, delete_directory, rename_directory,
 };
+use crate::a_1_file_system_hiding::{
+    b_1_1_file_interaction::{get_filename, write_file},
+    REMOTE,
+};
 
-use std::io;
 use std::collections::HashMap;
+use std::io;
 
 pub fn push(
     path: &str,
@@ -49,7 +47,7 @@ pub fn push(
         } else {
             branch.to_string()
         };
-        
+
         if !local_repo_metadata.branches.contains_key(&branch_to_push) {
             return Err(io::Error::new(
                 io::ErrorKind::NotFound,
@@ -57,8 +55,7 @@ pub fn push(
                     "Branch '{}' not found in repository '{}'.",
                     branch_to_push,
                     get_filename(&remote_absolute_path)
-                )
-                ,
+                ),
             ));
         }
 
@@ -323,7 +320,7 @@ pub fn pull(
         } else {
             branch.to_string()
         };
-        
+
         if !remote_repo_metadata.branches.contains_key(&branch_to_pull) {
             return Err(io::Error::new(
                 io::ErrorKind::NotFound,

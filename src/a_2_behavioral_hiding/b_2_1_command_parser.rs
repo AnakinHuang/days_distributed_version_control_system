@@ -29,26 +29,65 @@
 
 use crate::a_1_file_system_hiding::REMOTE;
 
-use clap::{arg, ArgMatches, Command};
 use clap::error::ErrorKind::InvalidSubcommand;
+use clap::{arg, ArgMatches, Command};
 
 #[derive(Debug, PartialEq)]
 pub enum ValidCommand {
-    Init { directory: String },
-    Clone { repo: String, directory: String },
-    Add { pathspec: Vec<String> },
-    Remove { pathspec: Vec<String> },
-    Status { repo: String },
-    Heads { repo: String },
-    Diff { commit_1: String, commit_2: String },
-    Cat { commit: String, path: String },
-    Checkout { branch_or_commit: String },
-    Commit { msg: String },
-    Log { repo: String },
-    Merge { branch: String },
-    Pull { path: String, branch: String, all: bool, force: bool },
-    Push { path: String, branch: String, all: bool, force: bool },
-    Branch { branch: String },
+    Init {
+        directory: String,
+    },
+    Clone {
+        repo: String,
+        directory: String,
+    },
+    Add {
+        pathspec: Vec<String>,
+    },
+    Remove {
+        pathspec: Vec<String>,
+    },
+    Status {
+        repo: String,
+    },
+    Heads {
+        repo: String,
+    },
+    Diff {
+        commit_1: String,
+        commit_2: String,
+    },
+    Cat {
+        commit: String,
+        path: String,
+    },
+    Checkout {
+        branch_or_commit: String,
+    },
+    Commit {
+        msg: String,
+    },
+    Log {
+        repo: String,
+    },
+    Merge {
+        branch: String,
+    },
+    Pull {
+        path: String,
+        branch: String,
+        all: bool,
+        force: bool,
+    },
+    Push {
+        path: String,
+        branch: String,
+        all: bool,
+        force: bool,
+    },
+    Branch {
+        branch: String,
+    },
 }
 
 pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
@@ -102,8 +141,11 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
         .subcommand(
             Command::new("diff")
                 .about("Display the difference between two branches or revisions")
-                .arg(arg!(base: [branch_or_commit] "First branch or revision ID").default_value(REMOTE))
-                .arg(arg!(head: [branch_or_commit] "Second branch or revision ID"))
+                .arg(
+                    arg!(base: [branch_or_commit] "First branch or revision ID")
+                        .default_value(REMOTE),
+                )
+                .arg(arg!(head: [branch_or_commit] "Second branch or revision ID")),
         )
         .subcommand(
             Command::new("cat")
@@ -219,7 +261,10 @@ fn parse_heads(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
 
 fn parse_diff(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
     let commit_1 = matches.get_one::<String>("base").unwrap().to_string();
-    let commit_2 = matches.get_one::<String>("head").unwrap_or(&String::new()).to_string();
+    let commit_2 = matches
+        .get_one::<String>("head")
+        .unwrap_or(&String::new())
+        .to_string();
     Ok(ValidCommand::Diff { commit_1, commit_2 })
 }
 
@@ -254,18 +299,34 @@ fn parse_merge(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
 
 fn parse_pull(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
     let path = matches.get_one::<String>("path").unwrap().to_string();
-    let branch = matches.get_one::<String>("branch").unwrap_or(&String::new()).to_string();
+    let branch = matches
+        .get_one::<String>("branch")
+        .unwrap_or(&String::new())
+        .to_string();
     let all = matches.get_flag("all");
     let force = matches.get_flag("force");
-    Ok(ValidCommand::Pull { path, branch, all, force })
+    Ok(ValidCommand::Pull {
+        path,
+        branch,
+        all,
+        force,
+    })
 }
 
 fn parse_push(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
     let path = matches.get_one::<String>("path").unwrap().to_string();
-    let branch = matches.get_one::<String>("branch").unwrap_or(&String::new()).to_string();
+    let branch = matches
+        .get_one::<String>("branch")
+        .unwrap_or(&String::new())
+        .to_string();
     let all = matches.get_flag("all");
     let force = matches.get_flag("force");
-    Ok(ValidCommand::Push { path, branch, all, force })
+    Ok(ValidCommand::Push {
+        path,
+        branch,
+        all,
+        force,
+    })
 }
 
 fn parse_branch(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {

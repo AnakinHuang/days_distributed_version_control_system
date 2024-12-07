@@ -3,14 +3,14 @@
 
 use super::b_3_3_branch_management::{init_branch, is_branch};
 
+use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
+    check_directory, copy_directory, create_directory, is_empty_directory,
+};
 use crate::a_1_file_system_hiding::{
     b_1_1_file_interaction::{
         check_file, get_absolute_path, get_parent, read_struct, write_struct,
     },
     REMOTE,
-};
-use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
-    check_directory, copy_directory, create_directory, is_empty_directory,
 };
 
 use serde::{Deserialize, Serialize};
