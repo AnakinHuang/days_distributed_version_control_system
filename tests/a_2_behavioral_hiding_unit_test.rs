@@ -9,10 +9,10 @@
 use days_dvcs::a_2_behavioral_hiding::b_2_1_command_parser::*;
 use days_dvcs::a_2_behavioral_hiding::b_2_3_output_formatter::*;
 
-#[allow(dead_code)]
 #[cfg(test)]
 mod tests {
     use super::*;
+    use days_dvcs::a_1_file_system_hiding::REMOTE;
 
     /// B.2.1 Command Parser: beta_tests parse_command() function
 
@@ -147,8 +147,8 @@ mod tests {
         assert_eq!(
             command,
             ValidCommand::Diff {
-                commit_1: "rev1".to_string(),
-                commit_2: "rev2".to_string()
+                branch_or_commit_1: "rev1".to_string(),
+                branch_or_commit_2: "rev2".to_string()
             }
         );
     }
@@ -226,7 +226,9 @@ mod tests {
         assert_eq!(
             command,
             ValidCommand::Merge {
-                branch: "branch".to_string(),
+                branch_or_revision_from: "branch".to_string(),
+                branch_or_revision_into: String::new(),
+                msg: "N/A".to_string(),
             }
         );
     }
@@ -242,7 +244,9 @@ mod tests {
         assert_eq!(
             command,
             ValidCommand::Merge {
-                branch: "feature-branch".to_string(),
+                branch_or_revision_from: "feature-branch".to_string(),
+                branch_or_revision_into: String::new(),
+                msg: "N/A".to_string(),
             }
         );
     }
@@ -267,14 +271,14 @@ mod tests {
         let args = vec![
             "days_dvcs".to_string(),
             "pull".to_string(),
-            "/path/to/repo".to_string(),
+            "main".to_string(),
         ];
         let command = parse_command(args).unwrap();
         assert_eq!(
             command,
             ValidCommand::Pull {
-                path: "/path/to/repo".to_string(),
-                branch: String::new(),
+                path: REMOTE.to_string(),
+                branch: "main".to_string(),
                 all: false,
                 force: false,
             }
@@ -286,8 +290,8 @@ mod tests {
         let args = vec![
             "days_dvcs".to_string(),
             "push".to_string(),
-            "remote".to_string(),
             "branch".to_string(),
+            "remote".to_string(),
         ];
         let command = parse_command(args).unwrap();
         assert_eq!(
@@ -321,8 +325,8 @@ mod tests {
         let args = vec![
             "days_dvcs".to_string(),
             "push".to_string(),
-            "/path/to/repo".to_string(),
             "branch".to_string(),
+            "/path/to/repo".to_string(),
         ];
         let command = parse_command(args).unwrap();
         assert_eq!(
@@ -342,6 +346,11 @@ mod tests {
     #[test]
     fn test_output_success() {
         OutputFormatter::display(OutputType::Success, "Expect succeed!".to_string());
+    }
+
+    #[test]
+    fn test_output_process() {
+        OutputFormatter::display(OutputType::Process, "Expect process!".to_string());
     }
 
     #[test]

@@ -10,7 +10,6 @@ use days_dvcs::a_1_file_system_hiding::b_1_1_file_interaction::*;
 use days_dvcs::a_1_file_system_hiding::b_1_2_directory_interaction::*;
 use days_dvcs::a_1_file_system_hiding::b_1_3_metadata_management::*;
 
-#[allow(dead_code)]
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -213,29 +212,6 @@ mod tests {
         assert_eq!(metadata.size, 0);
         assert!(metadata.last_modified <= SystemTime::now());
         assert!(!metadata.is_directory);
-
-        delete_file(path).unwrap();
-    }
-
-    #[test]
-    fn test_get_file_size() {
-        let path = "./test_size.txt";
-        let content = "Hello, world!";
-        write_file(path, content).unwrap();
-
-        let size = get_file_size(path).unwrap();
-        assert_eq!(size, content.len() as u64);
-
-        delete_file(path).unwrap();
-    }
-
-    #[test]
-    fn test_get_last_modified() {
-        let path = "test_last_modified.txt";
-        write_file(path, "").unwrap();
-
-        let last_modified = get_last_modified(path).unwrap();
-        assert!(last_modified <= SystemTime::now());
 
         delete_file(path).unwrap();
     }

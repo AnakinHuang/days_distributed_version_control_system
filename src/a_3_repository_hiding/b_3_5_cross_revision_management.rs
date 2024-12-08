@@ -2,40 +2,117 @@
 //
 
 use super::b_3_1_repository_management::is_repository;
-use super::b_3_2_revision_management::{get_branch_or_revision_id, load_revision_metadata};
+use super::b_3_2_revision_management::{
+    commit, get_branch_or_revision_id, load_revision_metadata, RevisionMetadata,
+};
+use super::b_3_3_branch_management::{
+    get_common_ancestor_and_count, load_branch_metadata, save_branch_metadata,
+};
 
 use crate::a_1_file_system_hiding::{
-    b_1_1_file_interaction::{is_binary_file, read_file},
-    b_1_3_metadata_management::get_mode,
+    b_1_1_file_interaction::{get_filename, get_parent, is_binary_file, read_file, write_file},
+    b_1_2_directory_interaction::{
+        check_directory, copy_directory, create_directory, delete_directory,
+    },
+    b_1_3_metadata_management::get_file_metadata,
     REMOTE,
 };
 
+use crate::a_1_file_system_hiding::b_1_2_directory_interaction::rename_directory;
 use std::collections::HashSet;
 use std::io;
+
 const CONTEXT_LINES: usize = 3;
 
 const EMPTY_FILE_HASH: &str = "00000000-0000-0000-0000-000000000000";
 
-pub fn diff(
+fn get_revisions(
     path: &str,
     branch_or_revision_id_1: &str,
     branch_or_revision_id_2: &str,
-) -> Result<String, io::Error> {
+) -> Result<
+    (
+        String,
+        String,
+        String,
+        RevisionMetadata,
+        String,
+        String,
+        String,
+        RevisionMetadata,
+    ),
+    io::Error,
+> {
     let path_2 = &is_repository(path)?;
     let path_1 = if branch_or_revision_id_1 == REMOTE {
         &is_repository(&format!("{}/{}", path_2, REMOTE))?
     } else {
         path_2
     };
-    let path_2 = &is_repository(path)?;
     let (_, branch_1, revision_id_1) = if branch_or_revision_id_1 == REMOTE {
         get_branch_or_revision_id(path_1, "")?
     } else {
         get_branch_or_revision_id(path_1, branch_or_revision_id_1)?
     };
     let (_, branch_2, revision_id_2) = get_branch_or_revision_id(path_2, branch_or_revision_id_2)?;
+
+    let error = Err(io::Error::new(
+        io::ErrorKind::InvalidInput,
+        format!(
+            "In repository '{}': No commits in branch '{}' yet...",
+            get_filename(path_1),
+            branch_1
+        ),
+    ));
+
+    if revision_id_1.is_empty() {
+        return error;
+    }
+
+    if revision_id_2.is_empty() {
+        return error.map_err(|e| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                format!(
+                    "{}\nIn repository '{}': No commits in branch '{}' yet...",
+                    e,
+                    get_filename(path_2),
+                    branch_2
+                ),
+            )
+        });
+    }
+
     let revision_metadata_1 = load_revision_metadata(path_1, &branch_1, &revision_id_1)?;
     let revision_metadata_2 = load_revision_metadata(path_2, &branch_2, &revision_id_2)?;
+
+    Ok((
+        path_1.to_string(),
+        branch_1,
+        revision_id_1,
+        revision_metadata_1,
+        path_2.to_string(),
+        branch_2,
+        revision_id_2,
+        revision_metadata_2,
+    ))
+}
+
+pub fn diff(
+    path: &str,
+    branch_or_revision_id_1: &str,
+    branch_or_revision_id_2: &str,
+) -> Result<String, io::Error> {
+    let (
+        path_1,
+        branch_1,
+        revision_id_1,
+        revision_metadata_1,
+        path_2,
+        branch_2,
+        revision_id_2,
+        revision_metadata_2,
+    ) = get_revisions(path, branch_or_revision_id_1, branch_or_revision_id_2)?;
     let old_path = if revision_metadata_1.timestamp < revision_metadata_2.timestamp {
         &format!(
             "{}/.dvcs/origin/{}/commits/{}",
@@ -94,13 +171,10 @@ pub fn diff(
                     )?)
                 } else {
                     // File exists in both revisions and is identical
-                    diff_report.push_str(
-                        format!(
-                            "\x1b[32mFiles {}/{} and {}/{} are identical\x1b[0m\n",
-                            &old_revision_metadata.id, file, &new_revision_metadata.id, file
-                        )
-                        .as_str(),
-                    );
+                    diff_report.push_str(&format!(
+                        "\x1b[33mFiles '{}/{}' and '{}/{}' are identical\x1b[0m\n",
+                        &old_revision_metadata.id, file, &new_revision_metadata.id, file
+                    ));
                 }
             }
             (Some(old), None) => {
@@ -148,7 +222,6 @@ fn diff_files(
     } else {
         read_file(&format!("{}/{}", old_path, file))?
     };
-
     let content_new = if new_path.is_empty() {
         String::new()
     } else {
@@ -158,17 +231,19 @@ fn diff_files(
     if (is_binary_file(&content_old) || is_binary_file(&content_new))
         || (content_old.is_empty() && !content_new.is_empty())
         || (!content_old.is_empty() && content_new.is_empty())
+        || (file_old_hash == EMPTY_FILE_HASH && content_new != EMPTY_FILE_HASH)
+        || (content_old != EMPTY_FILE_HASH && file_new_hash == EMPTY_FILE_HASH)
     {
         return Ok(format!(
-            "\x1b[32mBinary files {}/{} and {}/{} differ\x1b[0m\n",
+            "\x1b[33mBinary files '{}/{}' and '{}/{}' differ\x1b[0m\n",
             revision_id_old, file, revision_id_new, file
         ));
     } else if content_old == content_new {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
             format!(
-                "Files {}/{} and {}/{} are identical in content but have different hash value",
-                revision_id_old, file, revision_id_new, file
+                "Files '{}/{}' and '{}/{}' are identical in content but have different hash values '{}' : '{}'",
+                revision_id_old, file, revision_id_new, file, file_old_hash, file_new_hash
             ),
         ));
     }
@@ -199,12 +274,18 @@ fn diff_files_header(
     let mode_old = if old_path.is_empty() {
         "100644"
     } else {
-        &format!("{:o}", get_mode(&format!("{}/{}", old_path, file))?)
+        &format!(
+            "{:o}",
+            get_file_metadata(&format!("{}/{}", old_path, file))?.mode
+        )
     };
     let mode_new = if new_path.is_empty() {
         "100644"
     } else {
-        &format!("{:o}", get_mode(&format!("{}/{}", new_path, file))?)
+        &format!(
+            "{:o}",
+            get_file_metadata(&format!("{}/{}", new_path, file))?.mode
+        )
     };
     let header_head = format!(
         "diff --dvcs {}/{} {}/{}\nindex {}..{}",
@@ -332,4 +413,268 @@ fn format_chunk(chunk: &Vec<(usize, String)>) -> String {
         .join("\n");
 
     format!("{}{}", header, body)
+}
+
+pub fn merge(
+    path: &str,
+    branch_or_revision_id_into: &str,
+    branch_or_revision_id_from: &str,
+    message: &str,
+) -> Result<String, io::Error> {
+    let (
+        path_into,
+        branch_into,
+        revision_id_into,
+        revision_metadata_into,
+        path_from,
+        branch_from,
+        revision_id_from,
+        revision_metadata_from,
+    ) = get_revisions(path, branch_or_revision_id_into, branch_or_revision_id_from)?;
+
+    if revision_id_into == revision_id_from {
+        return Ok("No merge needed: Revisions are identical".to_string());
+    }
+
+    if revision_metadata_into.files.is_empty() && revision_metadata_from.files.is_empty() {
+        return Ok("No files to merge yet...".to_string());
+    }
+
+    let mut branch_metadata = load_branch_metadata(&path_into, &branch_into)?;
+
+    let merge_path = format!("{}/.dvcs/origin/{}/staging", path_into, branch_into);
+    let stage_before_merge_path = format!(
+        "{}/.dvcs/origin/{}/temp_staging_before_merge",
+        path_into, branch_into
+    );
+    let content_into_path = format!(
+        "{}/.dvcs/origin/{}/commits/{}",
+        path_into, branch_into, revision_id_into
+    );
+    let content_from_path = format!(
+        "{}/.dvcs/origin/{}/commits/{}",
+        path_from, branch_from, revision_id_from
+    );
+    let mut merge_report = String::new();
+
+    if check_directory(&stage_before_merge_path) {
+        delete_directory(&stage_before_merge_path, true)?;
+    }
+
+    create_directory(&stage_before_merge_path)?;
+    copy_directory(&merge_path, &stage_before_merge_path)?;
+
+    let files: HashSet<&String> = revision_metadata_into
+        .files
+        .keys()
+        .chain(revision_metadata_from.files.keys())
+        .collect();
+    let into = if branch_or_revision_id_into == REMOTE {
+        "Remote HEAD"
+    } else {
+        branch_or_revision_id_into
+    };
+    let from = if branch_or_revision_id_from.is_empty() {
+        "Local HEAD"
+    } else {
+        branch_or_revision_id_from
+    };
+
+    for file in files.clone() {
+        let hash_into = revision_metadata_into.files.get(file);
+        let hash_from = revision_metadata_from.files.get(file);
+        let content_into = read_file(&format!("{}/{}", content_into_path, file)).ok();
+        let content_from = read_file(&format!("{}/{}", content_from_path, file)).ok();
+        let staging_dir = format!("{}/{}", merge_path, get_parent(file));
+        let staging_path = format!("{}/{}", merge_path, file);
+        let (_, revision_id) = get_common_ancestor_and_count(
+            &path_into,
+            &branch_into,
+            &revision_id_into,
+            &path_from,
+            &branch_from,
+            &revision_id_from,
+        )?;
+        let ancestor_content = if let Some(revision_id_ancestor) = revision_id {
+            read_file(&format!(
+                "{}/.dvcs/origin/{}/commits/{}/{}",
+                path_into, branch_into, revision_id_ancestor, file
+            ))
+            .ok()
+        } else {
+            None
+        };
+
+        match (content_into, content_from) {
+            (Some(content_into), Some(content_from)) => {
+                if content_into == content_from {
+                    match (hash_into, hash_from) {
+                        (Some(into), Some(from)) => {
+                            if into == from {
+                                if !check_directory(&staging_dir) {
+                                    create_directory(&staging_dir)?;
+                                }
+                                write_file(&staging_path, &content_into)?;
+                                merge_report.push_str(&format!("File unchanged: '{}'\n", file));
+                            } else {
+                                return Err(io::Error::new(
+                                    io::ErrorKind::InvalidData,
+                                    format!(
+                                        "Files '{}/{}' and '{}/{}' are identical in content but have different hash values '{}' : '{}'",
+                                        revision_id_into, file, revision_id_from, file, into, from
+                                    ),
+                                ));
+                            }
+                        }
+                        (Some(_), None) | (None, Some(_)) => {
+                            return Err(io::Error::new(
+                                io::ErrorKind::InvalidData,
+                                format!(
+                                    "Files '{}/{}' and '{}/{}' are identical in content but hash value of one file is missing",
+                                    revision_id_into, file, revision_id_from, file
+                                ),
+                            ));
+                        }
+                        _ => unreachable!(),
+                    }
+                } else if let Some(ancestor) = ancestor_content {
+                    let merged_content =
+                        merge_contents(&ancestor, into, &content_into, from, &content_from);
+                    if !check_directory(&staging_dir) {
+                        create_directory(&staging_dir)?;
+                    }
+                    write_file(&staging_path, &merged_content)?;
+                    merge_report.push_str(&format!("File merged: '{}'\n", file));
+                } else {
+                    let merged_content = merge_conflict(into, &content_into, from, &content_from);
+                    if !check_directory(&staging_dir) {
+                        create_directory(&staging_dir)?;
+                    }
+                    write_file(&staging_path, &merged_content)?;
+                    merge_report.push_str(&format!(
+                        "Conflict in file (no common ancestor): '{}'\n",
+                        file
+                    ));
+                }
+            }
+            (Some(content_into), None) => {
+                if !check_directory(&staging_dir) {
+                    create_directory(&staging_dir)?;
+                }
+                write_file(&staging_path, &content_into)?;
+                merge_report.push_str(&format!(
+                    "File removed in revision '{}': '{}'\n",
+                    revision_id_from, file
+                ));
+            }
+            (None, Some(content_from)) => {
+                if !check_directory(&staging_dir) {
+                    create_directory(&staging_dir)?;
+                }
+                write_file(&staging_path, &content_from)?;
+                merge_report.push_str(&format!(
+                    "File added in revision '{}': '{}'\n",
+                    revision_id_from, file
+                ));
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    let new_staging: HashSet<String> = branch_metadata
+        .staging
+        .iter()
+        .chain(files)
+        .cloned()
+        .collect();
+
+    branch_metadata.staging = Vec::from_iter(new_staging);
+    save_branch_metadata(&path_into, &branch_into, &branch_metadata)?;
+
+    if let Err(e) = commit(&path_into, message) {
+        delete_directory(&merge_path, true)?;
+        rename_directory(&stage_before_merge_path, &merge_path)?;
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!(
+                "Merge failed during commit. Reverting to previous staging area: {}",
+                e
+            ),
+        ));
+    }
+
+    delete_directory(&stage_before_merge_path, true)?;
+
+    Ok(merge_report)
+}
+
+fn merge_contents(
+    ancestor: &str,
+    into: &str,
+    content_into: &str,
+    from: &str,
+    content_from: &str,
+) -> String {
+    let ancestor_lines: Vec<&str> = ancestor.lines().collect();
+    let content_into_lines: Vec<&str> = content_into.lines().collect();
+    let content_from_lines: Vec<&str> = content_from.lines().collect();
+
+    let mut merged_content = String::new();
+    let max_lines = ancestor_lines
+        .len()
+        .max(content_into_lines.len())
+        .max(content_from_lines.len());
+
+    for i in 0..max_lines {
+        let ancestor_line = ancestor_lines.get(i).unwrap_or(&"");
+        let content_into_line = content_into_lines.get(i).unwrap_or(&"");
+        let content_from_line = content_from_lines.get(i).unwrap_or(&"");
+
+        if content_into_line == content_from_line {
+            merged_content.push_str(content_into_line);
+            merged_content.push('\n');
+        } else if content_into_line == ancestor_line {
+            merged_content.push_str(content_from_line);
+            merged_content.push('\n');
+        } else if content_from_line == ancestor_line {
+            merged_content.push_str(content_into_line);
+            merged_content.push('\n');
+        } else {
+            merged_content.push_str(&merge_conflict(
+                into,
+                content_into_line,
+                from,
+                content_from_line,
+            ));
+            merged_content.push('\n');
+        }
+    }
+
+    merged_content
+}
+
+fn merge_conflict(into: &str, content_into: &str, from: &str, content_from: &str) -> String {
+    let mut merged_lines = Vec::new();
+
+    for diff in diff::lines(content_into, content_from) {
+        match diff {
+            diff::Result::Left(line) => {
+                merged_lines.push(format!(
+                    "<<<<<<< {}\n{}\n=======\n>>>>>>> {}",
+                    into, line, from
+                ));
+            }
+            diff::Result::Right(line) => {
+                merged_lines.push(format!(
+                    "<<<<<<< {}\n=======\n{}\n>>>>>>> {}",
+                    into, line, from
+                ));
+            }
+            diff::Result::Both(line, _) => {
+                merged_lines.push(format!("{}", line));
+            }
+        }
+    }
+
+    merged_lines.join("\n")
 }

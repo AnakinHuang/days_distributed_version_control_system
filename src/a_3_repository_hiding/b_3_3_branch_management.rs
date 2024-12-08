@@ -4,19 +4,20 @@
 use super::b_3_1_repository_management::{is_repository, load_repo_metadata, save_repo_metadata};
 use super::b_3_2_revision_management::{init_revision_metadata, load_revision_metadata};
 
-use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
-    check_directory, create_directory, delete_directory, list_directory,
-};
 use crate::a_1_file_system_hiding::{
     b_1_1_file_interaction::{
         check_file, delete_file, get_absolute_path, get_filename, get_parent, get_relative_path,
         read_file, read_struct, write_file, write_struct,
+    },
+    b_1_2_directory_interaction::{
+        check_directory, create_directory, delete_directory, list_directory,
     },
     REMOTE,
 };
 
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
+use std::collections::{HashSet, VecDeque};
 use std::fmt::Debug;
 use std::io;
 use std::time::SystemTime;
@@ -61,7 +62,7 @@ pub fn is_branch(path: &str) -> Result<String, io::Error> {
 
     Err(io::Error::new(
         io::ErrorKind::NotFound,
-        format!("No branch found starting from {}", get_filename(&path)),
+        format!("No branch found starting from '{}'", get_filename(&path)),
     ))
 }
 
@@ -128,7 +129,7 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
     if files.len() > 1 && files.contains(&".".to_string()) {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "Cannot stage all files ('.') and specific files simultaneously. Use either '.' or specific file paths.",
+            "Cannot stage all files ('.') and specific files simultaneously. Use either '.' or specific file paths",
         ));
     }
 
@@ -153,11 +154,11 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
         } else if check_directory(&file_path) {
             files_to_stage.extend(list_directory(&file_path, true, true)?.into_iter().filter(
                 |f| {
-                    !f.strip_suffix(path).unwrap_or_default().contains(".dvcs")
-                        && !f.strip_suffix(path).unwrap_or_default().contains(REMOTE)
-                        && !f.strip_suffix(path).unwrap_or_default().contains(".git")
+                    !f.strip_prefix(path).unwrap_or_default().contains(".dvcs")
+                        && !f.strip_prefix(path).unwrap_or_default().contains(REMOTE)
+                        && !f.strip_prefix(path).unwrap_or_default().contains(".git")
                         && !f
-                            .strip_suffix(path)
+                            .strip_prefix(path)
                             .unwrap_or_default()
                             .contains(".DS_Store")
                 },
@@ -165,7 +166,7 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
         } else {
             return Err(io::Error::new(
                 io::ErrorKind::NotFound,
-                format!("File or directory '{}' does not exist.", file),
+                format!("File or directory '{}' does not exist", file),
             ));
         }
     }
@@ -173,7 +174,14 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
     if files_to_stage.is_empty() {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "No valid files to stage.",
+            format!(
+                "No files found to stage in {}",
+                files
+                    .iter()
+                    .map(|f| format!("'{}'", f))
+                    .collect::<Vec<String>>()
+                    .join(" ")
+            ),
         ));
     }
 
@@ -185,6 +193,7 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
             branch,
             get_parent(&relative_path)
         );
+
         let staging_path = format!("{}/{}", staging_dir, get_filename(&file));
         let content = read_file(&file)?;
 
@@ -192,12 +201,12 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
             create_directory(&staging_dir)?;
             write_file(&staging_path, &content)?;
             branch_metadata.staging.push(relative_path);
-        } else if read_file(&staging_path)? != content {
+        } else if read_file(&file)? != content {
             write_file(&staging_path, &content)?; // Overwrite only if content differs
         } else {
             return Err(io::Error::new(
                 io::ErrorKind::AlreadyExists,
-                format!("File '{}' is already staged for commit.", relative_path),
+                format!("File '{}' is already staged for commit", relative_path),
             ));
         }
     }
@@ -217,7 +226,7 @@ pub fn remove(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
         if files.len() > 1 {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
-                "Cannot remove all files ('.') and specific files simultaneously. Use either '.' or specific file paths.",
+                "Cannot remove all files ('.') and specific files simultaneously. Use either '.' or specific file paths",
             ));
         }
 
@@ -234,7 +243,7 @@ pub fn remove(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
             if !branch_metadata.staging.contains(&relative_path) {
                 return Err(io::Error::new(
                     io::ErrorKind::NotFound,
-                    format!("File '{}' is not staged for commit.", file),
+                    format!("File '{}' is not staged for commit", file),
                 ));
             };
 
@@ -242,7 +251,7 @@ pub fn remove(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
                 return Err(io::Error::new(
                     io::ErrorKind::NotFound,
                     format!(
-                        "File or directory '{}' does not exist in the staging area.",
+                        "File or directory '{}' does not exist in the staging area",
                         file
                     ),
                 ));
@@ -275,89 +284,115 @@ pub fn heads(path: &str) -> Result<String, io::Error> {
 
     for (branch, _) in repo_metadata.branches.iter() {
         let branch_metadata = load_branch_metadata(path, branch)?;
+        let mut date_time: DateTime<chrono::Local> = SystemTime::now().into();
+        let mut message = "No commits yet...".to_string();
+        let mut header = format!("\x1b[31morigin/{}\x1b[0m", branch);
 
-        if let Some(revision_id) = branch_metadata.head_commit.as_ref() {
-            let revision_metadata = load_revision_metadata(path, branch, revision_id)?;
-            let date_time: DateTime<chrono::Local> = revision_metadata.timestamp.into();
-
-            let content = format!(
-                "\ncommit {} (HEAD -> {}, origin/{})\nDate: {}\n\n\t{}\n\n",
-                revision_metadata.id,
-                repo_metadata.head,
-                branch,
-                format!("{}", date_time.format("%Y-%m-%d %H:%M:%S")),
-                revision_metadata.message,
-            );
-
-            heads.push((revision_metadata.timestamp, content));
-        } else {
-            let date_time: DateTime<chrono::Local> = SystemTime::now().into();
-
-            let content = format!(
-                "\ncommit N/A (HEAD -> {}, origin/{})\nDate: {}\n\n\t{}\n",
-                repo_metadata.head,
-                branch,
-                format!("{}", date_time.format("%Y-%m-%d %H:%M:%S")),
-                "No commits yet...",
-            );
-
-            heads.push((date_time.into(), content));
+        if branch == &repo_metadata.head {
+            header = format!("\x1b[1;36mHEAD\x1b[0m \x1b[1;36m->\x1b[0m \x1b[32m{}\x1b[0m, {}, \x1b[31morigin/HEAD\x1b[0m", branch, header);
         }
+
+        if let Some(revision_id) = &branch_metadata.head_commit {
+            let revision_metadata = load_revision_metadata(path, branch, revision_id)?;
+            message = revision_metadata.message;
+            date_time = revision_metadata.timestamp.into();
+            header = format!(
+                "\x1b[33mcommit {} ({})\x1b[0m\n",
+                revision_metadata.id, header
+            );
+        } else {
+            header = format!("\x1b[33mcommit N/A ({})\x1b[0m\n", header);
+        }
+
+        let content = format!(
+            "\n\x1b[0m{}Date: {}\n\n\t{}\x1b[0m\n\n",
+            header,
+            format!("{}", date_time.format("%Y-%m-%d %H:%M:%S")),
+            message,
+        );
+
+        heads.push((date_time, content));
     }
 
     heads.sort_by_key(|(timestamp, _)| *timestamp);
-    Ok(heads.into_iter().map(|(_, content)| content).collect())
+    Ok(heads
+        .into_iter()
+        .rev()
+        .map(|(_, content)| content)
+        .collect())
 }
 
-fn count_commits_ahead(
-    path: &str,
-    branch: &str,
-    local: &str,
-    upstream: &str,
-) -> Result<isize, io::Error> {
-    let ahead = 0;
-
-    let local_revision = load_revision_metadata(path, branch, local).map_err(|e| {
+pub fn get_common_ancestor_and_count(
+    path_into: &str,
+    branch_into: &str,
+    revision_id_into: &str,
+    path_from: &str,
+    branch_from: &str,
+    revision_id_from: &str,
+) -> Result<(isize, Option<String>), io::Error> {
+    load_revision_metadata(path_into, branch_into, revision_id_into).map_err(|e| {
         io::Error::new(
             io::ErrorKind::NotFound,
-            format!("Local commit {} not found: {}", local, e),
+            format!(
+                "'{}' commit '{}' not found: {}",
+                branch_into, revision_id_into, e
+            ),
         )
     })?;
 
-    let upstream_revision = load_revision_metadata(path, branch, upstream).map_err(|e| {
+    load_revision_metadata(path_from, branch_from, revision_id_from).map_err(|e| {
         io::Error::new(
             io::ErrorKind::NotFound,
-            format!("Upstream commit {} not found: {}", upstream, e),
+            format!(
+                "'{}' commit '{}' not found: {}",
+                branch_from, revision_id_from, e
+            ),
         )
     })?;
 
-    if local_revision.id == upstream_revision.id {
-        return Ok(ahead);
+    if revision_id_into == revision_id_from {
+        return Ok((0, Some(revision_id_into.to_string())));
     }
 
-    if let Some(index) = local_revision
-        .parents
-        .iter()
-        .position(|id| *id == upstream_revision.id)
-    {
-        return Ok(ahead + (local_revision.parents.len() - index) as isize);
+    let mut queue_into: VecDeque<(String, isize)> = VecDeque::new(); // Track distance
+    let mut queue_from: VecDeque<(String, isize)> = VecDeque::new(); // Track distance
+
+    let mut visited_into: HashSet<String> = HashSet::new();
+    let mut visited_from: HashSet<String> = HashSet::new();
+
+    queue_into.push_back((revision_id_into.to_string(), 0));
+    queue_from.push_back((revision_id_from.to_string(), 0));
+
+    while !queue_into.is_empty() || !queue_from.is_empty() {
+        if let Some((current, distance)) = queue_into.pop_front() {
+            if visited_from.contains(&current) {
+                return Ok((distance, Some(current)));
+            }
+
+            if visited_into.insert(current.clone()) {
+                if let Ok(metadata) = load_revision_metadata(path_into, branch_into, &current) {
+                    for parent in metadata.parents {
+                        queue_into.push_back((parent, distance + 1)); // Increment distance
+                    }
+                }
+            }
+        }
+
+        if let Some((current, distance)) = queue_from.pop_front() {
+            if visited_into.contains(&current) {
+                return Ok((0 - distance, Some(current)));
+            }
+            if visited_from.insert(current.clone()) {
+                if let Ok(metadata) = load_revision_metadata(path_from, branch_from, &current) {
+                    for parent in metadata.parents {
+                        queue_from.push_back((parent, distance + 1));
+                    }
+                }
+            }
+        }
     }
 
-    if let Some(index) = upstream_revision
-        .parents
-        .iter()
-        .position(|id| *id == local_revision.id)
-    {
-        return Ok(ahead - (upstream_revision.parents.len() - index) as isize);
-    }
-
-    Err(io::Error::new(
-        io::ErrorKind::Other,
-        format!(
-            "Cannot determine ahead/behind status: commits {} and {} have diverged.",
-            local, upstream
-        ),
-    ))
+    Ok((0, None))
 }
 
 pub fn status(path: &str) -> Result<String, io::Error> {
@@ -372,34 +407,43 @@ pub fn status(path: &str) -> Result<String, io::Error> {
     status_report.push_str(&format!("On branch {}\n", branch));
 
     // Ahead/Behind Status
-    if let Some(local_commit) = local_branch_metadata.head_commit.as_ref() {
-        let ahead_count = if let Some(upstream_commit) = remote_branch_metadata.head_commit.as_ref()
-        {
-            count_commits_ahead(&repo_root, branch, local_commit, upstream_commit)?
+    if let Some(local_commit) = &local_branch_metadata.head_commit {
+        let (count, _) = if let Some(upstream_commit) = &remote_branch_metadata.head_commit {
+            get_common_ancestor_and_count(
+                &repo_root,
+                branch,
+                local_commit,
+                &remote_repo_root,
+                branch,
+                upstream_commit,
+            )?
         } else {
-            let local_revision =
-                load_revision_metadata(path, branch, local_commit).map_err(|e| {
-                    io::Error::new(
-                        io::ErrorKind::NotFound,
-                        format!("Local commit {} not found: {}", local_commit, e),
-                    )
-                })?;
-            local_revision.parents.len() as isize
+            get_common_ancestor_and_count(
+                &repo_root,
+                branch,
+                local_commit,
+                &repo_root,
+                branch,
+                local_branch_metadata
+                    .commits
+                    .first()
+                    .expect(&format!("No commits found in branch: {}", branch)),
+            )?
         };
 
-        if ahead_count > 0 {
+        if count > 0 {
             status_report.push_str(&format!(
                 "Your branch is ahead of 'origin/{}' by {} commit{}.",
                 branch,
-                ahead_count,
-                if ahead_count > 1 { "s" } else { "" }
+                count,
+                if count > 1 { "s" } else { "" }
             ));
-        } else if ahead_count < 0 {
+        } else if count < 0 {
             status_report.push_str(&format!(
                 "Your branch is behind 'origin/{}' by {} commit{}.",
                 branch,
-                ahead_count.abs(),
-                if ahead_count.abs() > 1 { "s" } else { "" }
+                count.abs(),
+                if count.abs() > 1 { "s" } else { "" }
             ));
         } else {
             status_report.push_str(&format!(
@@ -412,7 +456,7 @@ pub fn status(path: &str) -> Result<String, io::Error> {
     }
 
     // Retrieve Latest Revision Metadata
-    let latest_revision = if let Some(head_commit) = local_branch_metadata.head_commit.as_ref() {
+    let latest_revision = if let Some(head_commit) = &local_branch_metadata.head_commit {
         load_revision_metadata(&repo_root, branch, head_commit)?
     } else {
         init_revision_metadata()
@@ -438,14 +482,16 @@ pub fn status(path: &str) -> Result<String, io::Error> {
                     );
 
                     if &staged_hash != revision_hash {
-                        status_report.push_str(&format!("\tmodified:   {}\n", relative_path));
+                        status_report
+                            .push_str(&format!("\t\x1b[32mmodified:   {}\x1b[0m\n", relative_path));
                     }
                 } else {
                     // File is new
-                    status_report.push_str(&format!("\tnew file:   {}\n", relative_path));
+                    status_report
+                        .push_str(&format!("\t\x1b[32mnew file:   {}\x1b[0m\n", relative_path));
                 }
             } else {
-                status_report.push_str(&format!("\tdeleted:   {}\n", relative_path));
+                status_report.push_str(&format!("\t\x1b[32mdeleted:   {}\x1b[0m\n", relative_path));
             }
         }
     }
@@ -477,7 +523,7 @@ pub fn status(path: &str) -> Result<String, io::Error> {
     if !not_staged.is_empty() {
         status_report.push_str("\nChanges not staged for commit:\n  (use \"cargo run add <pathspec>...\" to update what will be committed)\n");
         for (file, status) in &not_staged {
-            status_report.push_str(&format!("\t{}:   {}\n", status, file));
+            status_report.push_str(&format!("\t\x1b[31m{}:   {}\x1b[0m\n", status, file));
         }
     }
 
@@ -504,7 +550,7 @@ pub fn status(path: &str) -> Result<String, io::Error> {
         status_report.push_str("\nUntracked files:\n  (use \"cargo run add <pathspec>...\" to include in what will be committed)\n");
         for file in untracked_files {
             let relative_path = get_relative_path(&file, &current_path, true);
-            status_report.push_str(&format!("\t{}\n", relative_path));
+            status_report.push_str(&format!("\t\x1b[31m{}\x1b[0m\n", relative_path));
         }
     }
 

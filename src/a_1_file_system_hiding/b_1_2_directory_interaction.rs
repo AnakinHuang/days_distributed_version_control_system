@@ -39,40 +39,70 @@ pub fn rename_directory(old_path: &str, new_path: &str) -> Result<(), io::Error>
     } else {
         Err(io::Error::new(
             io::ErrorKind::NotFound,
-            "Directory not found.",
+            format!(
+                "Failed to rename directory '{}': Directory not found",
+                old_path
+            ),
         ))
     }
 }
 
 pub fn create_directory(path: &str) -> Result<(), io::Error> {
-    create_dir_all(path)?;
-    Ok(())
+    match create_dir_all(path) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(io::Error::new(
+            io::ErrorKind::AlreadyExists,
+            format!("Failed to create directory '{}': {}", path, e),
+        )),
+    }
 }
 
 pub fn delete_directory(path: &str, recursive: bool) -> Result<(), io::Error> {
     if Path::new(path).is_dir() {
         if recursive {
-            remove_dir_all(path)?;
+            match remove_dir_all(path) {
+                Ok(_) => Ok(()),
+                Err(e) => Err(io::Error::new(
+                    io::ErrorKind::NotFound,
+                    format!("Failed to delete directory '{}': {}", path, e),
+                )),
+            }
         } else {
-            remove_dir(path)?;
+            match remove_dir(path) {
+                Ok(_) => Ok(()),
+                Err(e) => Err(io::Error::new(
+                    io::ErrorKind::NotFound,
+                    format!("Failed to delete directory '{}': {}", path, e),
+                )),
+            }
         }
-        Ok(())
     } else {
         Err(io::Error::new(
             io::ErrorKind::NotFound,
-            "Directory not found.",
+            format!("Failed to delete directory '{}': Directory not found", path),
         ))
     }
 }
 
 pub fn is_empty_directory(path: &str) -> Result<(), io::Error> {
-    if read_dir(path)?.next().is_none() {
-        Ok(())
-    } else {
-        Err(io::Error::new(
-            io::ErrorKind::InvalidInput,
-            "Directory is not empty.",
-        ))
+    match read_dir(path) {
+        Ok(mut dir) => {
+            if dir.next().is_none() {
+                Ok(())
+            } else {
+                Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    format!(
+                        "Failed to delete directory '{}': Directory is not empty",
+                        path
+                    ),
+                ))
+            }
+        }
+        Err(e) => Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Failed to read directory '{}': {}", path, e),
+        )),
     }
 }
 
@@ -81,57 +111,113 @@ pub fn list_directory(path: &str, full: bool, recursive: bool) -> Result<Vec<Str
     if recursive {
         list_directory_helper(path, full, &mut entries)?;
     } else {
-        for entry in read_dir(path)? {
-            let entry = entry?;
-            let file_name = entry.file_name();
-            if full {
-                entries.push(format!("{}/{}", path, file_name.to_string_lossy()));
-            } else {
-                entries.push(file_name.to_string_lossy().into_owned());
+        match read_dir(path) {
+            Ok(dir) => {
+                for entry in dir {
+                    match entry {
+                        Ok(entry) => {
+                            let file_name = entry.file_name();
+
+                            if full {
+                                entries.push(format!("{}/{}", path, file_name.to_string_lossy()));
+                            } else {
+                                entries.push(file_name.to_string_lossy().into_owned());
+                            }
+                        }
+                        Err(e) => {
+                            return Err(io::Error::new(
+                                io::ErrorKind::NotFound,
+                                format!("Failed to list directory '{}': {}", path, e),
+                            ))
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                return Err(io::Error::new(
+                    io::ErrorKind::NotFound,
+                    format!("Failed to list directory '{}': {}", path, e),
+                ))
             }
         }
     }
+
     Ok(entries)
 }
 
 fn list_directory_helper(path: &str, full: bool, files: &mut Vec<String>) -> Result<(), io::Error> {
-    for entry in read_dir(path)? {
-        let entry = entry?;
-        let full_path = format!("{}/{}", path, entry.file_name().to_string_lossy());
+    match read_dir(path) {
+        Ok(dir) => {
+            for entry in dir {
+                match entry {
+                    Ok(entry) => {
+                        let full_path = format!("{}/{}", path, entry.file_name().to_string_lossy());
 
-        if check_directory(&full_path) {
-            list_directory_helper(&full_path, full, files)?;
-        } else if check_file(&full_path) {
-            if full {
-                files.push(full_path);
-            } else {
-                files.push(entry.file_name().to_string_lossy().into_owned());
+                        if check_directory(&full_path) {
+                            list_directory_helper(&full_path, full, files)?;
+                        } else if check_file(&full_path) {
+                            if full {
+                                files.push(full_path);
+                            } else {
+                                files.push(entry.file_name().to_string_lossy().into_owned());
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        return Err(io::Error::new(
+                            io::ErrorKind::NotFound,
+                            format!("Failed to list directory '{}': {}", path, e),
+                        ))
+                    }
+                }
             }
         }
+        Err(e) => {
+            return Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                format!("Failed to list directory '{}': {}", path, e),
+            ))
+        }
     }
+
     Ok(())
 }
 
 pub fn copy_directory(src: &str, dest: &str) -> Result<(), io::Error> {
-    let src_path = Path::new(src);
-    if !src_path.exists() || !src_path.is_dir() {
+    if !check_directory(src) {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "Source is not a valid directory",
+            format!(
+                "Failed to copy directory '{}': Source is not a valid directory",
+                src
+            ),
         ));
     }
 
-    create_directory(dest)?;
-    for entry in list_directory(src, false, false)? {
-        let src_path = format!("{}/{}", src, entry);
-        let dest_path = format!("{}/{}", dest, entry);
+    match create_directory(dest) {
+        Ok(_) => match list_directory(src, false, false) {
+            Ok(entries) => {
+                for entry in entries {
+                    let src_path = format!("{}/{}", src, entry);
+                    let dest_path = format!("{}/{}", dest, entry);
 
-        if Path::new(&src_path).is_dir() {
-            copy_directory(&src_path, &dest_path)?;
-        } else {
-            copy_file(&src_path, &dest_path)?;
-        }
+                    if check_file(&src_path) {
+                        copy_file(&src_path, &dest_path)?;
+                    } else {
+                        copy_directory(&src_path, &dest_path)?;
+                    }
+                }
+
+                Ok(())
+            }
+            Err(e) => Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                format!("Failed to copy directory '{}': {}", dest, e),
+            )),
+        },
+        Err(e) => Err(io::Error::new(
+            io::ErrorKind::AlreadyExists,
+            format!("Failed to copy directory '{}': {}", dest, e),
+        )),
     }
-
-    Ok(())
 }

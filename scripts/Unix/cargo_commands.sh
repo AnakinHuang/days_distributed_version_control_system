@@ -45,7 +45,7 @@ cargo run add tests.txt
 cargo run commit "Add test.txt"
 cargo run checkout main
 cd ../.. || exit
-cargo run checkout '1f1f6c33-e94e-4b59-8452-c3a5e4db73ef'
+cargo run checkout 'ade0dee6-3515-436b-941a-c6b147409d8d'
 
 # LEVEL-3: Status, Heads, Cat, Log
 echo "Level-3: Status, Heads, Cat, Log"
@@ -77,7 +77,8 @@ cargo run heads
 # Test-3d: Cat command
 echo "Test-3d: Inspect file content from a specific revision"
 cd ../.. || exit
-cargo run cat 'a75ea01b-fc02-4e06-a5cc-56fed3f7068e' README.md
+cargo run cat 'e3e9b566-9369-4257-8697-068907f92dae' README.md
+cargo run cat 'dacaba2a-b89e-4413-9ec3-81e636de7a88' program.rs
 cargo run add README.md
 cargo run commit "Add README.md"
 cd acceptance_tests/repo_3 || exit
@@ -99,9 +100,11 @@ echo "Test-4b: Comparing revisions using diff"
 cargo run commit "Add test_5.txt"
 echo "Modified content" > test_5.txt
 cd ..
-ls
+echo "This is a new line of text" >> ../README.md
+cargo run add ../README.md
+cargo run commit "Update README.md"
 cargo run diff
-cargo run diff 'a75ea01b-fc02-4e06-a5cc-56fed3f7068e' 'main'
+cargo run diff '98b0436a-f409-4288-a5a4-c817133639ba' 'main'
 
 # LEVEL-5: Merge
 echo "Level-5: Merge"
@@ -110,13 +113,11 @@ echo "Level-5: Merge"
 echo "Test-5a: Merging beta branch into main"
 cargo run checkout beta
 cargo run status
-tree ./beta_tests
 echo "Hello World" > test_6.txt
 cargo run add test_6.txt
 cargo run commit "Add test_6.txt"
 cargo run checkout main
 cargo run status
-tree ./beta_tests
 cargo run merge beta
 
 # Test-5b: Merging main branch into beta
@@ -161,7 +162,7 @@ cargo run pull
 
 # Cleanup: Remove all tests repositories
 echo "Cleaning up test directories..."
-rm -rf .remote repo_* test_*.txt ../README.md ../program.rs
+rm -rf .remote repo_* test_*.txt
 cd ../../ || exit
 
 echo "All DVCS acceptance tests executed successfully!"

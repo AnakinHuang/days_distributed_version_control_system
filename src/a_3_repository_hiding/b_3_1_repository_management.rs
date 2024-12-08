@@ -3,12 +3,12 @@
 
 use super::b_3_3_branch_management::{init_branch, is_branch};
 
-use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
-    check_directory, copy_directory, create_directory, is_empty_directory,
-};
 use crate::a_1_file_system_hiding::{
     b_1_1_file_interaction::{
         check_file, get_absolute_path, get_parent, read_struct, write_struct,
+    },
+    b_1_2_directory_interaction::{
+        check_directory, copy_directory, create_directory, is_empty_directory,
     },
     REMOTE,
 };
@@ -42,25 +42,25 @@ pub fn is_repository(path: &str) -> Result<String, io::Error> {
                     } else {
                         error = io::Error::new(
                             io::ErrorKind::NotFound,
-                            format!("No main branch found in repository {}", repo_path),
+                            format!("No main branch found in repository '{}'", repo_path),
                         );
                     }
                 } else {
                     error = io::Error::new(
                         io::ErrorKind::NotFound,
-                        format!("No metadata file found in repository {}", repo_path),
+                        format!("No metadata file found in repository '{}'", repo_path),
                     );
                 }
             } else {
                 error = io::Error::new(
                     io::ErrorKind::NotFound,
-                    format!("No HEAD file found in repository {}", repo_path),
+                    format!("No HEAD file found in repository '{}'", repo_path),
                 );
             }
         } else {
             error = io::Error::new(
                 io::ErrorKind::NotFound,
-                format!("No .dvcs directory found in repository {}", repo_path),
+                format!("No .dvcs directory found in repository '{}'", repo_path),
             );
         }
 
@@ -75,7 +75,7 @@ pub fn is_repository(path: &str) -> Result<String, io::Error> {
 
     Err(io::Error::new(
         io::ErrorKind::NotFound,
-        format!("No repository found starting from {}\n{}", path, error),
+        format!("No repository found starting from '{}': {}", path, error),
     ))
 }
 
@@ -87,7 +87,7 @@ pub fn init_repository(path: &str, remote: bool) -> Result<(), io::Error> {
             if root_path == current_path && path != REMOTE {
                 return Err(io::Error::new(
                     io::ErrorKind::AlreadyExists,
-                    format!("The directory {} is already a repository.", path),
+                    format!("The directory '{}' is already a repository.", path),
                 ));
             }
         }
@@ -116,14 +116,14 @@ pub fn clone_repository(src: &str, dest: &str) -> Result<(), io::Error> {
             if root_path != current_path {
                 return Err(io::Error::new(
                     io::ErrorKind::NotFound,
-                    format!("The directory {} is not a repository.", src),
+                    format!("The directory '{}' is not a repository.", src),
                 ));
             }
         }
         Err(_) => {
             return Err(io::Error::new(
                 io::ErrorKind::NotFound,
-                format!("The directory {} is not a repository.", src),
+                format!("The directory '{}' is not a repository.", src),
             ));
         }
     }
@@ -132,7 +132,7 @@ pub fn clone_repository(src: &str, dest: &str) -> Result<(), io::Error> {
         if is_empty_directory(dest).is_err() {
             return Err(io::Error::new(
                 io::ErrorKind::AlreadyExists,
-                format!("The directory {} already exists and is not empty.", dest),
+                format!("The directory '{}' already exists and is not empty.", dest),
             ));
         }
     }

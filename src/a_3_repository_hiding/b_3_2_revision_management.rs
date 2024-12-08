@@ -6,11 +6,11 @@ use super::b_3_1_repository_management::{
 };
 use super::b_3_3_branch_management::{load_branch_metadata, save_branch_metadata};
 
-use crate::a_1_file_system_hiding::b_1_1_file_interaction::{
-    check_file, get_filename, get_parent, read_file, read_struct, write_file, write_struct,
-};
-use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
-    check_directory, create_directory, delete_directory,
+use crate::a_1_file_system_hiding::{
+    b_1_1_file_interaction::{
+        check_file, get_filename, get_parent, read_file, read_struct, write_file, write_struct,
+    },
+    b_1_2_directory_interaction::{check_directory, create_directory, delete_directory},
 };
 
 use chrono::DateTime;
@@ -38,21 +38,20 @@ pub fn is_revision(path: &str, branch: &str, revision_id: &str) -> Result<(), io
     if !check_file(&revision_path) {
         return Err(io::Error::new(
             io::ErrorKind::NotFound,
-            format!("Revision does not exist {}", revision_path),
+            format!("Revision does not exist '{}'", revision_path),
         ));
     }
 
     if !check_file(&metadata_path) {
         return Err(io::Error::new(
             io::ErrorKind::NotFound,
-            format!("Revision is missing {}", metadata_path),
+            format!("Revision is missing '{}'", metadata_path),
         ));
     }
 
     Ok(())
 }
 
-#[allow(unused)]
 pub fn init_revision_metadata() -> RevisionMetadata {
     RevisionMetadata {
         id: String::new(),
@@ -100,7 +99,7 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
     if branch_metadata.staging.is_empty() {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "No changes to commit.",
+            "No changes to commit",
         ));
     }
 
@@ -134,7 +133,7 @@ pub fn commit(path: &str, message: &str) -> Result<String, io::Error> {
         } else {
             return Err(io::Error::new(
                 io::ErrorKind::NotFound,
-                format!("Staged file '{}' does not exist.", src_path),
+                format!("Staged file '{}' does not exist", src_path),
             ));
         }
     }
@@ -202,21 +201,43 @@ pub fn log(path: &str) -> Result<String, io::Error> {
             let revision_metadata = load_revision_metadata(path, branch, revision_id)?;
             let date_time: DateTime<chrono::Local> = revision_metadata.timestamp.into();
 
-            let header = if branch == head_branch {
-                format!("HEAD -> {}, origin/{}", head_branch, branch)
-            } else {
-                format!("origin/{}", branch)
+            match branch_metadata.head_commit.clone() {
+                Some(head_commit) => {
+                    let header = if revision_id == &head_commit {
+                        let mut head = format!("\x1b[31morigin/{}\x1b[0m", branch);
+
+                        if branch == head_branch {
+                            head = format!("\x1b[1;36mHEAD\x1b[0m \x1b[1;36m->\x1b[0m \x1b[32m{}\x1b[0m, {}, \x1b[31morigin/HEAD\x1b[0m", branch, head);
+                        }
+
+                        format!(
+                            "\x1b[33mcommit {} ({})\x1b[0m\n",
+                            revision_metadata.id, head
+                        )
+                    } else {
+                        format!("\x1b[33mcommit {}\x1b[0m\n", revision_metadata.id)
+                    };
+
+                    let content = format!(
+                        "\n\x1b[0m{}Date: {}\n\n\t{}\x1b[0m\n\n",
+                        header,
+                        format!("{}", date_time.format("%Y-%m-%d %H:%M:%S")),
+                        revision_metadata.message,
+                    );
+
+                    logs.push((revision_metadata.timestamp, content));
+                }
+                None => {
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        format!(
+                            "In repository '{}': branch '{}' has commits but no head commit",
+                            get_filename(path),
+                            branch
+                        ),
+                    ));
+                }
             };
-
-            let content = format!(
-                "commit {} ({})\nDate: {}\n\n\t{}\n\n",
-                revision_metadata.id,
-                header,
-                format!("{}", date_time.format("%Y-%m-%d %H:%M:%S")),
-                revision_metadata.message,
-            );
-
-            logs.push((revision_metadata.timestamp, content));
         }
     }
 
@@ -225,7 +246,7 @@ pub fn log(path: &str) -> Result<String, io::Error> {
     if logs.is_empty() {
         Ok("No commits yet...".to_string())
     } else {
-        Ok(logs.into_iter().map(|(_, content)| content).collect())
+        Ok(logs.into_iter().rev().map(|(_, content)| content).collect())
     }
 }
 
@@ -242,7 +263,7 @@ fn get_revision_id(
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 format!(
-                    "In repository {}: No commits in branch {} yet...",
+                    "In repository '{}': No commits in branch '{}' yet...",
                     get_filename(path),
                     head_branch_metadata.name
                 ),
@@ -267,7 +288,7 @@ fn get_revision_id(
     Err(io::Error::new(
         io::ErrorKind::NotFound,
         format!(
-            "Revision {} not found in the repository {}.",
+            "Revision '{}' not found in the repository '{}'",
             revision_id,
             get_filename(path)
         ),
@@ -299,21 +320,25 @@ pub fn get_branch_or_revision_id(
 pub fn cat(path: &str, revision_id: &str, file_name: &str) -> Result<String, io::Error> {
     let path = &is_repository(path)?;
     let (_, branch, last_revision_id) = get_revision_id(path, revision_id)?;
-    let revision_metadata = load_revision_metadata(path, &branch, &last_revision_id)?;
+    if !last_revision_id.is_empty() {
+        let revision_metadata = load_revision_metadata(path, &branch, &last_revision_id)?;
 
-    if revision_metadata.files.contains_key(file_name) {
-        let file_path = format!(
-            "{}/.dvcs/origin/{}/commits/{}/{}",
-            path, branch, last_revision_id, file_name
-        );
-        let file_content = read_file(&file_path)?;
+        if revision_metadata.files.contains_key(file_name) {
+            let file_path = format!(
+                "{}/.dvcs/origin/{}/commits/{}/{}",
+                path, branch, last_revision_id, file_name
+            );
+            let file_content = read_file(&file_path)?;
 
-        Ok(file_content)
+            Ok(format!("\x1b[0m{}\x1b[0m", file_content))
+        } else {
+            Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                format!("File '{}' not found in the revision", file_name),
+            ))
+        }
     } else {
-        Err(io::Error::new(
-            io::ErrorKind::NotFound,
-            format!("File {} not found in the revision.", file_name),
-        ))
+        Err(io::Error::new(io::ErrorKind::NotFound, "No commits yet..."))
     }
 }
 
@@ -322,22 +347,24 @@ pub fn checkout(path: &str, branch_or_revision_id: &str) -> Result<(), io::Error
     let (mut repo_metadata, branch, last_revision_id) =
         get_branch_or_revision_id(path, branch_or_revision_id)?;
     let branch_metadata = load_branch_metadata(path, &branch)?;
-    let revision_metadata = load_revision_metadata(path, &branch, &last_revision_id)?;
-    let commit_path = format!(
-        "{}/.dvcs/origin/{}/commits/{}",
-        path, branch, &last_revision_id
-    );
+    if !last_revision_id.is_empty() {
+        let revision_metadata = load_revision_metadata(path, &branch, &last_revision_id)?;
+        let commit_path = format!(
+            "{}/.dvcs/origin/{}/commits/{}",
+            path, branch, &last_revision_id
+        );
 
-    if !check_directory(path) {
-        create_directory(path)?;
-    }
+        if !check_directory(path) {
+            create_directory(path)?;
+        }
 
-    for (file, _) in revision_metadata.files.iter() {
-        let src_path = format!("{}/{}", commit_path, file);
-        let dest_path = format!("{}/{}", path, file);
+        for (file, _) in revision_metadata.files.iter() {
+            let src_path = format!("{}/{}", commit_path, file);
+            let dest_path = format!("{}/{}", path, file);
 
-        let content = read_file(&src_path)?;
-        write_file(&dest_path, &content)?;
+            let content = read_file(&src_path)?;
+            write_file(&dest_path, &content)?;
+        }
     }
 
     repo_metadata.head = branch.to_string();

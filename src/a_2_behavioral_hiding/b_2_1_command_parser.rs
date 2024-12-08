@@ -54,8 +54,8 @@ pub enum ValidCommand {
         repo: String,
     },
     Diff {
-        commit_1: String,
-        commit_2: String,
+        branch_or_commit_1: String,
+        branch_or_commit_2: String,
     },
     Cat {
         commit: String,
@@ -71,7 +71,9 @@ pub enum ValidCommand {
         repo: String,
     },
     Merge {
-        branch: String,
+        branch_or_revision_from: String,
+        branch_or_revision_into: String,
+        msg: String,
     },
     Pull {
         path: String,
@@ -172,23 +174,27 @@ pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
         )
         .subcommand(
             Command::new("merge")
-                .about("Merge a branch into the current branch")
-                .arg(arg!(<branch> "Branch to merge"))
-                .arg_required_else_help(true),
+                .about("Merge: merge two branches or revisions")
+                .arg(
+                    arg!(base: [branch_or_commit] "The branch or revision to merge from")
+                        .default_value(REMOTE),
+                )
+                .arg(arg!(head: [branch_or_commit] "The branch or revision to merge into"))
+                .arg(arg!(-m --message [msg] "Commit message").default_value("N/A")),
         )
         .subcommand(
             Command::new("pull")
                 .about("Pull changes from another repository")
-                .arg(arg!([path] "Directory of the remote repository").default_value(REMOTE))
                 .arg(arg!([branch] "Branch to pull"))
+                .arg(arg!([path] "Directory of the remote repository").default_value(REMOTE))
                 .arg(arg!(--all "Pull all branches"))
                 .arg(arg!(-f --force "Force overwrite of local branch")),
         )
         .subcommand(
             Command::new("push")
                 .about("Push changes to another repository")
-                .arg(arg!([path] "Directory of the repository to push to").default_value(REMOTE))
                 .arg(arg!([branch] "Branch to pull"))
+                .arg(arg!([path] "Directory of the repository to push to").default_value(REMOTE))
                 .arg(arg!(--all "Push all branches"))
                 .arg(arg!(-f --force "Force overwrite of local branch")),
         )
@@ -260,12 +266,15 @@ fn parse_heads(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
 }
 
 fn parse_diff(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
-    let commit_1 = matches.get_one::<String>("base").unwrap().to_string();
-    let commit_2 = matches
+    let branch_or_commit_1 = matches.get_one::<String>("base").unwrap().to_string();
+    let branch_or_commit_2 = matches
         .get_one::<String>("head")
         .unwrap_or(&String::new())
         .to_string();
-    Ok(ValidCommand::Diff { commit_1, commit_2 })
+    Ok(ValidCommand::Diff {
+        branch_or_commit_1,
+        branch_or_commit_2,
+    })
 }
 
 fn parse_cat(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
@@ -293,8 +302,17 @@ fn parse_log(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
 }
 
 fn parse_merge(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {
-    let branch = matches.get_one::<String>("branch").unwrap().to_string();
-    Ok(ValidCommand::Merge { branch })
+    let branch_or_revision_from = matches.get_one::<String>("base").unwrap().to_string();
+    let branch_or_revision_into = matches
+        .get_one::<String>("head")
+        .unwrap_or(&String::new())
+        .to_string();
+    let msg = matches.get_one::<String>("message").unwrap().to_string();
+    Ok(ValidCommand::Merge {
+        branch_or_revision_from,
+        branch_or_revision_into,
+        msg,
+    })
 }
 
 fn parse_pull(matches: &ArgMatches) -> Result<ValidCommand, clap::Error> {

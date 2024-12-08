@@ -5,11 +5,11 @@ use super::b_3_1_repository_management::{is_repository, load_repo_metadata, save
 use super::b_3_2_revision_management::load_revision_metadata;
 use super::b_3_3_branch_management::{init_branch, load_branch_metadata, save_branch_metadata};
 
-use crate::a_1_file_system_hiding::b_1_2_directory_interaction::{
-    check_directory, copy_directory, create_directory, delete_directory, rename_directory,
-};
 use crate::a_1_file_system_hiding::{
     b_1_1_file_interaction::{get_filename, write_file},
+    b_1_2_directory_interaction::{
+        check_directory, copy_directory, create_directory, delete_directory, rename_directory,
+    },
     REMOTE,
 };
 
@@ -26,7 +26,7 @@ pub fn push(
     if !branch.is_empty() && all {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "Cannot push all ('--all') and a specific branch simultaneously. Use either --all or specific a branch.",
+            "Cannot push all ('--all') and a specific branch simultaneously. Use either --all or specific a branch",
         ));
     }
 
@@ -52,7 +52,7 @@ pub fn push(
             return Err(io::Error::new(
                 io::ErrorKind::NotFound,
                 format!(
-                    "Branch '{}' not found in repository '{}'.",
+                    "Branch '{}' not found in repository '{}'",
                     branch_to_push,
                     get_filename(&remote_absolute_path)
                 ),
@@ -69,11 +69,15 @@ pub fn push(
 
     for (branch_to_push, local_last_revision_id) in branches {
         let local_branch_metadata = load_branch_metadata(&local_absolute_path, &branch_to_push)?;
+        let temp_commits_path = format!(
+            "{}/.dvcs/origin/{}/temp_commits",
+            remote_absolute_path, branch_to_push
+        );
 
         if !remote_repo_metadata.branches.contains_key(&branch_to_push) {
             init_branch(&remote_absolute_path, &branch_to_push, false)?;
             push_report.push_str(&format!(
-                "Branch '{}' created in '{}'.\n",
+                "Branch '{}' created in '{}'\n",
                 branch_to_push,
                 get_filename(&remote_absolute_path)
             ));
@@ -91,23 +95,11 @@ pub fn push(
             load_branch_metadata(&remote_absolute_path, &branch_to_push)?;
         let mut extended_commits = Vec::new();
 
-        if check_directory(&format!(
-            "{}/.dvcs/origin/{}/temp_commits",
-            remote_absolute_path, branch_to_push
-        )) {
-            delete_directory(
-                &format!(
-                    "{}/.dvcs/origin/{}/temp_commits",
-                    remote_absolute_path, branch_to_push
-                ),
-                true,
-            )?;
+        if check_directory(&temp_commits_path) {
+            delete_directory(&temp_commits_path, true)?;
         }
 
-        create_directory(&format!(
-            "{}/.dvcs/origin/{}/temp_commits",
-            remote_absolute_path, branch_to_push
-        ))?;
+        create_directory(&temp_commits_path)?;
 
         if let Some(remote_last_revision_id) = remote_branch_metadata.head_commit {
             let local_last_revision_metadata = load_revision_metadata(
@@ -123,7 +115,7 @@ pub fn push(
 
             if local_last_revision_id == remote_last_revision_id {
                 push_report.push_str(&format!(
-                    "Branch '{}' is already up to date.\n",
+                    "Branch '{}' is already up to date\n",
                     branch_to_push
                 ));
                 continue;
@@ -138,7 +130,7 @@ pub fn push(
                         Err(io::Error::new(
                             io::ErrorKind::Other,
                             format!(
-                                "Branch '{}' is ahead of local branch. Please pull changes from '{}' before pushing.",
+                                "Branch '{}' is ahead of local branch. Please pull changes from '{}' before pushing",
                                 branch_to_push, get_filename(&remote_absolute_path)
                             ),
                         ))
@@ -146,7 +138,7 @@ pub fn push(
                         Err(io::Error::new(
                             io::ErrorKind::Other,
                             format!(
-                                "Cannot push branch '{}': '{}' and '{}' have diverged.",
+                                "Cannot push branch '{}': '{}' and '{}' have diverged",
                                 branch_to_push,
                                 get_filename(&remote_absolute_path),
                                 get_filename(&local_absolute_path)
@@ -156,7 +148,7 @@ pub fn push(
                 }
 
                 push_report.push_str(&format!(
-                    "Force pushing branch '{}' to overwrite '{}' changes.\n",
+                    "Force pushing branch '{}' to overwrite '{}' changes\n",
                     branch_to_push,
                     get_filename(&remote_absolute_path)
                 ));
@@ -176,7 +168,7 @@ pub fn push(
                     return Err(io::Error::new(
                         io::ErrorKind::NotFound,
                         format!(
-                            "Revision '{}' not found in '{}' branch '{}'.",
+                            "Revision '{}' not found in '{}' branch '{}'",
                             remote_last_revision_id,
                             get_filename(&local_absolute_path),
                             branch_to_push
@@ -191,10 +183,7 @@ pub fn push(
                         "{}/.dvcs/origin/{}/commits/{}",
                         local_absolute_path, branch_to_push, revision_id_to_push
                     ),
-                    &format!(
-                        "{}/.dvcs/origin/{}/temp_commits/{}",
-                        remote_absolute_path, branch_to_push, revision_id_to_push
-                    ),
+                    &format!("{}/{}", temp_commits_path, revision_id_to_push),
                 )?;
             }
 
@@ -205,10 +194,7 @@ pub fn push(
                     "{}/.dvcs/origin/{}/commits",
                     local_absolute_path, branch_to_push
                 ),
-                &format!(
-                    "{}/.dvcs/origin/{}/temp_commits",
-                    remote_absolute_path, branch_to_push
-                ),
+                &temp_commits_path,
             )?;
             extended_commits.extend(local_branch_metadata.commits);
         }
@@ -216,23 +202,14 @@ pub fn push(
         if !force {
             for extended_revision_id in extended_commits.iter() {
                 copy_directory(
-                    &format!(
-                        "{}/.dvcs/origin/{}/temp_commits/{}",
-                        remote_absolute_path, branch_to_push, extended_revision_id
-                    ),
+                    &format!("{}/{}", temp_commits_path, extended_revision_id),
                     &format!(
                         "{}/.dvcs/origin/{}/commits/{}",
                         remote_absolute_path, branch_to_push, extended_revision_id
                     ),
                 )?;
             }
-            delete_directory(
-                &format!(
-                    "{}/.dvcs/origin/{}/temp_commits",
-                    remote_absolute_path, branch_to_push
-                ),
-                true,
-            )?;
+            delete_directory(&temp_commits_path, true)?;
             remote_branch_metadata.commits.extend(extended_commits);
         } else {
             delete_directory(
@@ -243,10 +220,7 @@ pub fn push(
                 true,
             )?;
             rename_directory(
-                &format!(
-                    "{}/.dvcs/origin/{}/temp_commits",
-                    remote_absolute_path, branch_to_push
-                ),
+                &temp_commits_path,
                 &format!(
                     "{}/.dvcs/origin/{}/commits",
                     remote_absolute_path, branch_to_push
@@ -266,7 +240,7 @@ pub fn push(
             .insert(branch_to_push.clone(), local_last_revision_id);
 
         push_report.push_str(&format!(
-            "Branch '{}' pushed successfully.\n",
+            "Branch '{}' pushed successfully\n",
             branch_to_push
         ));
     }
@@ -297,7 +271,7 @@ pub fn pull(
     if !branch.is_empty() && all {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "Cannot pull all ('--all') and a specific branch simultaneously. Use either --all or specify a branch.",
+            "Cannot pull all ('--all') and a specific branch simultaneously. Use either --all or specify a branch",
         ));
     }
 
@@ -325,7 +299,7 @@ pub fn pull(
             return Err(io::Error::new(
                 io::ErrorKind::NotFound,
                 format!(
-                    "Branch '{}' not found in repository '{}'.",
+                    "Branch '{}' not found in repository '{}'",
                     branch_to_pull,
                     get_filename(&remote_absolute_path)
                 ),
@@ -340,11 +314,15 @@ pub fn pull(
 
     for (branch_to_pull, remote_last_revision_id) in branches {
         let remote_branch_metadata = load_branch_metadata(&remote_absolute_path, &branch_to_pull)?;
+        let temp_commits_path = format!(
+            "{}/.dvcs/origin/{}/temp_commits",
+            local_absolute_path, branch_to_pull
+        );
 
         if !local_repo_metadata.branches.contains_key(&branch_to_pull) {
             init_branch(&local_absolute_path, &branch_to_pull, false)?;
             pull_report.push_str(&format!(
-                "Branch '{}' created in '{}'.\n",
+                "Branch '{}' created in '{}'\n",
                 branch_to_pull,
                 get_filename(&local_absolute_path)
             ));
@@ -362,23 +340,11 @@ pub fn pull(
             load_branch_metadata(&local_absolute_path, &branch_to_pull)?;
         let mut extended_commits = Vec::new();
 
-        if check_directory(&format!(
-            "{}/.dvcs/origin/{}/temp_commits",
-            local_absolute_path, branch_to_pull
-        )) {
-            delete_directory(
-                &format!(
-                    "{}/.dvcs/origin/{}/temp_commits",
-                    local_absolute_path, branch_to_pull
-                ),
-                true,
-            )?;
+        if check_directory(&temp_commits_path) {
+            delete_directory(&temp_commits_path, true)?;
         }
 
-        create_directory(&format!(
-            "{}/.dvcs/origin/{}/temp_commits",
-            local_absolute_path, branch_to_pull
-        ))?;
+        create_directory(&temp_commits_path)?;
 
         if let Some(local_last_revision_id) = local_branch_metadata.head_commit {
             let local_last_revision_metadata = load_revision_metadata(
@@ -394,7 +360,7 @@ pub fn pull(
 
             if local_last_revision_id == remote_last_revision_id {
                 pull_report.push_str(&format!(
-                    "Branch '{}' is already up to date.\n",
+                    "Branch '{}' is already up to date\n",
                     branch_to_pull
                 ));
                 continue;
@@ -409,7 +375,7 @@ pub fn pull(
                         Err(io::Error::new(
                             io::ErrorKind::Other,
                             format!(
-                                "Branch '{}' is ahead of remote branch. Please push changes to '{}' before pulling.",
+                                "Branch '{}' is ahead of remote branch. Please push changes to '{}' before pulling",
                                 branch_to_pull, get_filename(&remote_absolute_path)
                             ),
                         ))
@@ -417,7 +383,7 @@ pub fn pull(
                         Err(io::Error::new(
                             io::ErrorKind::Other,
                             format!(
-                                "Cannot pull branch '{}': '{}' and '{}' have diverged.",
+                                "Cannot pull branch '{}': '{}' and '{}' have diverged",
                                 branch_to_pull,
                                 get_filename(&local_absolute_path),
                                 get_filename(&remote_absolute_path)
@@ -427,14 +393,13 @@ pub fn pull(
                 }
 
                 pull_report.push_str(&format!(
-                    "Force pulling branch '{}' to overwrite '{}' changes.\n",
+                    "Force pulling branch '{}' to overwrite '{}' changes\n",
                     branch_to_pull,
                     get_filename(&local_absolute_path)
                 ));
             }
 
             let mut commit_to_pull = remote_branch_metadata.commits.clone();
-            println!("commit_to_pull: {:?}", commit_to_pull);
 
             if let Some(index) = remote_branch_metadata
                 .commits
@@ -446,7 +411,7 @@ pub fn pull(
                 return Err(io::Error::new(
                     io::ErrorKind::NotFound,
                     format!(
-                        "Revision '{}' not found in '{}' branch '{}'.",
+                        "Revision '{}' not found in '{}' branch '{}'",
                         local_last_revision_id,
                         get_filename(&remote_absolute_path),
                         branch_to_pull
@@ -460,10 +425,7 @@ pub fn pull(
                         "{}/.dvcs/origin/{}/commits/{}",
                         remote_absolute_path, branch_to_pull, revision_id_to_pull
                     ),
-                    &format!(
-                        "{}/.dvcs/origin/{}/temp_commits/{}",
-                        local_absolute_path, branch_to_pull, revision_id_to_pull
-                    ),
+                    &format!("{}/{}", temp_commits_path, revision_id_to_pull),
                 )?;
             }
 
@@ -474,10 +436,7 @@ pub fn pull(
                     "{}/.dvcs/origin/{}/commits",
                     remote_absolute_path, branch_to_pull
                 ),
-                &format!(
-                    "{}/.dvcs/origin/{}/temp_commits",
-                    local_absolute_path, branch_to_pull
-                ),
+                &temp_commits_path,
             )?;
             extended_commits.extend(remote_branch_metadata.commits);
         }
@@ -491,10 +450,7 @@ pub fn pull(
                 true,
             )?;
             rename_directory(
-                &format!(
-                    "{}/.dvcs/origin/{}/temp_commits",
-                    local_absolute_path, branch_to_pull
-                ),
+                &temp_commits_path,
                 &format!(
                     "{}/.dvcs/origin/{}/commits",
                     local_absolute_path, branch_to_pull
@@ -504,23 +460,14 @@ pub fn pull(
         } else {
             for extended_revision_id in extended_commits.iter() {
                 copy_directory(
-                    &format!(
-                        "{}/.dvcs/origin/{}/temp_commits/{}",
-                        local_absolute_path, branch_to_pull, extended_revision_id
-                    ),
+                    &format!("{}/{}", temp_commits_path, extended_revision_id),
                     &format!(
                         "{}/.dvcs/origin/{}/commits/{}",
                         local_absolute_path, branch_to_pull, extended_revision_id
                     ),
                 )?;
             }
-            delete_directory(
-                &format!(
-                    "{}/.dvcs/origin/{}/temp_commits",
-                    local_absolute_path, branch_to_pull
-                ),
-                true,
-            )?;
+            delete_directory(&temp_commits_path, true)?;
             local_branch_metadata.commits.extend(extended_commits);
         }
 
@@ -536,7 +483,7 @@ pub fn pull(
             .insert(branch_to_pull.clone(), remote_last_revision_id);
 
         pull_report.push_str(&format!(
-            "Branch '{}' pulled successfully.\n",
+            "Branch '{}' pulled successfully\n",
             branch_to_pull
         ));
     }

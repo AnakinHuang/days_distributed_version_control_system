@@ -27,7 +27,7 @@
 //! Author: Anakin (Yuesong Huang), Yifan (Alvin) Jiang
 //! Date: 11/14/2024
 
-use serde::de::DeserializeOwned;
+use serde::de::{DeserializeOwned, Error};
 use std::fs::{self, rename, OpenOptions};
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
@@ -75,11 +75,14 @@ pub fn get_relative_path(path: &str, base: &str, sanitize: bool) -> String {
 }
 
 pub fn get_absolute_path(path: &str, base: &str) -> Result<String, io::Error> {
-    Ok(Path::new(base)
-        .join(path)
-        .canonicalize()?
-        .to_string_lossy()
-        .into_owned())
+    if let Ok(abs_path) = Path::new(base).join(path).canonicalize() {
+        Ok(abs_path.to_string_lossy().into_owned())
+    } else {
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Failed to get absolute path: '{}'", path),
+        ))
+    }
 }
 
 #[allow(unused)]
@@ -87,15 +90,30 @@ pub fn rename_file(old_path: &str, new_path: &str) -> Result<(), io::Error> {
     if Path::new(old_path).is_file() {
         rename(old_path, new_path)
     } else {
-        Err(io::Error::new(io::ErrorKind::NotFound, "File not found."))
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Failed to rename file: '{}'", old_path),
+        ))
     }
 }
 
 pub fn read_file(path: &str) -> Result<String, io::Error> {
-    let mut file = OpenOptions::new().read(true).open(path)?;
-    let mut content = String::new();
-    file.read_to_string(&mut content)?;
-    Ok(content)
+    if let Ok(mut file) = OpenOptions::new().read(true).open(path) {
+        let mut content = String::new();
+        if let Ok(_) = file.read_to_string(&mut content) {
+            Ok(content)
+        } else {
+            Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Failed to read file: '{}'", path),
+            ))
+        }
+    } else {
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Failed to open file: '{}'", path),
+        ))
+    }
 }
 
 pub fn read_struct<T>(path: &str) -> Result<T, serde_json::Error>
@@ -103,34 +121,71 @@ where
     T: DeserializeOwned,
 {
     let content = read_file(path).map_err(serde_json::Error::io)?;
-    let result: T = serde_json::from_str(&content)?;
-    Ok(result)
+    if let Ok(result) = serde_json::from_str(&content) {
+        Ok(result)
+    } else {
+        Err(serde_json::Error::custom(format!(
+            "Failed to deserialize struct from file: '{}'",
+            path
+        )))
+    }
 }
 
 pub fn write_file(path: &str, content: &str) -> Result<(), io::Error> {
-    let mut file = OpenOptions::new()
+    if let Ok(mut file) = OpenOptions::new()
         .write(true)
         .create(true)
         .truncate(true) // Ensure truncation
-        .open(path)?;
-    file.write_all(content.as_bytes())?;
-    Ok(())
+        .open(path)
+    {
+        if let Ok(_) = file.write_all(content.as_bytes()) {
+            Ok(())
+        } else {
+            Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Failed to write file: '{}'", path),
+            ))
+        }
+    } else {
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Failed to open file: '{}'", path),
+        ))
+    }
 }
 
 pub fn write_struct<T>(path: &str, s: &T) -> Result<(), serde_json::Error>
 where
     T: serde::Serialize,
 {
-    let content = serde_json::to_string_pretty(s)?;
-    write_file(path, &content).map_err(serde_json::Error::io)?;
-    Ok(())
+    if let Ok(content) = serde_json::to_string_pretty(s) {
+        write_file(path, &content).map_err(serde_json::Error::io)?;
+        Ok(())
+    } else {
+        Err(serde_json::Error::custom(format!(
+            "Failed to serialize struct to file: '{}'",
+            path
+        )))
+    }
 }
 
 #[allow(unused)]
 pub fn append_file(path: &str, content: &str) -> Result<(), io::Error> {
-    let mut file = OpenOptions::new().write(true).append(true).open(path)?;
-    file.write_all(content.as_bytes())?;
-    Ok(())
+    if let Ok(mut file) = OpenOptions::new().write(true).append(true).open(path) {
+        if let Ok(_) = file.write_all(content.as_bytes()) {
+            Ok(())
+        } else {
+            Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Failed to append file: '{}'", path),
+            ))
+        }
+    } else {
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Failed to open file: '{}'", path),
+        ))
+    }
 }
 
 pub fn copy_file(src: &str, dest: &str) -> Result<(), io::Error> {
@@ -138,7 +193,10 @@ pub fn copy_file(src: &str, dest: &str) -> Result<(), io::Error> {
         fs::copy(src, dest)?;
         Ok(())
     } else {
-        Err(io::Error::new(io::ErrorKind::NotFound, "File not found."))
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Failed to copy file: '{}'", src),
+        ))
     }
 }
 
@@ -147,6 +205,9 @@ pub fn delete_file(path: &str) -> Result<(), io::Error> {
         fs::remove_file(path)?;
         Ok(())
     } else {
-        Err(io::Error::new(io::ErrorKind::NotFound, "File not found."))
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            format!("Failed to delete file: '{}'", path),
+        ))
     }
 }
