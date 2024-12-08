@@ -1,7 +1,9 @@
 {
-  "name": "beta",
-  "head_commit": "e624ec3c-98cd-4f11-bf94-ba2b19e49ac6",
-  "commits": [
+  "id": "ed72c6eb-579d-4009-8ef9-f0ca3a10a26b",
+  "files": {
+    "acceptance_tests/test_6.txt": "0f94e79d-b5db-52ba-a4e6-20d0804e734f"
+  },
+  "parents": [
     "cb1e8499-0675-4ff3-82e3-1227e7df21b9",
     "17183d07-8e82-40a6-9e8c-4e2c16261021",
     "fbccb37d-62f9-48f5-8812-8e0a01861ec8",
@@ -89,10 +91,11 @@
     "c3f30e3f-930e-4518-a5c6-5449a518d3e3",
     "affb5ec0-156c-4f68-8499-93f309cab600",
     "be9f5ba7-c94a-4893-a68b-e60f4f1f61e0",
-    "8a07a35b-dba8-4207-acba-5098a4d1acc1",
-    "ed72c6eb-579d-4009-8ef9-f0ca3a10a26b",
-    "d2dbd8be-00b5-48d8-8d50-8988587b1c39",
-    "e624ec3c-98cd-4f11-bf94-ba2b19e49ac6"
+    "8a07a35b-dba8-4207-acba-5098a4d1acc1"
   ],
-  "staging": []
+  "message": "Add test_6.txt",
+  "timestamp": {
+    "secs_since_epoch": 1733701370,
+    "nanos_since_epoch": 819580000
+  }
 }
