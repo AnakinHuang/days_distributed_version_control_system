@@ -1,0 +1,13 @@
+[package]
+name = "days_dvcs"
+version = "0.2.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.20", features = ["derive"] }
+chrono = "0.4.38"
+uuid = { version = "1.11.0", features = ["v4", "v5"] }
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.133"
+pathdiff = "0.2.3"
+diff = "0.1.13"
