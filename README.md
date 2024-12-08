@@ -28,7 +28,7 @@ The **days** DVCS system implements the following commands:
 
 ## Contributors
 
-- **Yuesong (Anakin) Huang** - A.3 Repository Hiding
+- **Yuesong (Anakin) Huang** - A.1 File System Hiding - A.2 Behavioral Hiding - A.3 Repository Hiding
 - **Yifan (Alvin) Jiang** - A.2 Behavioral Hiding
 - **Duy Pham** - A.3 Repository Hiding
 - **Shervin Tursun-Zade** - A.1 File System Hiding
@@ -37,6 +37,9 @@ The **days** DVCS system implements the following commands:
 
 ```plaintext
 /days_dvcs
+├── cargo.lock
+├── cargo.toml
+├── README.md
 ├── src
 │   ├── a_1_file_system_hiding
 │   │   ├── b_1_1_file_interaction.rs
@@ -56,7 +59,45 @@ The **days** DVCS system implements the following commands:
 │   │   ├── b_3_5_repository_helper.rs
 │   │   └── mod.rs
 │   ├── lib.rs
-│   ├── main.rs
+│   └── main.rs
+└── tests
+    ├── a_1_file_system_hiding_unit_test.rs
+    ├── a_2_behavioral_hiding_unit_test.rs
+    └── a_3_repository_hiding_unit_test.rs
+```
+
+## Repository Structure
+
+```plaintext
+./
+├── .dvcs
+│   ├── .metadata
+│   │   └── metadata.json
+│   ├── HEAD
+│   └── origin
+│       ├── main
+│       │   ├── .metadata
+│       │   │   └── metadata.json
+│       │   ├── commits
+│       │   └── staging
+│       ├── feature
+│       │   ├── .metadata
+│       │   │   └── metadata.json
+│       │   ├── commits
+│       │   └── staging
+│       └── ...
+└── .remote
+    └── .dvcs
+        ├── .metadata
+        │   └── metadata.json
+        ├── HEAD
+        └── origin
+            ├── main
+            │   ├── .metadata
+            │   │   └── metadata.json
+            │   ├── commits
+            │   └── staging
+            └── ...
 ```
 
 ## Usage
