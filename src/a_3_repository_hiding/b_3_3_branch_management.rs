@@ -32,7 +32,7 @@ pub struct BranchMetadata {
 }
 
 pub fn is_branch(path: &str) -> Result<String, io::Error> {
-    let mut branch_path = get_absolute_path("", path)?;
+    let mut branch_path = get_absolute_path(path, "")?;
 
     loop {
         if check_directory(&branch_path) {
@@ -40,14 +40,17 @@ pub fn is_branch(path: &str) -> Result<String, io::Error> {
 
             if check_file(&metadata_path) {
                 let commits_path = format!("{}/commits", branch_path);
+                let staging_path = format!("{}/staging", branch_path);
 
-                if check_directory(&commits_path) {
-                    let staging_path = format!("{}/staging", branch_path);
-
-                    if check_directory(&staging_path) {
-                        return Ok(branch_path);
-                    }
+                if !check_directory(&commits_path) {
+                    create_directory(&commits_path)?;
                 }
+
+                if !check_directory(&staging_path) {
+                    create_directory(&staging_path)?;
+                }
+
+                return Ok(branch_path)
             }
         }
 
@@ -140,7 +143,7 @@ pub fn add(test_path: &str, files: Vec<String>) -> Result<(), io::Error> {
     let mut files_to_stage = Vec::new();
 
     for file in files.iter() {
-        let file_path = get_absolute_path("", file)?;
+        let file_path = get_absolute_path(file, "")?;
 
         if !file_path.starts_with(path) {
             return Err(io::Error::new(
@@ -397,7 +400,7 @@ pub fn get_common_ancestor_and_count(
 
 pub fn status(path: &str) -> Result<String, io::Error> {
     let repo_root = is_repository(path)?; // Get the root of the repository
-    let current_path = get_absolute_path("", ".")?; // Get current working directory
+    let current_path = get_absolute_path(".", "")?; // Get current working directory
     let repo_metadata = load_repo_metadata(&repo_root)?;
     let branch = &repo_metadata.head;
     let local_branch_metadata = load_branch_metadata(&repo_root, branch)?;

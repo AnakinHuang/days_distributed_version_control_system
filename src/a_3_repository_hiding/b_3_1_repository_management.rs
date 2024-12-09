@@ -24,7 +24,7 @@ pub struct RepositoryMetadata {
 }
 
 pub fn is_repository(path: &str) -> Result<String, io::Error> {
-    let mut absolute_path = get_absolute_path("", path)?;
+    let mut absolute_path = get_absolute_path(path, "")?;
     let mut error;
 
     loop {
@@ -82,7 +82,7 @@ pub fn is_repository(path: &str) -> Result<String, io::Error> {
 pub fn init_repository(path: &str, remote: bool) -> Result<(), io::Error> {
     match is_repository(path) {
         Ok(root_path) => {
-            let current_path = get_absolute_path("", path)?;
+            let current_path = get_absolute_path(path, "")?;
 
             if root_path == current_path && path != REMOTE {
                 return Err(io::Error::new(
@@ -111,7 +111,7 @@ pub fn init_repository(path: &str, remote: bool) -> Result<(), io::Error> {
 pub fn clone_repository(src: &str, dest: &str) -> Result<(), io::Error> {
     match is_repository(src) {
         Ok(root_path) => {
-            let current_path = get_absolute_path("", src)?;
+            let current_path = get_absolute_path(src, "")?;
 
             if root_path != current_path {
                 return Err(io::Error::new(

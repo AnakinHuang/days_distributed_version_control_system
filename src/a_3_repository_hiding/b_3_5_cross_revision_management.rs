@@ -597,8 +597,7 @@ pub fn merge(
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
             format!(
-                "Merge failed during commit. Reverting to previous staging area: {}",
-                e
+                "Merge failed during commit. Reverting to previous staging area: {}", e
             ),
         ));
     }
@@ -618,63 +617,115 @@ fn merge_contents(
     let ancestor_lines: Vec<&str> = ancestor.lines().collect();
     let content_into_lines: Vec<&str> = content_into.lines().collect();
     let content_from_lines: Vec<&str> = content_from.lines().collect();
+    let mut conflicted_into_lines: Vec<String> = Vec::new();
+    let mut conflicted_from_lines: Vec<String> = Vec::new();
+    let mut agreed_lines: Vec<String> = Vec::new();
 
-    let mut merged_content = String::new();
+    let mut merged_lines: Vec<String> = Vec::new();
     let max_lines = ancestor_lines
         .len()
         .max(content_into_lines.len())
         .max(content_from_lines.len());
 
     for i in 0..max_lines {
-        let ancestor_line = ancestor_lines.get(i).unwrap_or(&"");
-        let content_into_line = content_into_lines.get(i).unwrap_or(&"");
-        let content_from_line = content_from_lines.get(i).unwrap_or(&"");
+        let ancestor_line = ancestor_lines.get(i).unwrap_or(&"").to_string();
+        let content_into_line = content_into_lines.get(i).unwrap_or(&"").to_string();
+        let content_from_line = content_from_lines.get(i).unwrap_or(&"").to_string();
+        let mut new_line = &ancestor_line;
+        let mut agreed = false;
 
-        if content_into_line == content_from_line {
-            merged_content.push_str(content_into_line);
-            merged_content.push('\n');
-        } else if content_into_line == ancestor_line {
-            merged_content.push_str(content_from_line);
-            merged_content.push('\n');
-        } else if content_from_line == ancestor_line {
-            merged_content.push_str(content_into_line);
-            merged_content.push('\n');
+        if content_from_line == content_into_line {
+            new_line = &content_from_line;
+            agreed = true;
+        } else if content_into_line == ancestor_line || content_from_line == ancestor_line {
+            agreed = true;
         } else {
-            merged_content.push_str(&merge_conflict(
-                into,
-                content_into_line,
-                from,
-                content_from_line,
-            ));
-            merged_content.push('\n');
+            conflicted_from_lines.push(content_from_line);
+            conflicted_into_lines.push(content_into_line);
+        }
+
+        if agreed {
+            if !conflicted_from_lines.is_empty() || !conflicted_into_lines.is_empty() {
+                merged_lines.extend(agreed_lines.drain(..));
+                merged_lines.push(format_conflict(
+                    into,
+                    conflicted_into_lines.drain(..).collect(),
+                    from,
+                    conflicted_from_lines.drain(..).collect(),
+                ));
+            }
+            agreed_lines.push(new_line.to_string());
         }
     }
 
-    merged_content
+    merged_lines.extend(agreed_lines.drain(..));
+
+    if !conflicted_from_lines.is_empty() || !conflicted_into_lines.is_empty() {
+        merged_lines.push(format_conflict(
+            into,
+            conflicted_into_lines.drain(..).collect(),
+            from,
+            conflicted_from_lines.drain(..).collect(),
+        ));
+    }
+
+    merged_lines.join("\n")
 }
 
 fn merge_conflict(into: &str, content_into: &str, from: &str, content_from: &str) -> String {
     let mut merged_lines = Vec::new();
+    let mut conflicted_into_lines: Vec<String> = Vec::new();
+    let mut conflicted_from_lines: Vec<String> = Vec::new();
+    let mut unchanged_lines: Vec<String> = Vec::new();
 
-    for diff in diff::lines(content_into, content_from) {
+    for diff in diff::lines(content_from, content_into) {
         match diff {
             diff::Result::Left(line) => {
-                merged_lines.push(format!(
-                    "<<<<<<< {}\n{}\n=======\n>>>>>>> {}",
-                    into, line, from
-                ));
+                conflicted_from_lines.push(line.to_string());
             }
             diff::Result::Right(line) => {
-                merged_lines.push(format!(
-                    "<<<<<<< {}\n=======\n{}\n>>>>>>> {}",
-                    into, line, from
-                ));
+                conflicted_into_lines.push(line.to_string());
             }
             diff::Result::Both(line, _) => {
-                merged_lines.push(format!("{}", line));
+                if !conflicted_from_lines.is_empty() || !conflicted_into_lines.is_empty() {
+                    merged_lines.extend(unchanged_lines.drain(..));
+                    merged_lines.push(format_conflict(
+                        into,
+                        conflicted_into_lines.drain(..).collect(),
+                        from,
+                        conflicted_from_lines.drain(..).collect(),
+                    ));
+                }
+                unchanged_lines.push(line.to_string());
             }
         }
     }
 
+    merged_lines.extend(unchanged_lines.drain(..));
+
+    if !conflicted_from_lines.is_empty() || !conflicted_into_lines.is_empty() {
+        merged_lines.push(format_conflict(
+            into,
+            conflicted_into_lines.drain(..).collect(),
+            from,
+            conflicted_from_lines.drain(..).collect(),
+        ));
+    }
+
     merged_lines.join("\n")
+}
+
+fn format_conflict(
+    into: &str,
+    conflicted_into_lines: Vec<String>,
+    from: &str,
+    conflicted_from_lines: Vec<String>,
+) -> String {
+    format!(
+        "<<<<<<< {}\n{}\n=======\n{}\n>>>>>>> {}",
+        into,
+        conflicted_from_lines.join("\n"),
+        conflicted_into_lines.join("\n"),
+        from
+    )
 }

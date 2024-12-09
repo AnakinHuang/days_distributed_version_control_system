@@ -118,6 +118,7 @@ pub fn push(
                     "Branch '{}' is already up to date\n",
                     branch_to_push
                 ));
+                delete_directory(&temp_commits_path, true)?;
                 continue;
             } else if !local_last_revision_metadata
                 .parents
@@ -196,6 +197,7 @@ pub fn push(
                 ),
                 &temp_commits_path,
             )?;
+
             extended_commits.extend(local_branch_metadata.commits);
         }
 
@@ -228,6 +230,7 @@ pub fn push(
             )?;
             remote_branch_metadata.commits = extended_commits;
         }
+
         remote_branch_metadata.head_commit = Some(local_last_revision_id.clone());
         save_branch_metadata(
             &remote_absolute_path,
@@ -363,6 +366,7 @@ pub fn pull(
                     "Branch '{}' is already up to date\n",
                     branch_to_pull
                 ));
+                delete_directory(&temp_commits_path, true)?;
                 continue;
             } else if !remote_last_revision_metadata
                 .parents
