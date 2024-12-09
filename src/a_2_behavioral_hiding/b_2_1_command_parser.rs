@@ -95,7 +95,7 @@ pub enum ValidCommand {
 pub fn parse_command(args: Vec<String>) -> Result<ValidCommand, clap::Error> {
     let matches = Command::new("days_dvcs")
         .about("Group DAYS distributed version control system developed in Rust")
-        .version("3.0")
+        .version("4.0")
         .author(
             "Yuesong Huang <yhu116@ur.rochester.edu>\n\
             Alvin Jiang <yjiang54@ur.rochester.edu>\n\

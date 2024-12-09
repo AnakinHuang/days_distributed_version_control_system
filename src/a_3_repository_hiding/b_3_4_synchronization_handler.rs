@@ -196,6 +196,7 @@ pub fn push(
                 ),
                 &temp_commits_path,
             )?;
+
             extended_commits.extend(local_branch_metadata.commits);
         }
 
@@ -228,6 +229,7 @@ pub fn push(
             )?;
             remote_branch_metadata.commits = extended_commits;
         }
+
         remote_branch_metadata.head_commit = Some(local_last_revision_id.clone());
         save_branch_metadata(
             &remote_absolute_path,

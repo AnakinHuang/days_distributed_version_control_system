@@ -80,7 +80,7 @@ pub fn get_absolute_path(path: &str, base: &str) -> Result<String, io::Error> {
     } else {
         Err(io::Error::new(
             io::ErrorKind::NotFound,
-            format!("Failed to get absolute path: '{}'", path),
+            format!("Failed to get absolute path: '{}/{}'", base, path),
         ))
     }
 }
@@ -92,7 +92,7 @@ pub fn rename_file(old_path: &str, new_path: &str) -> Result<(), io::Error> {
     } else {
         Err(io::Error::new(
             io::ErrorKind::NotFound,
-            format!("Failed to rename file: '{}'", old_path),
+            format!("Failed to rename file: '{}' to '{}'", old_path, new_path),
         ))
     }
 }
