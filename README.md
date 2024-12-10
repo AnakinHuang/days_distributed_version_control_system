@@ -124,3 +124,8 @@ chmod +x ./scripts/Unix/cargo_commands.sh
 
 The **DAYS** DVCS system is fully functional and has successfully passed all unit and acceptance tests, including the
 implementation of all required commands. It is ready for production use on supported environments.
+
+## Acknowledgments
+
+The **DAYS DVCS** system is inspired by the functionalities and design of [Git](https://git-scm.com/), the widely used distributed version control system created by Linus Torvalds. While **DAYS** was built independently, it adheres to concepts and behaviors introduced by Git to provide a familiar experience.
+
