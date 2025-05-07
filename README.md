@@ -1,131 +1,123 @@
+Awesome! Here’s the **final `README.md` in a clean Markdown code block**:
+
+```markdown
 # DAYS DVCS: Distributed Version Control System
 
-## Description
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-**DAYS** is a distributed version control system (DVCS) developed for the University of Rochester Computer Science
-Undergraduate Council (CSUG) hosted Fedora machines. It provides robust functionality for local repository creation,
-commits, branching, merging, and file inspection. The system has been fully tested and passed all unit and acceptance
-tests, ensuring full functionality and reliability.
+## 🚀 Overview
 
-## Features
+**DAYS** is a lightweight, Rust-based distributed version control system (DVCS) developed for the University of Rochester Computer Science Undergraduate Council (CSUG) Fedora servers. It provides core Git-like functionalities including repository creation, commits, branching, merging, and remote synchronization. The system is fully tested and verified for reliability.
 
-The **days** DVCS system implements the following commands:
+---
 
-1. **init**: Create an empty repository.
-2. **clone**: Copy an existing repository.
-3. **add**: Add specific files that you want to track.
-4. **remove**: Remove specific files from the tracking list.
-5. **status**: Check the current status of the repository.
-6. **heads**: Show the current branch heads.
-7. **diff**: Compare changes between revisions.
-8. **cat**: Inspect a file of a given revision.
-9. **checkout**: Switch to a specific revision.
-10. **commit**: Commit changes and create a new revision.
-11. **log**: View the change log.
-12. **merge**: Merge two revisions.
-13. **pull**: Fetch and integrate changes from another repository.
-14. **push**: Push changes to another repository.
-15. **branch**: Create a new branch.
+## 🧩 Features
 
-## Contributors
+- **Repository Management:** `init`, `clone`, `commit`, `log`, `checkout`
+- **Branching & Merging:** `branch`, `merge`, `heads`
+- **File Operations:** `add`, `remove`, `status`, `diff`, `cat`
+- **Remote Sync:** `push`, `pull`
+- **Metadata Handling:** Robust revision and branch tracking
 
-- **Yuesong (Anakin) Huang** - A.1 File System Hiding - A.2 Behavioral Hiding - A.3 Repository Hiding
-- **Yifan (Alvin) Jiang** - A.2 Behavioral Hiding
-- **Duy Pham** - A.3 Repository Hiding
-- **Shervin Tursun-Zade** - A.1 File System Hiding
+---
 
-## Directory Structure
+## 🛠️ Architecture
 
-```plaintext
-/days_dvcs
-├── cargo.lock
-├── cargo.toml
-├── README.md
-├── src
-│   ├── a_1_file_system_hiding
-│   │   ├── b_1_1_file_interaction.rs
-│   │   ├── b_1_2_directory_interaction.rs
-│   │   ├── b_1_3_metadata_management.rs
-│   │   └── mod.rs
-│   ├── a_2_behavioral_hiding
-│   │   ├── b_2_1_command_parser.rs
-│   │   ├── b_2_2_command_handler.rs
-│   │   ├── b_2_3_output_formatter.rs
-│   │   └── mod.rs
-│   ├── a_3_repository_hiding
-│   │   ├── b_3_1_repository_management.rs
-│   │   ├── b_3_2_revision_management.rs
-│   │   ├── b_3_3_branch_management.rs
-│   │   ├── b_3_4_synchronization_handler.rs
-│   │   ├── b_3_5_repository_helper.rs
-│   │   └── mod.rs
-│   ├── lib.rs
-│   └── main.rs
-└── tests
-    ├── a_1_file_system_hiding_unit_test.rs
-    ├── a_2_behavioral_hiding_unit_test.rs
-    └── a_3_repository_hiding_unit_test.rs
+The system is organized into three core modules:
+
+1. **File System Layer:** Manages file and directory operations, metadata storage.
+2. **Behavioral Layer:** Handles command parsing, logic, and output.
+3. **Repository Layer:** Controls repository state, revisions, branches, and synchronization.
+
+Each module is well-documented and rigorously tested.
+
+---
+
+## 📂 Directory Structure
+
+```
+days_dvcs/
+├── src/
+│   ├── a_1_file_system_hiding/
+│   ├── a_2_behavioral_hiding/
+│   ├── a_3_repository_hiding/
+│   └── main.rs
+├── tests/
+├── scripts/
+│   ├── Unix/
+│   └── Windows/
+├── Cargo.toml
+└── README.md
 ```
 
-## Repository Structure
+---
 
-```plaintext
-./
-├── .dvcs
-│   ├── .metadata
-│   │   └── metadata.json
-│   ├── HEAD
-│   └── origin
-│       ├── main
-│       │   ├── .metadata
-│       │   │   └── metadata.json
-│       │   ├── commits
-│       │   └── staging
-│       ├── feature
-│       │   ├── .metadata
-│       │   │   └── metadata.json
-│       │   ├── commits
-│       │   └── staging
-│       └── ...
-└── .remote
-    └── .dvcs
-        ├── .metadata
-        │   └── metadata.json
-        ├── HEAD
-        └── origin
-            ├── main
-            │   ├── .metadata
-            │   │   └── metadata.json
-            │   ├── commits
-            │   └── staging
-            └── ...
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Rust:** Install from [rust-lang.org](https://www.rust-lang.org/tools/install)
+
+### Installation
+
+1️⃣ **Clone the repository:**
+
+```bash
+git clone https://github.com/AnakinHuang/days_distributed_version_control_system.git
+cd days_distributed_version_control_system
 ```
 
-## Usage
+2️⃣ **Build the project:**
 
-### On Windows
-
-Run the PowerShell script:
-
-```powershell
-./scripts/Windows/cargo_commands.ps1
+```bash
+cargo build --release
 ```
 
-### On Linux/Unix-based OS
+---
 
-Run the shell script:
+## ⚙️ Usage
+
+### On Unix/Linux:
 
 ```bash
 chmod +x ./scripts/Unix/cargo_commands.sh
 ./scripts/Unix/cargo_commands.sh
 ```
 
-## Status
+### On Windows:
 
-The **DAYS** DVCS system is fully functional and has successfully passed all unit and acceptance tests, including the
-implementation of all required commands. It is ready for production use on supported environments.
+```powershell
+.\scripts\Windows\cargo_commands.ps1
+```
 
-## Acknowledgments
+---
 
-The **DAYS DVCS** system is inspired by the functionalities and design of [Git](https://git-scm.com/), the widely used distributed version control system created by Linus Torvalds. While **DAYS** was built independently, it adheres to concepts and behaviors introduced by Git to provide a familiar experience.
+## ✅ Testing
 
+Run all tests to ensure functionality:
+
+```bash
+cargo test
+```
+
+---
+
+## 👥 Contributors
+
+- **Yuesong (Anakin) Huang** – File System, Behavioral Logic, Repository Management
+- **Yifan (Alvin) Jiang** – Behavioral Logic
+- **Duy Pham** – Repository Management
+- **Shervin Tursun-Zade** – File System
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+---
+
+*Inspired by Git. Built in Rust to demonstrate DVCS principles and practical implementation.*
+```
+
+✅ Let me know if you want to add images, badges, or example commands for specific operations (like `commit`, `merge`, etc.)!
