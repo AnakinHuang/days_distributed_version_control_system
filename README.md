@@ -1,6 +1,5 @@
 Awesome! Here’s the **final `README.md` in a clean Markdown code block**:
 
-```markdown
 # DAYS DVCS: Distributed Version Control System
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
