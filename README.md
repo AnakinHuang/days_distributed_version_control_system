@@ -113,8 +113,3 @@ cargo test
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
 
 ---
-
-*Inspired by Git. Built in Rust to demonstrate DVCS principles and practical implementation.*
-```
-
-✅ Let me know if you want to add images, badges, or example commands for specific operations (like `commit`, `merge`, etc.)!
