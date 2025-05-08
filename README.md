@@ -1,6 +1,6 @@
 # DAYS DVCS: Distributed Version Control System
 
-![License: BSD](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 ## 🚀 Overview
 
@@ -110,6 +110,6 @@ cargo test
 
 ## 📄 License
 
-This project is licensed under the BSD 3-Clause License – see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU AGPL v3 License – see the [LICENSE](LICENSE) file for details.
 
 ---
